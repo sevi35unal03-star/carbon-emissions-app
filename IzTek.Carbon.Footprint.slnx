@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/IzTek.Carbon.Footprint.Api/IzTek.Carbon.Footprint.Api.csproj" />
+    <Project Path="src/IzTek.Carbon.Footprint.Application/IzTek.Carbon.Footprint.Application.csproj" />
+    <Project Path="src/IzTek.Carbon.Footprint.Domain/IzTek.Carbon.Footprint.Domain.csproj" />
+    <Project Path="src/IzTek.Carbon.Footprint.Infrastructure/IzTek.Carbon.Footprint.Infrastructure.csproj" />
+    <Project Path="src/IzTek.Carbon.Footprint.Persistence/IzTek.Carbon.Footprint.Persistence.csproj" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>

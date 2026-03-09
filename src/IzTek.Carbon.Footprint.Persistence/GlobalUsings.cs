@@ -1,0 +1,16 @@
+﻿global using IzTek.Carbon.Footprint.Application.Common.Interfaces;
+global using IzTek.Carbon.Footprint.Domain.Common;
+global using IzTek.Carbon.Footprint.Domain.Entities;
+global using IzTek.Carbon.Footprint.Domain.Enums;
+global using IzTek.Carbon.Footprint.Persistence.Contexts;
+global using IzTek.Carbon.Footprint.Persistence.Interceptors;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Diagnostics;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using System.Reflection;
+global using Wolverine;

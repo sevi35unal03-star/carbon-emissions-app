@@ -1,0 +1,18 @@
+
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
+
+public class LoginCommand
+{
+    public string EmailorIdentityNumber { get; set; }
+    public string Password { get; set; }
+}
+
+public class LoginCommandValidator : AbstractValidator<LoginCommand>
+{
+    public LoginCommandValidator()
+   {
+        RuleFor(x => x.EmailorIdentityNumber)
+            .NotEmpty().WithMessage("Email or identity number is required.");
+
+    }
+}

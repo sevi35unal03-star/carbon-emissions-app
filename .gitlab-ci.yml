@@ -1,0 +1,70 @@
+stages:
+  - build
+  - publish
+
+variables:
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE
+  DOTNET_VERSION: "10.0"
+  PROJECT_NAME: "IzTek.Carbon.Footprint"
+
+# Cache NuGet paketleri
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .nuget/
+
+# Build job - her push'ta çalışır
+build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION}
+  rules:
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - dotnet restore ${PROJECT_NAME}.slnx --packages .nuget/
+    - dotnet build ${PROJECT_NAME}.slnx --no-restore -c Release
+    - dotnet test ${PROJECT_NAME}.slnx --no-build -c Release --logger "junit;LogFilePath=results.xml" || true
+  artifacts:
+    reports:
+      junit: "**/results.xml"
+    expire_in: 1 day
+
+# Main branch'e push - latest tag ile yayınla
+publish-latest:
+  stage: publish
+  image: docker:24
+  services:
+    - docker:24-dind
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE:latest -f src/${PROJECT_NAME}.Api/Dockerfile .
+    - docker push $DOCKER_IMAGE:latest
+    - echo "Published $DOCKER_IMAGE:latest"
+
+# Tag oluşturulduğunda - semantic version ile yayınla
+publish-release:
+  stage: publish
+  image: docker:24
+  services:
+    - docker:24-dind
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    # Tag'den versiyon al (v1.0.0 -> 1.0.0)
+    - VERSION=${CI_COMMIT_TAG#v}
+    - echo "Publishing version $VERSION"
+    
+    # Docker image build ve push
+    - docker build -t $DOCKER_IMAGE:$VERSION -t $DOCKER_IMAGE:latest -f src/${PROJECT_NAME}.Api/Dockerfile .
+    - docker push $DOCKER_IMAGE:$VERSION
+    - docker push $DOCKER_IMAGE:latest
+    
+    - echo "Published $DOCKER_IMAGE:$VERSION and $DOCKER_IMAGE:latest"
