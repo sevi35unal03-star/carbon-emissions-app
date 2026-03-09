@@ -1,10 +1,19 @@
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+
 namespace IzTek.Carbon.Footprint.Persistence;
+
 
 public static class ServiceCollectionExtensions
 {
     public static IHostApplicationBuilder ConfigurePersistence(this IHostApplicationBuilder builder)
     {
         builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = builder.Configuration.GetConnectionString("Redis");
+            options.InstanceName = "CarbonFootprint:";
+        });
 
         builder.Services.ConfigureServices();
 

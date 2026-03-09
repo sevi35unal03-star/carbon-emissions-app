@@ -2,8 +2,14 @@
 
 public record GetActivityCalendarQuery(
     int Year,
-    int? Month, // Null ise yıllık görünüm, dolu ise aylık görünüm
-    int Period = 1);
+    int? Month,
+    int Period = 1) : ICacheableQuery
+{
+    public string CacheKey => Month.HasValue
+        ? $"activity-calendar:{Year}:{Month}"
+        : $"activity-calendar:{Year}";
+    public TimeSpan? Expiry => TimeSpan.FromMinutes(15);
+}
 
 public class CalendarResponse
 {
