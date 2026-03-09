@@ -1,10 +1,10 @@
-﻿using Microsoft.CodeAnalysis.Differencing;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using StackExchange.Redis;
 
 namespace IzTek.Carbon.Footprint.Infrastructure.Services;
 
-public class CacheService(IDistributedCache cache) : ICacheService
+public class CacheService(IDistributedCache cache, IConnectionMultiplexer redis) : ICacheService
 {
     public async Task<T?> GetAsync<T>(string key, CancellationToken ct = default)
     {

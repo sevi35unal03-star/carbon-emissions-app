@@ -63,3 +63,11 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
         return await responseMessage.DeserializeAsync<Result>();
     }
 }
+
+
+/*
+    PlatformService, uygulamanın diğer bölümlerinin e-posta gönderme ve push bildirimleri gibi platforma özgü işlemleri gerçekleştirmesine olanak tanır. 
+    Bu servis, HTTP istemcisi aracılığıyla platformun API'sine istekler göndererek bu işlemleri gerçekleştirir.
+*/
+
+// Ileride buraya RegisterAsync eklenecek -> BizIzmir servisi

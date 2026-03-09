@@ -4,7 +4,12 @@ public record PollAnswerItem(Guid QuestionId, Guid OptionId);
 
 public record SubmitPollAnswerCommand(
     Guid PollSetId,
-    List<PollAnswerItem> Answers);
+    List<PollAnswerItem> Answers) : ICacheInvalidator
+{
+    public IEnumerable<string> CacheKeys =>
+        [$"monthly-leaderboard:{DateTime.Now.Month}:{DateTime.Now.Year}",
+         $"goal-detail:{DateTime.Now.Month}:{DateTime.Now.Year}"];
+}
 
 
 //SubmitPollAnswer Validator ekle
