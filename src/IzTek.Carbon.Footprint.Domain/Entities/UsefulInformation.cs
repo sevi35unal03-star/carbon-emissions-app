@@ -1,0 +1,31 @@
+﻿namespace IzTek.Carbon.Footprint.Domain.Entities;
+
+public class UsefulInformation : BaseAuditableEntity
+{
+    public string Title { get; private set; } = default!;
+    public string Content { get;  private set; } = default!;
+    public int DisplayOrder { get; private set; }
+    public bool IsActive { get; private set; }
+
+   private UsefulInformation() { }
+
+    public UsefulInformation(string title, string content, int displayOrder)
+    {
+        if (string.IsNullOrWhiteSpace(title)) throw new ArgumentException("Title cannot be empty.");
+
+        Title = title;
+        Content = content;
+        DisplayOrder = displayOrder;
+        IsActive = true;
+    }
+
+    public void Update(string title, string content, int displayOrder)
+    {
+        Title = title;
+        Content = content;
+        DisplayOrder = displayOrder;
+    }
+
+    public void Deactivate() => IsActive = false;
+    public void Activate() => IsActive = true;
+}

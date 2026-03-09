@@ -1,0 +1,6 @@
+﻿namespace IzTek.Carbon.Footprint.Domain.Common;
+
+public abstract class BaseEvent
+{
+    public DateTimeOffset OccurredOn { get; protected set; } = DateTimeOffset.UtcNow;
+}
