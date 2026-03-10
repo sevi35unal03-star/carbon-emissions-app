@@ -27,13 +27,13 @@ public class AuditableEntityInterceptor(ICurrentUserService currentUserService) 
         {
             if (entry.State == EntityState.Added)
             {
-                entry.Entity.CreatedBy = currentUserService!.UserId;
+                entry.Entity.CreatedBy = currentUserService!.UserId.ToString();
                 entry.Entity.CreatedAt = DateTime.UtcNow;
             }
 
             if (entry.State is EntityState.Added or EntityState.Modified)
             {
-                entry.Entity.UpdatedBy = currentUserService!.UserId;
+                entry.Entity.UpdatedBy = currentUserService!.UserId.ToString();
                 entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
             }
 
@@ -42,7 +42,7 @@ public class AuditableEntityInterceptor(ICurrentUserService currentUserService) 
                 entry.State = EntityState.Modified;
                 entry.Entity.IsDeleted = true;
                 entry.Entity.DeletedAt = DateTimeOffset.UtcNow;
-                entry.Entity.DeletedBy = currentUserService!.UserId;
+                entry.Entity.DeletedBy = currentUserService!.UserId.ToString();
             }
         }
     }

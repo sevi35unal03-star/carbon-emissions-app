@@ -12,16 +12,15 @@ public class DeleteUserCommandHandler(
 {
     public async Task<Result> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        if (!currentUserService.IsAuthenticated || string.IsNullOrEmpty(currentUserService.UserId))
+        if (!currentUserService.IsAuthenticated || string.IsNullOrEmpty(currentUserService.UserId.ToString()))
             return Result.Failure("Unauthorized", HttpStatusCode.Unauthorized);
 
-        var user = await userManager.FindByIdAsync(currentUserService.UserId);
+        var user = await userManager.FindByIdAsync(currentUserService.UserId.ToString());
 
         if (user == null || user.IsDeleted)
             return Result.Failure("UserNotFound", HttpStatusCode.NotFound);
 
-        user.IsDeleted = true;
-        user.DeletedDate = DateTime.UtcNow;
+        user.Delete();
 
         await userManager.UpdateSecurityStampAsync(user);
 

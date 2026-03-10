@@ -1,4 +1,4 @@
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetDailyPoll;
+namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 
 public class PollOptionResponse
 {

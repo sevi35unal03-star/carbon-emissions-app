@@ -1,7 +1,9 @@
 ﻿using Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 using Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
+using IzTek.Carbon.Footprint.Application.Features.Users.Commands.DonateTrees;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Password;
+using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetDonationHistory;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
@@ -41,4 +43,20 @@ public class UsersController(IMessageBus bus, IStringLocalizer<Resource> localiz
     [Authorize(Roles = "Admin")] // Sadece adminlerin detaylı listeyi görebildiğini varsayalım
     public async Task<IActionResult> GetDetailedListAsync([FromQuery] GetUsersDetailedQuery query)
         => CreateActionResultInstance(await bus.InvokeAsync<Result<List<GetUsersDetailedResponse>>>(query));
+
+    /// <summary>
+    /// Kullanıcının tüm puanlarını ağaç bağışına dönüştürür.
+    /// </summary>
+    [HttpPost("donate-trees")]
+    public async Task<IActionResult> DonateTreesAsync()
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<DonateTreesResponse>>(new DonateTreesCommand()));
+
+    /// <summary>
+    /// Kullanıcının bağış geçmişini getirir.
+    /// </summary>
+    [HttpGet("donation-history")]
+    public async Task<IActionResult> GetDonationHistoryAsync([FromQuery] GetDonationHistoryQuery query)
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<GetDonationHistoryResponse>>(query));
 }

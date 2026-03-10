@@ -25,7 +25,7 @@ public class UserValidator : IUserValidator<User>
         }
 
         return Task.FromResult(errors.Count == 0
-            ? IdentityResult.Succeeded
+            ? IdentityResult.Success
             : IdentityResult.Failed(errors.ToArray()));
     }
 }

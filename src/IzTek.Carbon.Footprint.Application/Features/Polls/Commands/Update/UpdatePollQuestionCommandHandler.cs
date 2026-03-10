@@ -12,7 +12,7 @@ public class UpdatePollQuestionCommandHandler
             .FirstOrDefaultAsync(x => x.Id == command.QuestionId, ct); // ✅ PollQuestionId → Id
 
         if (question is null)
-            return Result.Failure("Soru bulunamadı."); // ✅ throw yerine Result.Failure
+            return Result.Failure(SystemErrorCodes.PollQuestionNotFound, HttpStatusCode.NotFound); // ✅ throw yerine Result.Failure
 
         // 2. Domain metodu ile güncelle
         question.UpdateDetails(

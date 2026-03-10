@@ -24,7 +24,7 @@ public class LoginCommandHandler(
         {
             //Failure(string v, HttpStatusCode notFound)
             logger.LogWarning("Login failed: User not found → {Input}", command.EmailorIdentityNumber);
-            return (Result<TokenResponse>)Result<TokenResponse>.Failure("Geçersiz kullanıcı adı veya şifre.", HttpStatusCode.Unauthorized);
+            return Result<TokenResponse>.Failure(SystemErrorCodes.ValidationError, HttpStatusCode.Unauthorized);
         }
 
         // 4. Şifre kontrolü
@@ -32,7 +32,7 @@ public class LoginCommandHandler(
         if (!isPasswordValid)
         {
             logger.LogWarning("Login failed: Invalid password → UserId: {UserId}", user.PollQuestionId);
-            return (Result<TokenResponse>)Result<TokenResponse>.Failure("Geçersiz kullanıcı adı veya şifre.", HttpStatusCode.Unauthorized);
+            return Result<TokenResponse>.Failure(SystemErrorCodes.ValidationError, HttpStatusCode.Unauthorized);
         }
 
         // 5. Token oluştur

@@ -29,7 +29,7 @@ public class PasswordValidator : IPasswordValidator<User>
         }
 
         return Task.FromResult(errors.Count == 0
-            ? IdentityResult.Succeeded
-            : IdentityResult.Failed(errors.ToArray()));
-    }
+         ? IdentityResult.Success  
+         : IdentityResult.Failed(errors.ToArray()));
+        }
 }

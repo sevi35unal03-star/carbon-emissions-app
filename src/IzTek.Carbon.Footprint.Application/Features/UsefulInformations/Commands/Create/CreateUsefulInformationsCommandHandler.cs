@@ -12,7 +12,7 @@ public static class CreateUsefulInformationsCommandHandler
 
         if (isExists)
         {
-            return Result.Failure("InformationAlreadyExists", HttpStatusCode.BadRequest);
+            return Result.Failure(SystemErrorCodes.InformationAlreadyExists, HttpStatusCode.BadRequest);
         }
 
         var info = new UsefulInformation(
@@ -24,7 +24,7 @@ public static class CreateUsefulInformationsCommandHandler
         await context.UsefulInformations.AddAsync(info, ct);
 
         return await context.SaveChangesAsync(ct) > 0
-            ? Result.Created()
-            : Result.Failure("SystemException", HttpStatusCode.InternalServerError);
+        ? Result.Created()
+        : Result.SystemException();
     }
 }

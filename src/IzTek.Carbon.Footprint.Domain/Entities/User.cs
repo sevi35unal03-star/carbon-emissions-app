@@ -26,6 +26,11 @@ public class User : BaseEntity
     public DateTime LastLoginDate { get; private set; }
     public double TotalCarbonPoint { get; private set; }
 
+    public int DonatedTreeCount { get; private set; }
+    public DateTime? LastDonationDate { get; private set; }
+
+   
+
     private User () { }
 
     public User(bool emailConfirmed,
@@ -43,10 +48,11 @@ public class User : BaseEntity
         double totalPoints,
         bool isDeleted,
         DateTime? deletedDate,
-        string userName,
         double totalCarbonScore,
         DateTime lastLoginDate,
-        double totalCarbonPoint)
+        double totalCarbonPoint,
+        int donatedTreeCount,
+        DateTime lastDonationDate)
     {
         EmailConfirmed = emailConfirmed;
         Email = email;
@@ -63,12 +69,24 @@ public class User : BaseEntity
         TotalPoints = totalPoints;
         IsDeleted = isDeleted;
         DeletedDate = deletedDate;
-        UserName = userName;
         TotalCarbonScore = totalCarbonScore;
         LastLoginDate = lastLoginDate;
         TotalCarbonPoint = totalCarbonPoint;
+        DonatedTreeCount = donatedTreeCount;
+        LastDonationDate = lastDonationDate;
     }
 
+    public void Delete()
+    {
+        IsDeleted = true;
+        DeletedDate = DateTime.UtcNow;
+    }
+    public void DonateAllPoints(int treeCount)
+    {
+        DonatedTreeCount += treeCount;
+        LastDonationDate = DateTime.UtcNow;
+        TotalPoints = 0; // Tüm puanlar bağışlandı, sıfırlanıyor
+    }
     public void UpdateMonthlyCarbonResult(double pollScore, int treeCount)
     {
         // Son doldurduğu anketin puanı
@@ -79,8 +97,6 @@ public class User : BaseEntity
     }
 
 }
-
-//UpdateMonthlyCarbonResult ekle
 
 
 

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 
-namespace.Iztek.Carbon.Footprint.Persistence.Interceptors;
+namespace Iztek.Carbon.Footprint.Persistence.Interceptors;
 
 public class AuditEntry
 {
@@ -13,13 +13,12 @@ public class AuditEntry
     public Dictionary<string, object> OldValues { get; } = new();
     public Dictionary<string, object> NewValues { get; } = new();
 
-    public AuditLog ToAuditLog() => new AuditLog
-    {
-        UserId = UserId,
-        Operation = Operation,
-        TableName = TableName,
-        CreatedAt = DateTime.UtcNow,
-        OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues),
-        NewValues = NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues)
-    };
+    public AuditLog ToAuditLog() => new AuditLog(
+    userId: UserId,
+    operation: Operation,
+    tableName: TableName,
+    oldValues: OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues),
+    newValues: NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues),
+    createdAt: DateTime.UtcNow
+);
 }

@@ -20,8 +20,7 @@ public static class SubmitPollAnswerCommandHandler
 
         if (!options.Any())
             return Result<SubmitPollAnswerResponse>.Failure(
-                "Cevaplar geçerli değil.",
-                HttpStatusCode.BadRequest);
+                SystemErrorCodes.InvalidPollAnswers, HttpStatusCode.BadRequest);
 
         // 3. Aktif TreeDefinition getir
         var treeDef = await context.TreeDefinitions

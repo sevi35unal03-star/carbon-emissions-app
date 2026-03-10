@@ -13,9 +13,9 @@ public class GetUserProfileQueryHandler(
     {
         var userId = currentUserService.UserId;
 
-        if (string.IsNullOrEmpty(userId))
+        if (string.IsNullOrEmpty(userId.ToString()))
             return Result<GetUserProfileResponse>.Failure(
-                "Oturum açmanız gerekiyor.",
+                SystemErrorCodes.Unauthorized,
                 HttpStatusCode.Unauthorized);
 
         // ✅ Guid → string dönüşümü
@@ -23,7 +23,7 @@ public class GetUserProfileQueryHandler(
 
         if (user is null || user.IsDeleted)
             return Result<GetUserProfileResponse>.Failure(
-                "Kullanıcı bulunamadı.",
+                SystemErrorCodes.NotFound,
                 HttpStatusCode.NotFound);
 
         var response = new GetUserProfileResponse(

@@ -1,31 +1,26 @@
 using Iztek.Carbon.Footprint.Domain.Entities;
-
 namespace IzTek.Carbon.Footprint.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    DbSet<Role> Roles { get; set; }
-
-    DbSet<User> Users { get; set; }
-    DbSet<UserAnswer> UserAnswers { get; set; }
-
-
+    DbSet<Role> Roles { get; }
+    DbSet<User> Users { get; }
+    DbSet<UserActivityAnswer> UserActivityAnswers { get; }
+    DbSet<Goal> Goals { get; }
     DbSet<Product> Products { get; }
     DbSet<AuditLog> AuditLogs { get; }
-    DbSet<ActivityQuestion> ActivityQuestions { get; set; }
-    DbSet<ActivityOption> ActivityOptions { get; set; }
-    DbSet<UserActivityLog> UserActivityLogs { get; set; }
-    DbSet<UsefulInformation> UsefulInformations { get; set; }
-    DbSet<PollOption> PollOptions { get; set; }
-    DbSet<PollSet> PollSets { get; set; }
-    DbSet<PollQuestion> PollQuestions { get; set; }
-    DbSet<TreeDefinition> TreeDefinitions { get; set; }
-    DbSet<UserPollResult> UserPollResults { get; set; }
-
-    DbSet<ScoringSetting> ScoringSettings { get; set; }
-
+    DbSet<ActivityQuestion> ActivityQuestions { get; }
+    DbSet<ActivityOption> ActivityOptions { get; }
+    DbSet<UserActivityLog> UserActivityLogs { get; }
+    DbSet<UsefulInformation> UsefulInformations { get; }
+    DbSet<PollOption> PollOptions { get; }
+    DbSet<PollSet> PollSets { get; }
+    DbSet<PollQuestion> PollQuestions { get; }
+    DbSet<TreeDefinition> TreeDefinitions { get; }
+    DbSet<UserPollResult> UserPollResults { get; }
+    DbSet<ScoringSetting> ScoringSettings { get; }
+    DbSet<TreeDonation> TreeDonations { get; }
     DatabaseFacade Database { get; }
-  
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

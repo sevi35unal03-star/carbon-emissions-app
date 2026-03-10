@@ -18,7 +18,8 @@ public class SubmitActivityAnswerHandler
                 ct);
 
         if (option is null)
-            return (Result<SubmitActivityAnswerResponse>)Result<SubmitActivityAnswerResponse>.Failure("Geçersiz seçenek.", HttpStatusCode.BadRequest);
+            return Result<SubmitActivityAnswerResponse>.Failure(
+                SystemErrorCodes.InvalidActivityOption, HttpStatusCode.BadRequest);
 
         // 2. Cevabı kaydet
         var log = new UserActivityLog(

@@ -30,7 +30,8 @@ public class UpdateScoringSettingsHandler
             .ToListAsync(ct);
 
         if (!existingSettings.Any())
-            return Result.Failure("Güncellenecek ayar bulunamadı.", HttpStatusCode.NotFound);
+            return Result.Failure(
+                SystemErrorCodes.ScoringSettingsNotFound, HttpStatusCode.NotFound);
 
         // 3. Kısmi güncelleme kontrolü
         var missingIds = settingIds
@@ -39,7 +40,9 @@ public class UpdateScoringSettingsHandler
 
         if (missingIds.Any())
             return Result.Failure(
-                $"Şu ID'ler bulunamadı: {string.Join(", ", missingIds)}", HttpStatusCode.NotFound);
+                SystemErrorCodes.ScoringSettingsPartialNotFound,
+                $"Şu ID'ler bulunamadı: {string.Join(", ", missingIds)}",
+                HttpStatusCode.NotFound);
 
         // 4. Domain metodu ile güncelle (Encapsulation)
         foreach (var setting in existingSettings)
@@ -56,6 +59,6 @@ public class UpdateScoringSettingsHandler
         // 6. Cache temizle
         await _cacheService.RemoveAsync(CacheKeys.GlobalScoringParams);
 
-        return Result.Success("Puanlama katsayıları başarıyla güncellendi.");
+        return Result.Success();
     }
 }

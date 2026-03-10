@@ -38,7 +38,7 @@ public class ForgotPasswordCommandHandler(
             subject: "Şifre Sıfırlama Kodu",
             content: $"Şifre sıfırlama kodunuz: {resetCode}. Bu kod 15 dakika geçerlidir.");
 
-        if (result is null || !result.IsSuccess)
+        if (result is null || !result.IsSuccessful)
         {
             logger.LogError("ForgotPassword email failed → UserId: {UserId}", user.PollQuestionId);
             return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);

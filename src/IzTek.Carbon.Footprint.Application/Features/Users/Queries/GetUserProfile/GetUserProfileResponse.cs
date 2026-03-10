@@ -4,13 +4,13 @@ public class GetUserProfileResponse
 {
     public GetUserProfileResponse(string v, string? name, string? surname, DateTime? birthDate)
     {
-        Name = name;
+        Name = name; 
         Surname = surname;
         BirthDate = birthDate;
     }
 
     public string IdentityNumber {  get; set; }
-     public string Name { get; set; }
+     public string Name { get; set; } 
     public string Surname { get; set; }
     public DateTime? BirthDate { get; set; }
 

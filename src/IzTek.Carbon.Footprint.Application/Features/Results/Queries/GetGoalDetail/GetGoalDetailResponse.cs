@@ -1,5 +1,4 @@
-﻿// GetGoalDetailResponse.cs
-namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
 
 public record GetGoalDetailResponse(
     int Month,
@@ -12,9 +11,10 @@ public record GetGoalDetailResponse(
 public record LeaderboardItemDto(
     int Rank,
     string FullName,
-    int TreeCount);
+    int TreeCount,
+    bool IsCurrentUser);
 
 public record UserRankDto(
-    int Rank,
+    int Rank,           // 272. sıra
     int TreeCount,
-    string Message);
+    string Message); // "120 Ağaç ile 272. sıradasınız."

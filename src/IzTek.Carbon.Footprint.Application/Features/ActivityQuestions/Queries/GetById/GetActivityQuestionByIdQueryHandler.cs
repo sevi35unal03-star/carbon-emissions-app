@@ -17,10 +17,10 @@ public static class GetActivityQuestionByIdQueryHandler
             .FirstOrDefaultAsync(x => x.PollQuestionId == request.Id, ct);
 
         if (question == null)
-            return Result.Failure<ActivityQuestionResponse>("Question is not found.");
+            return Result<ActivityQuestionResponse>.Failure(SystemErrorCodes.ActivityQuestionNotFound, HttpStatusCode.NotFound);
 
         var response = question.Adapt<ActivityQuestionResponse>();
 
-        return Result.Success(response);
+        return Result<ActivityQuestionResponse>.Success(response);
     }
 }

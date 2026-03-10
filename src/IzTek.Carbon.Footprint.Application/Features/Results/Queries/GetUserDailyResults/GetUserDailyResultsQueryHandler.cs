@@ -50,6 +50,7 @@ public class GetUserDailyResultsHandler(IApplicationDbContext context)
             }
         ).ToListAsync(ct);
 
-        return Result.Success(results);
+        return Result<List<UserDailyResultResponse>>.Success(results);
+        //Tip guvenligi: Result.Success() tipi algilayamiyor. Bu nedenle Result<List<UserDailyResultResponse>>.Success() seklinde kullanmak gerekiyor.
     }
 }

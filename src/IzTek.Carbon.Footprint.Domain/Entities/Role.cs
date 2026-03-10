@@ -6,3 +6,5 @@ public class Role : IdentityRole<Guid>
     public DateTime? DeletedDate { get; set; }
     public string? DeletedBy { get; set; }
     public RoleType Type { get; set; }
+
+}

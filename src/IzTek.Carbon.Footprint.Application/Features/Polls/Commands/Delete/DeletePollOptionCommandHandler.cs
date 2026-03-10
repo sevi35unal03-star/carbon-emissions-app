@@ -7,22 +7,23 @@ namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Delete;
 
 public class DeletePollOptionCommandHandler
 {
-    public static async Task Handle(
-        DeletePollOptionCommand command,
-        IApplicationDbContext context,
-        IMessageBus bus,
-        CancellationToken ct)
+    public static async Task<Result> Handle(
+    DeletePollOptionCommand command,
+    IApplicationDbContext context,
+    IMessageBus bus,
+    CancellationToken ct)
     {
         var option = await context.PollOptions
             .FirstOrDefaultAsync(x => x.PollQuestionId == command.OptionId, ct);
 
         if (option == null)
-            throw new Exception("Option not found.");
+            return Result.Failure(
+                SystemErrorCodes.PollOptionNotFound, HttpStatusCode.NotFound);
 
         context.PollOptions.Remove(option);
 
-        await context.SaveChangesAsync(ct);
-
-        await bus.PublishAsync(new PollOptionDeletedDomainEvent(command.OptionId), ct);
+        return await context.SaveChangesAsync(ct) > 0
+            ? Result.NoContent()
+            : Result.SystemException();
     }
 }

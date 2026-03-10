@@ -14,7 +14,8 @@ public static class DeleteActivityQuestionHandler
             .FirstOrDefaultAsync(x => x.PollQuestionId == command.Id);
 
         if (question == null)
-            return Result.Failure("Soru bulunamadı.");
+            return Result.Failure(
+                SystemErrorCodes.ActivityQuestionNotFound, HttpStatusCode.NotFound);
 
         context.ActivityQuestions.Remove(question);
 
