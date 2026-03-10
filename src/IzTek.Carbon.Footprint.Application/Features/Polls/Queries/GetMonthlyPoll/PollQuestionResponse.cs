@@ -1,6 +1,6 @@
-using IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetDailyPoll;
+using IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 
-namespace Iztek.Carbon.Footprint.Application.Features.Polls.Queries.GetDailyPoll;
+namespace Iztek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 public class PollQuestionResponse
 {
     public Guid Id { get; set; }

@@ -12,7 +12,7 @@ public class UpdatePollSetCommandHandler
             .FirstOrDefaultAsync(x => x.Id == command.PollSetId, ct); // ✅ PollQuestionId → Id
 
         if (pollSet is null)
-            return Result.Failure("Anket seti bulunamadı."); // ✅ throw yerine Result.Failure
+            return Result.Failure(SystemErrorCodes.PollSetNotFound, HttpStatusCode.NotFound); 
 
         // 2. Domain metodu ile güncelle
         pollSet.UpdateDetails(

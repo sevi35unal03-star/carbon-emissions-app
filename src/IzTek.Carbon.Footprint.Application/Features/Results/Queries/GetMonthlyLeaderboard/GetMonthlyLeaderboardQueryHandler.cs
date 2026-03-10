@@ -1,5 +1,5 @@
 ﻿using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
-using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
+namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
 
 public static class GetMonthlyLeaderboardQueryHandler
 {
@@ -9,38 +9,44 @@ public static class GetMonthlyLeaderboardQueryHandler
         ICurrentUserService currentUser,
         CancellationToken ct)
     {
-        // 1. TreeDefinition'dan hedef ağaç sayısını al
-        var treeDef = await context.TreeDefinitions
+        // 1. Goal tablosundan aylık ve yıllık hedefi al
+        var monthlyGoal = await context.Goals
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.IsActive, ct);
+            .FirstOrDefaultAsync(x => x.Month == query.Month && x.Year == query.Year, ct);
 
-        var pointPerTree = treeDef is not null && treeDef.PointUnit > 0
-            ? treeDef.PointUnit / treeDef.TreeCount
-            : 1;
+        var yearlyTarget = await context.Goals
+            .AsNoTracking()
+            .Where(x => x.Year == query.Year)
+            .SumAsync(x => x.TargetTreeCount, ct);
+
+        var monthlyTarget = monthlyGoal?.TargetTreeCount ?? 0;
 
         // 2. O aya ait poll sonuçlarından sıralama yap
         var rankings = await context.UserPollResults
-            .AsNoTracking()
-            .Where(x => x.Month == query.Month && x.Year == query.Year)
-            .OrderByDescending(x => x.TreeCount)
-            .Select(x => new
-            {
-                x.UserId,
-                x.TreeCount,
-                FullName = x.Name + " " + x.Surname
-            })
-            .ToListAsync(ct);
+     .AsNoTracking()
+     .Where(x => x.Month == query.Month && x.Year == query.Year)
+     .OrderByDescending(x => x.TreeCount)
+     .Select(x => new
+     {
+         x.UserId,
+         x.TreeCount,
+         FullName = x.Name + " " + x.Surname
+     })
+     .ToListAsync(ct);
 
-        // 3. Liderlik listesi
+        // 3. Giriş yapan kullanıcının ID'si
+        var currentUserId = currentUser.UserId;
+
+        // 4. Liderlik listesi
         var leaders = rankings
             .Select((x, index) => new LeaderboardItemDto(
                 Rank: index + 1,
                 FullName: x.FullName,
-                TreeCount: x.TreeCount))
+                TreeCount: x.TreeCount,
+                IsCurrentUser: x.UserId == currentUserId))
             .ToList();
 
-        // 4. Giriş yapan kullanıcının sırası
-        var currentUserId = Guid.Parse(currentUser.UserId);
+        // 5. Giriş yapan kullanıcının sırası
         var userRank = rankings
             .Select((x, index) => new { x.UserId, x.TreeCount, Rank = index + 1 })
             .FirstOrDefault(x => x.UserId == currentUserId);
@@ -52,12 +58,10 @@ public static class GetMonthlyLeaderboardQueryHandler
                 Message: $"{userRank.TreeCount} Ağaç ile {userRank.Rank}. sıradasınız.")
             : null;
 
-        // 5. Hedef ağaç sayısı (TreeDefinition'dan)
-        var targetTreeCount = treeDef?.TreeCount ?? 0;
-
         return Result<GetMonthlyLeaderboardResponse>.Success(new GetMonthlyLeaderboardResponse(
-            targetTreeCount,
-            leaders,
-            userRankDto));
+            yearlyTargetTreeCount: yearlyTarget,
+            monthlyTargetTreeCount: monthlyTarget,
+            leaders: leaders,
+            currentUserRank: userRankDto));
     }
 }

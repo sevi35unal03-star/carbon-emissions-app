@@ -1,3 +1,5 @@
+using IzTek.Carbon.Footprint.Application.Common.Validators;
+
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Password;
 
 public class ResetPasswordCommand
@@ -12,7 +14,10 @@ public class ResetPasswordCommand
         public Validator()
         {
             RuleFor(x => x.PhoneNumber)
-            .SetValidator(new PhoneNumberValidator());
+            .Must(PhoneNumberValidator.IsValidTurkishMobile)
+                .WithMessage("Please enter a valid Turkish phone number. (Örn: +905551234567)")
+            .Must(PhoneNumberValidator.IsAllowedRegion)
+                .WithMessage("Phone number from this region is not allowed.");
 
             RuleFor(x => x.ResetCode)
                 .NotEmpty().WithMessage("Reset code cannot be empty.")

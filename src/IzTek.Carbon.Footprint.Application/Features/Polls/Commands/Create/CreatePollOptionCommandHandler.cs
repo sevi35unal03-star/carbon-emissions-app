@@ -16,7 +16,7 @@ public class CreatePollOptionCommandHandler
             .FirstOrDefaultAsync(x => x.Id == command.QuestionId, ct); 
 
         if (question is null)
-            return Result<Guid>.Failure("Soru bulunamadı.", HttpStatusCode.NotFound);
+            return Result<Guid>.Failure(SystemErrorCodes.PollQuestionNotFound, HttpStatusCode.NotFound);
 
         // 2. PollOption oluştur
         var option = new PollOption(

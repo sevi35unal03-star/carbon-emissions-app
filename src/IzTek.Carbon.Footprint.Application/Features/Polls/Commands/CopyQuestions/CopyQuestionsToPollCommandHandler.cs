@@ -10,7 +10,8 @@ public class CopyQuestionsToPollCommandHandler(IApplicationDbContext context)
     {
         // 1. Boş liste kontrolü
         if (request.SourceQuestionIds is null || !request.SourceQuestionIds.Any())
-            return Result.Failure("Kopyalanacak soru ID'leri boş olamaz.", HttpStatusCode.BadRequest);
+            return Result.Failure(
+                SystemErrorCodes.SourceQuestionIdsEmpty, HttpStatusCode.BadRequest);
 
         // 2. Kaynak soruları ve seçeneklerini getir
         var sourceQuestions = await _context.ActivityQuestions
@@ -26,7 +27,9 @@ public class CopyQuestionsToPollCommandHandler(IApplicationDbContext context)
 
         if (missingIds.Any())
             return Result.Failure(
-                $"Şu ID'lere ait sorular bulunamadı: {string.Join(", ", missingIds)}", HttpStatusCode.NotFound);
+                SystemErrorCodes.SourceQuestionsNotFound,
+                $"Şu ID'lere ait sorular bulunamadı: {string.Join(", ", missingIds)}",
+                HttpStatusCode.NotFound);
 
         // 4. Her soruyu domain factory metodu ile klonla
         var pollQuestions = sourceQuestions

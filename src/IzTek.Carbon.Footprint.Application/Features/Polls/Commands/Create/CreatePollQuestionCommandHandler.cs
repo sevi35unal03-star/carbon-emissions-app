@@ -11,7 +11,8 @@ public class CreatePollQuestionCommandHandler
     .AnyAsync(x => x.Id == command.PollSetId, ct);
 
         if (!exists)
-            return Result<Guid>.Failure("PollSet bulunamadı.");
+            return Result<Guid>.Failure(
+                SystemErrorCodes.PollSetNotFound, HttpStatusCode.NotFound);
 
         // 2. PollQuestion oluştur
         var question = new PollQuestion(

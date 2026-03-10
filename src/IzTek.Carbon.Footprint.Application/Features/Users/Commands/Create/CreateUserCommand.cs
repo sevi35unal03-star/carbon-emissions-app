@@ -1,6 +1,7 @@
 ﻿using IzTek.Carbon.Footprint.Application.Common.Validators;
 using IzTek.Carbon.Footprint.Domain.Common;
 
+
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Create;
 
 public class CreateUserCommand : BaseEntity
@@ -21,13 +22,16 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     public CreateUserCommandValidator()
     {
         RuleFor(x => x.IdentityNumber)
-            .SetValidator(new IdentityValidator());
+            .Must(IdentityValidator.IsValidTurkishIdentityNumber).WithMessage("Identity number must be valid.");
 
         RuleFor(x => x.Email)
-            .SetValidator(new EmailValidator());
+            .Must(EmailValidator.IsValid).WithMessage("Email must be valid.");
 
         RuleFor(x => x.PhoneNumber)
-            .SetValidator(new PhoneNumberValidator());
+            .Must(PhoneNumberValidator.IsValidTurkishMobile)
+                .WithMessage("Please enter a valid Turkish phone number. (Örn: +905551234567)")
+            .Must(PhoneNumberValidator.IsAllowedRegion)
+                .WithMessage("Phone number from this region is not allowed.");
 
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("First name is required.");
@@ -37,8 +41,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 
         RuleFor(x => x.BirthDate)
             .NotEmpty().WithMessage("Birth date is required.")
-            .Must(BeAValidAge).WithMessage("User must be at least 18 years old.");
-
+            
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required.")
             .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");

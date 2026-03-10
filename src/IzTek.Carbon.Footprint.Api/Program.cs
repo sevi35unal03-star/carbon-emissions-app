@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using IzTek.Carbon.Footprint.Application.Common.Behaviors;
 using IzTek.Carbon.Footprint.Application.Common.Interfaces;
+using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 using IzTek.Carbon.Footprint.Infrastructure.Services;
 using IzTek.Carbon.Footprint.Infrastructure.Validators;
 
@@ -17,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseWolverine(opts =>
 {
     // Command/Query handler'larını tara
-    opts.Discovery.IncludeAssembly(typeof(CreateProductCommand).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(LoginCommand).Assembly);
     opts.Policies.AddMiddleware<CachingBehavior>();
     opts.Policies.AddMiddleware<CacheInvalidationBehavior>();
 
@@ -41,7 +42,7 @@ builder.ConfigureApi()
 
 // 4. Fluent Validation Servis Kaydı (Kritik Eklemeler)
 // CreateProductCommand'in bulunduğu assembly'deki tüm validatorları otomatik kaydeder.
-builder.Services.AddValidatorsFromAssemblyContaining<CreateProductCommand>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginCommand>();
 
 // 5. Identity ve Auth Yapılandırması
 builder.Services

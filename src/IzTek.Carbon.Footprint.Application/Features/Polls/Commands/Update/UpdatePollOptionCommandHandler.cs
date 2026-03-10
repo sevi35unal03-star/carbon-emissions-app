@@ -12,7 +12,7 @@ public class UpdatePollOptionCommandHandler
             .FirstOrDefaultAsync(x => x.Id == command.OptionId, ct); // ✅ PollQuestionId → Id
 
         if (option is null)
-            return Result.Failure("Seçenek bulunamadı."); // ✅ throw yerine Result.Failure
+            return Result.Failure(SystemErrorCodes.PollOptionNotFound, HttpStatusCode.NotFound); // ✅ throw yerine Result.Failure
 
         // 2. Domain metodu ile güncelle
         option.UpdateDetails(

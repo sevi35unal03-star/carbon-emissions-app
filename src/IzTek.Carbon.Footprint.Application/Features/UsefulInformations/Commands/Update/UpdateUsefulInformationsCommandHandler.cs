@@ -12,7 +12,7 @@ public static class UpdateUsefulInformationCommandHandler
 
         if (info is null)
         {
-            return Result.Failure("InformationNotFound", HttpStatusCode.NotFound);
+            return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
         }
 
         
@@ -21,7 +21,7 @@ public static class UpdateUsefulInformationCommandHandler
 
         if (isTitleExists)
         {
-            return Result.Failure("InformationTitleAlreadyExists", HttpStatusCode.BadRequest);
+            return Result.Failure(SystemErrorCodes.InformationAlreadyExists, HttpStatusCode.BadRequest);
         }
 
         
@@ -32,6 +32,6 @@ public static class UpdateUsefulInformationCommandHandler
 
         return success
             ? Result.Success()
-            : Result.Failure("UpdateFailed", HttpStatusCode.InternalServerError);
+            : Result.Failure(SystemErrorCodes.UpdateFailed, HttpStatusCode.InternalServerError);
     }
 }

@@ -27,8 +27,7 @@ public class GetDailyActivityDetailsHandler
 
         if (!logs.Any())
             return Result<DailyActivityDetailsResponse>.Failure(
-                "Bu tarihe ait aktivite bulunamadı.",
-                HttpStatusCode.NotFound);
+                SystemErrorCodes.ActivityNotFound, HttpStatusCode.NotFound);
 
         // 2. Toplam skoru hesapla
         var totalScore = logs.Sum(x => x.Score);

@@ -10,20 +10,28 @@ public class CreateUserCommandHandler(
 {
     public async Task<Result<Guid>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = new User
-        {
-            PollQuestionId = Guid.NewGuid(),
-            Email = request.Email,
-            UserName = request.IdentityNumber, // Giriş anahtarı olarak T.C. No kullanıyoruz
-            Name = request.FirstName,
-            Surname = request.LastName,
-            IdentityNumber = request.IdentityNumber,
-            PhoneNumber = request.PhoneNumber,
-            BirthDate = request.BirthDate,
-            EmailConfirmed = true, // Mobil senaryoda genellikle varsayılan true tutulur veya OTP istenir
-            IsKvkkApproved = request.IsKvkkApproved,
-            KvkkApprovalDate = DateTime.UtcNow,
-        };
+        var user = new User(
+            emailConfirmed: true,
+            email: request.Email,
+            name: request.FirstName,
+            surname: request.LastName,
+            birthDate: request.BirthDate,
+            identityNumber: request.IdentityNumber,
+            phoneNumber: request.PhoneNumber,
+            password: request.Password,
+            confirmPassword: request.ConfirmPassword,
+            isKvkkApproved: request.IsKvkkApproved,
+            kvkkApprovalDate: DateTime.UtcNow,
+            lastCarbonScore: 0,
+            totalPoints: 0,
+            isDeleted: false,
+            deletedDate: null,
+            totalCarbonScore: 0,
+            lastLoginDate: DateTime.UtcNow,
+            totalCarbonPoint: 0,
+            donatedTreeCount: 0,
+            lastDonationDate: DateTime.UtcNow
+);
 
         // 2. Identity üzerinden kullanıcıyı oluştur (Şifre burada otomatik hashlenir)
         var result = await userManager.CreateAsync(user, request.Password);
@@ -37,9 +45,6 @@ public class CreateUserCommandHandler(
 
         // 3. Kullanıcıya varsayılan rolü ata (Örn: "User")
         await userManager.AddToRoleAsync(user, "User");
-
-        // 4. Domain Event fırlat (Hoş geldin maili veya loglama için)
-        user.AddDomainEvent(new UserRegisteredDomainEvent(user));
 
         logger.LogInformation("User created successfully with Identity Number: {IdentityNumber}", user.IdentityNumber);
 

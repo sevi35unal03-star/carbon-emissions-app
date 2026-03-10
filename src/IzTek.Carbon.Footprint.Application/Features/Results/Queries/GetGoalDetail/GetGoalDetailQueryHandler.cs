@@ -16,9 +16,8 @@ public class GetGoalDetailQueryHandler
             .AnyAsync(x => x.Month == query.Month && x.Year == query.Year, ct);
 
         if (!anyResult)
-            return (Result<GetGoalDetailResponse>)Result<GetGoalDetailResponse>.Failure(
-                "Bu aya ait hedef verisi bulunamadı.",
-                HttpStatusCode.NotFound);
+            return Result<GetGoalDetailResponse>.Failure(
+                SystemErrorCodes.GoalDataNotFound, HttpStatusCode.NotFound);
 
         // 2. TreeDefinition'dan hedef ağaç sayısını al
         var treeDef = await context.TreeDefinitions
@@ -38,16 +37,19 @@ public class GetGoalDetailQueryHandler
             })
             .ToListAsync(ct);
 
+        var currentUserId = (currentUser.UserId);
+
         // 4. Liderlik listesi
         var leaders = rankings
             .Select((x, index) => new LeaderboardItemDto(
                 Rank: index + 1,
                 FullName: x.FullName,
-                TreeCount: x.TreeCount))
+                TreeCount: x.TreeCount,
+                IsCurrentUser: x.UserId == currentUserId))
             .ToList();
 
         // 5. Giriş yapan kullanıcının sırası
-        var currentUserId = Guid.Parse(currentUser.UserId);
+       
         var userRank = rankings
             .Select((x, index) => new { x.UserId, x.TreeCount, Rank = index + 1 })
             .FirstOrDefault(x => x.UserId == currentUserId);

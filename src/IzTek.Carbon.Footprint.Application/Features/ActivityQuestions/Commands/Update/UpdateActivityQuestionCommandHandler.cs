@@ -14,7 +14,7 @@ public static class UpdateActivityQuestionCommandHandler
             .FirstOrDefaultAsync(x => x.PollQuestionId == command.Id, ct);
 
         if (question == null)
-            return Result.Failure("ActivityQuestionNotFound", HttpStatusCode.NotFound);
+            return Result.Failure(SystemErrorCodes.ActivityQuestionNotFound, HttpStatusCode.NotFound);
 
         // 2. Ana Alanları Güncelle (Domain Metodu Kullanımı)
         // Private setter'ları aşmak için reflection yerine bu metodu kullanmalısın
@@ -72,6 +72,6 @@ public static class UpdateActivityQuestionCommandHandler
             return Result.Success();
         }
 
-        return Result.Failure("UpdateFailed", HttpStatusCode.InternalServerError);
+        return Result.Failure(SystemErrorCodes.UpdateFailed, HttpStatusCode.InternalServerError);
     }
 }

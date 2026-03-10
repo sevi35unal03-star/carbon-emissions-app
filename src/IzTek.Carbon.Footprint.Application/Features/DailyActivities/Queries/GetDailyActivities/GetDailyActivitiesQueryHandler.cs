@@ -65,7 +65,7 @@ public class GetDailyActivitiesQueryHandler
 
         var response = new DailyActivityResponse(pending, history);
 
-        return Result.Success(response);
+        return Result<DailyActivityResponse>.Success(response);
     }
 }
 

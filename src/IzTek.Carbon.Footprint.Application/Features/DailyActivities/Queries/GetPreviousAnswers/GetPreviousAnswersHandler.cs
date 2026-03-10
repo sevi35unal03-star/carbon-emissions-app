@@ -14,7 +14,7 @@ public class GetPreviousAnswersHandler
 
         var logs = await context.UserActivityLogs
             .AsNoTracking()
-            .Where(x => x.UserId == Guid.Parse(userId))  // ✅ Guid dönüşümü
+            .Where(x => x.UserId == userId) 
             .OrderByDescending(x => x.ActivityDate)
             .Select(x => new PreviousAnswersResponse(
                 x.ActivityQuestion.Text,   // ✅ ActivityOption.Question → ActivityQuestion
@@ -25,8 +25,7 @@ public class GetPreviousAnswersHandler
 
         if (!logs.Any())
             return Result<List<PreviousAnswersResponse>>.Failure(
-                "Daha önce cevaplanmış aktivite bulunamadı.",
-                HttpStatusCode.NotFound);
+                SystemErrorCodes.PreviousAnswersNotFound, HttpStatusCode.NotFound);
 
         return Result<List<PreviousAnswersResponse>>.Success(logs);
     }

@@ -13,24 +13,22 @@ public class DeleteUsefulInformationsCommandHandler
     private readonly bool success;
 
     public async Task<Result> Handle(
-        DeleteUsefulInformationsCommand command,
+        DeleteUsefulInformationsCommand command, 
         IApplicationDbContext context,
         CancellationToken ct)
     {
         var info = await context.UsefulInformations
             .FirstOrDefaultAsync(x => x.PollQuestionId == command.Id, ct);
 
-        if (info == null) return Result.Failure("Information not found.", HttpStatusCode.NotFound);
+        if (info == null) return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
 
         info.IsDeleted = true;
         info.DeletedAt = DateTime.UtcNow;
 
         context.UsefulInformations.Remove(info);
-        await context.SaveChangesAsync(ct);
-
-        return success
-            ? Result.Success()
-            : Result.Failure("DeleteFailed", HttpStatusCode.InternalServerError);
+        return await context.SaveChangesAsync(ct) > 0
+    ? Result.NoContent()
+    : Result.Failure(SystemErrorCodes.DeleteFailed, HttpStatusCode.InternalServerError);
     }
 }
 
