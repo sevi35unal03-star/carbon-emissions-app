@@ -2,7 +2,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands
 
 public class UpdateActivityQuestionCommand
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; }  
     public string Text { get; set; } = default!;
     public int DisplayOrder { get; set; }
     public TimeSpan ScheduledTime { get; set; }

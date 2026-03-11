@@ -23,15 +23,9 @@ public static class CreateRoleCommandHandler
         // 3. Veritabanı setine ekle
         await context.Roles.AddAsync(role, cancellationToken);
 
-        // 4. Domain Event fırlat (Role.cs içinde constructor'a eklemediysek buradan da eklenebilir)
-        role.AddDomainEvent(new RoleCreatedDomainEvent()
-        {
-            Id = role.Id,
-            Name = role.Name,
-            Type = role.Type
-        });
+       
 
-        // 5. Değişiklikleri kaydet ve sonucu dön
+
         return await context.SaveChangesAsync(cancellationToken) > 0
             ? Result.Created()
             : Result.SystemException();

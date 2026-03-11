@@ -1,4 +1,4 @@
-namespace Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 
 public class GetUserProfileResponse
 {

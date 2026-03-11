@@ -8,7 +8,7 @@ public record ScoringSettingUpdateDto(
     double Value);
 
 public class UpdateScoringSettingsValidator : AbstractValidator<UpdateScoringSettingsCommand>
-{}
+{
 
     public UpdateScoringSettingsValidator()
     {

@@ -1,6 +1,4 @@
-﻿using Iztek.Carbon.Footprint.Domain.Entities;
-
-namespace IzTek.Carbon.Footprint.Domain.Entities;
+﻿namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class ActivityOption : BaseAuditableEntity
 {

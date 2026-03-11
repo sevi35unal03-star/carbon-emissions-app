@@ -1,7 +1,7 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Roles.Commands.Create;
 
 // 1. Command (İstek)
-public class CreateRoleCommand : IRequest<Guid>
+public class CreateRoleCommand
 {
     public string Name { get; set; } = string.Empty;
     public RoleType Type { get; set; }

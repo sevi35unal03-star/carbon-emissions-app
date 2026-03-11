@@ -1,4 +1,4 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.LogsUser.Queries.GetAuditLogs;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.LogsUser.Queries;
 
 public class GetAuditLogsQueryHandler
 {

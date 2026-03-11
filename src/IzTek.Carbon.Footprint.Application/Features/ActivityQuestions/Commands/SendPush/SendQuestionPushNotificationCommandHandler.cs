@@ -1,5 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.SendPush;
 
@@ -25,7 +24,7 @@ public class SendQuestionPushNotificationHandler
     {
         var question = await _context.ActivityQuestions
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.PollQuestionId == message.QuestionId, ct);
+            .FirstOrDefaultAsync(x => x.Id == message.QuestionId, ct);
 
         if (question == null)
         {
@@ -37,7 +36,7 @@ public class SendQuestionPushNotificationHandler
         var result = await _platformService.SendPushToAllUsersAsync(
             "Günün Karbon Sorusu!",
             $"Bugünkü aktiviteni girmeyi unutma: {question.Text}",
-            new { questionId = question.PollQuestionId });
+            new { questionId = question.Id });
 
         if (result is null || !result.IsSuccessful)
             _logger.LogWarning("Push notification gönderilemedi: Question {Id}", message.QuestionId);

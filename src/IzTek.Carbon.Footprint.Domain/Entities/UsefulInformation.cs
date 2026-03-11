@@ -3,16 +3,15 @@
 public class UsefulInformation : BaseAuditableEntity
 {
     public string Title { get; private set; } = default!;
-    public string Content { get;  private set; } = default!;
+    public string Content { get; private set; } = default!;
     public int DisplayOrder { get; private set; }
-    public bool IsActive { get; private set; }
+    public new bool IsActive { get; private set; } // ✅ new keyword eklendi
 
-   private UsefulInformation() { }
+    private UsefulInformation() { }
 
     public UsefulInformation(string title, string content, int displayOrder)
     {
         if (string.IsNullOrWhiteSpace(title)) throw new ArgumentException("Title cannot be empty.");
-
         Title = title;
         Content = content;
         DisplayOrder = displayOrder;
@@ -26,6 +25,6 @@ public class UsefulInformation : BaseAuditableEntity
         DisplayOrder = displayOrder;
     }
 
-    public void Deactivate() => IsActive = false;
     public void Activate() => IsActive = true;
+    public void Deactivate() => IsActive = false;
 }

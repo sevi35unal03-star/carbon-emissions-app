@@ -1,6 +1,6 @@
-using IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Queries.GetList;
 
-namespace Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Queries.GetList;
+
+namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Queries.GetList;
 
 public static class GetUsefulInformationsQueryHandler
 {
@@ -15,7 +15,7 @@ public static class GetUsefulInformationsQueryHandler
             .OrderBy(x => x.DisplayOrder)
             .Select(x => new GetUsefulInformationsResponse
             {
-                Id = x.PollQuestionId,
+                Id = x.Id,
                 Title = x.Title,
                 Content = x.Content,
                 DisplayOrder = x.DisplayOrder

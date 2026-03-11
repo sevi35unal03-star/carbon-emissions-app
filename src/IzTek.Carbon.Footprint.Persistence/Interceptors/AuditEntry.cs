@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 
-namespace Iztek.Carbon.Footprint.Persistence.Interceptors;
+namespace IzTek.Carbon.Footprint.Persistence.Interceptors;
 
 public class AuditEntry
 {

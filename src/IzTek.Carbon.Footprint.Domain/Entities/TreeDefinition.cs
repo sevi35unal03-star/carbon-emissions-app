@@ -1,15 +1,13 @@
 using IzTek.Carbon.Footprint.Domain.Events.TreeDefinition;
 
+namespace IzTek.Carbon.Footprint.Domain.Entities;
+
 public class TreeDefinition : BaseAuditableEntity
 {
-    public readonly object LastModifiedAt;
-    public readonly object LastModifiedBy;
+    // LastModifiedAt/By kaldırıldı — BaseAuditableEntity'de UpdatedAt/UpdatedBy olarak zaten var
+    public double PointUnit { get; private set; }
+    public int TreeCount { get; private set; }
 
-    public double PointUnit { get; private set; }   // Örn: 10
-    public int TreeCount { get; private set; }       // Örn: 2
-    public bool IsActive { get; private set; }
-
-    // ✅ Eklenmesi gereken: X puan = kaç ağaç?
     public double CalculateTreeCount(double totalPoints)
     {
         if (PointUnit <= 0) return 0;

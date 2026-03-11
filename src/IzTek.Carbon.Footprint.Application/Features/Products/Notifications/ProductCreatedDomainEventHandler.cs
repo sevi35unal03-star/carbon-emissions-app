@@ -1,4 +1,7 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Products.Notifications;
+﻿using IzTek.Carbon.Footprint.Domain.Events.Product;
+using Microsoft.Extensions.Logging;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Products.Notifications;
 
 public static class ProductCreatedDomainEventHandler
 {

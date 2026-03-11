@@ -1,5 +1,4 @@
-﻿using Iztek.Carbon.Footprint.Application.Features.AcitivityQuestions.Commands.Create;
-using Iztek.Carbon.Footprint.Domain.Entities;
+﻿
 using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.SendPush;
 
 namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Create;

@@ -1,11 +1,7 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using IzTek.Carbon.Footprint.Application.Features.Polls.Events;
-using Microsoft.EntityFrameworkCore;
-using Wolverine;
-
+﻿
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Delete;
 
-public class DeletePollOptionCommandHandler
+public static class DeletePollOptionCommandHandler
 {
     public static async Task<Result> Handle(
     DeletePollOptionCommand command,

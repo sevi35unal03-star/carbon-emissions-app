@@ -1,7 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using IzTek.Carbon.Footprint.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-
+﻿
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Create;
 
 public class CreatePollOptionCommandHandler

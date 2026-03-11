@@ -1,10 +1,5 @@
-using FluentValidation;
-using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using IzTek.Carbon.Footprint.Application.Common.Models;
-using IzTek.Carbon.Footprint.Domain.Entities;
-using System.Net;
 
-namespace Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Create;
+namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Create;
 
 public class CreateUsefulInformationsCommand
 {

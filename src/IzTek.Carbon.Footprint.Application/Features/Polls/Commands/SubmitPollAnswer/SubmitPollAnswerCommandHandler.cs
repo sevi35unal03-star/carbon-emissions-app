@@ -2,7 +2,7 @@
 
 public static class SubmitPollAnswerCommandHandler
 {
-    public static async Task<Result<SubmitPollAnswerResponse>> HandleAsync(
+    public static async Task<Result<SubmitPollAnswerResponse>> Handle(
         SubmitPollAnswerCommand command,
         IApplicationDbContext context,
         ICurrentUserService currentUser,
@@ -13,9 +13,10 @@ public static class SubmitPollAnswerCommandHandler
             .Select(a => a.OptionId)
             .ToList();
 
-        // 2. Seçilen seçenekleri getir
+        // 2. Seçilen seçenekleri soru bilgisiyle birlikte getir (snapshot için)
         var options = await context.PollOptions
-            .Where(o => optionIds.Contains(o.Id)) 
+            .Include(o => o.PollQuestion)
+            .Where(o => optionIds.Contains(o.Id))
             .ToListAsync(ct);
 
         if (!options.Any())
@@ -34,26 +35,46 @@ public static class SubmitPollAnswerCommandHandler
             ? (int)((totalCarbonScore / treeDef.PointUnit) * treeDef.TreeCount)
             : 0;
 
-        // 6. UserPollResult kaydet
+        // 6. Kullanıcı bilgilerini getir (Name/Surname için)
+        var user = await context.Users
+            .FirstOrDefaultAsync(x => x.Id == currentUser.UserId, ct);
+
+        if (user is null)
+            return Result<SubmitPollAnswerResponse>.Failure(
+                SystemErrorCodes.UserNotFound, HttpStatusCode.NotFound);
+
+        // 7. UserPollResult kaydet
         var pollResult = new UserPollResult(
-            currentUser.UserId,
-            command.PollSetId,
-            totalCarbonScore,
-            calculatedTrees);
+            name: user.Name,
+            surname: user.Surname,
+            userId: currentUser.UserId!.Value,
+            pollSetId: command.PollSetId,
+            totalScore: totalCarbonScore,
+            treeCount: calculatedTrees);
 
         context.UserPollResults.Add(pollResult);
 
-        // 7. User profilini güncelle
-        var user = await context.Users
-            .FirstOrDefaultAsync(x => x.Id == currentUser.UserId, ct); 
+        // 8. Her cevap için UserPollAnswer kaydet (snapshot)
+        foreach (var answer in command.Answers)
+        {
+            var option = options.FirstOrDefault(o => o.Id == answer.OptionId);
+            if (option is null) continue;
 
-        if (user is not null)
-            user.UpdateMonthlyCarbonResult(totalCarbonScore, calculatedTrees);
+            pollResult.AddAnswer(
+                pollQuestionId: answer.QuestionId,
+                pollOptionId: answer.OptionId,
+                questionText: option.PollQuestion?.Text ?? string.Empty,
+                selectedOptionText: option.Text,
+                carbonValue: option.CarbonValue);
+        }
 
-        // 8. Kaydet
+        // 9. User profilini güncelle
+        user.UpdateMonthlyCarbonResult(totalCarbonScore);
+
+        // 10. Kaydet
         await context.SaveChangesAsync(ct);
 
-        return Result<SubmitPollAnswerResponse>.Success(new SubmitPollAnswerResponse( 
+        return Result<SubmitPollAnswerResponse>.Success(new SubmitPollAnswerResponse(
             totalCarbonScore,
             calculatedTrees));
     }

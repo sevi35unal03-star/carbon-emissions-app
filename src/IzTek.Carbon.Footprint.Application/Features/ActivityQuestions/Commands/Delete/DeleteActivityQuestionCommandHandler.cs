@@ -1,5 +1,6 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Models;
-using IzTek.Carbon.Footprint.Domain.Entities;
+﻿
+
+using IzTek.Carbon.Footprint.Domain.Events.ActivityQuestion;
 
 namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Delete;
 
@@ -11,7 +12,7 @@ public static class DeleteActivityQuestionHandler
         IApplicationDbContext context)
     {
         var question = await context.ActivityQuestions
-            .FirstOrDefaultAsync(x => x.PollQuestionId == command.Id);
+            .FirstOrDefaultAsync(x => x.Id == command.Id);
 
         if (question == null)
             return Result.Failure(

@@ -1,7 +1,4 @@
-using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries;
-using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetById;
-
-namespace Iztek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetById;
+namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetById;
 
 public static class GetActivityQuestionByIdQueryHandler
 {
@@ -14,7 +11,7 @@ public static class GetActivityQuestionByIdQueryHandler
             .AsNoTracking()
             .Where(x => x.IsActive)
             .Include(x => x.Options)
-            .FirstOrDefaultAsync(x => x.PollQuestionId == request.Id, ct);
+            .FirstOrDefaultAsync(x => x.Id == request.Id, ct);
 
         if (question == null)
             return Result<ActivityQuestionResponse>.Failure(SystemErrorCodes.ActivityQuestionNotFound, HttpStatusCode.NotFound);

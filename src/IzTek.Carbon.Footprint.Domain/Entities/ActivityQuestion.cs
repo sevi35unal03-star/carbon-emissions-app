@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Domain.Entities;
-
-namespace Iztek.Carbon.Footprint.Domain.Entities;
+﻿namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class ActivityQuestion : BaseAuditableEntity
 {
@@ -8,14 +6,11 @@ public class ActivityQuestion : BaseAuditableEntity
     public int DisplayOrder { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
-
-    // Sorunun gün içindeki aktiflik saati (Örn: 08:00)
     public TimeSpan ScheduledTime { get; private set; }
 
     private readonly List<ActivityOption> _options = new();
     public IReadOnlyCollection<ActivityOption> Options => _options;
 
-    // Kök soru mu yoksa bir seçeneğe mi bağlı?
     public bool IsRoot => ParentOptionId == null;
     public Guid? ParentOptionId { get; private set; }
     public ActivityOption? ParentOption { get; private set; }
@@ -32,7 +27,6 @@ public class ActivityQuestion : BaseAuditableEntity
     {
         if (endDate < startDate)
             throw new ArgumentException("Bitiş tarihi başlangıçtan önce olamaz.");
-
         Text = text;
         DisplayOrder = displayOrder;
         StartDate = startDate;
@@ -42,8 +36,8 @@ public class ActivityQuestion : BaseAuditableEntity
 
     public void AddOption(string text, double carbonValue, Guid? nextQuestionId = null)
     {
-        // Encapsulation: Seçenek ekleme kuralı buraya gelebilir
-        var option = new ActivityOption(text, carbonValue, PollQuestionId, nextQuestionId);
+        // PollQuestionId → Id (düzeltildi)
+        var option = new ActivityOption(text, carbonValue, Id, nextQuestionId);
         _options.Add(option);
     }
 }

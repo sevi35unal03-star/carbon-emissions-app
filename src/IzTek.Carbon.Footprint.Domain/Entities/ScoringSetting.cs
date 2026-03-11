@@ -1,12 +1,12 @@
-namespace IzTek.Carbon.Footprint.Domain.Entities;
+ï»¿namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class ScoringSetting : BaseAuditableEntity
 {
-    public string Key { get; private set; }
+    public string Key { get; private set; } = default!; // âœ… non-nullable warning dÃ¼zeltildi
     public double Value { get; private set; }
-    public ScoringCategory Category { get; private set; } // Örn: Transport, Energy...
+    public ScoringCategory Category { get; private set; }
 
-    private ScoringSetting() { } // EF Core için
+    private ScoringSetting() { }
 
     public ScoringSetting(string key, double value, ScoringCategory category)
     {

@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using IzTek.Carbon.Footprint.Domain.Events.Poll;
+using Microsoft.Extensions.Logging;
 
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Notifications.Delete
+namespace IzTek.Carbon.Footprint.Application.Features.Polls.Notifications.Delete;
+
+public class PollOptionDeletedDomainEventHandler
 {
-    internal class PollOptionDeletedDomainEventHandler
+    public static Task Handle(PollOptionDeletedDomainEvent @event, ILogger<PollOptionDeletedDomainEventHandler> logger)
     {
+        logger.LogInformation("PollOption deleted with Id: {PollSetId}", @event.PollOptionId);
+
+        return Task.CompletedTask;
     }
 }

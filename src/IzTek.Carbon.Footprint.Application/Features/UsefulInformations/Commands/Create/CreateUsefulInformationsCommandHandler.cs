@@ -1,4 +1,4 @@
-﻿namespace Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Create;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Create;
 
 public static class CreateUsefulInformationsCommandHandler
 {

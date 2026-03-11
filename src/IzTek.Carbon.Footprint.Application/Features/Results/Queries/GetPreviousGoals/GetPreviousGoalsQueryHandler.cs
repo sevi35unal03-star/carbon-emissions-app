@@ -1,16 +1,15 @@
-﻿using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
-using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
-using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetPreviousGoals;
-using System.Globalization;
+﻿using System.Globalization;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetPreviousGoals;
 
 public class GetPreviousGoalsQueryHandler
 {
-    public async Task<Result<GetPreviousGoalsResponse>> HandleAsync(
+    public async Task<Result<GetPreviousGoalsResponse>> Handle(
         GetPreviousGoalsQuery query,
         IApplicationDbContext context,
         CancellationToken ct)
     {
-        // 1. Güncel hedef
+        // 1. Güncel ağaç tanımı
         var treeDef = await context.TreeDefinitions
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.IsActive, ct);
@@ -25,7 +24,7 @@ public class GetPreviousGoalsQueryHandler
                 x.Month,
                 x.Year,
                 x.TreeCount,
-                new DateTime(x.Year, x.Month, 1)
+                new DateTime(x.Year, x.Month, 1, 0, 0, 0, DateTimeKind.Utc) // ✅ DateTimeKind eklendi
                     .ToString("MMMM yyyy", new CultureInfo("tr-TR"))))
             .ToListAsync(ct);
 

@@ -2,7 +2,7 @@
 
 public class CreatePollOptionRequest
 {
-    public string Text { get; set; }    
+    public string Text { get; set; }  = string.Empty;
     public double Value { get; set; }       
     public int DisplayOrder { get; set; }  
 }

@@ -1,7 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.SubmitAnswer;
-
-
-namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
 
 public class SubmitActivityAnswerHandler
 {
@@ -13,7 +10,7 @@ public class SubmitActivityAnswerHandler
         // 1. Option doğrula
         var option = await context.ActivityOptions
             .FirstOrDefaultAsync(o =>
-                o.PollQuestionId == command.SelectedOptionId &&
+                o.Id == command.SelectedOptionId &&
                 o.ActivityQuestionId == command.QuestionId,
                 ct);
 
@@ -54,7 +51,7 @@ public class SubmitActivityAnswerHandler
         var nextQuestion = await context.ActivityQuestions
             .AsNoTracking()
             .Include(q => q.Options)
-            .FirstOrDefaultAsync(q => q.PollQuestionId == option.NextQuestionId, ct);
+            .FirstOrDefaultAsync(q => q.Id == option.NextQuestionId, ct);
 
         if (nextQuestion is null)
         {
@@ -70,11 +67,11 @@ public class SubmitActivityAnswerHandler
         return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
         {
             NextQuestion = new DailyQuestionResponse(
-                nextQuestion.PollQuestionId,
+                nextQuestion.Id,
                 nextQuestion.Text,
                 nextQuestion.DisplayOrder,
                 nextQuestion.Options.Select(o => new DailyOptionResponse(
-                    o.PollQuestionId,
+                    o.Id,
                     o.Text,
                     o.CarbonValue,
                     o.NextQuestionId

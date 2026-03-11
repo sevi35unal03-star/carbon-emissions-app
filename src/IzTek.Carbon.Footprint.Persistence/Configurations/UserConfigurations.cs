@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿
 
 namespace IzTek.Carbon.Footprint.Persistence.Configurations;
 

@@ -1,9 +1,9 @@
-﻿using Iztek.Carbon.Footprint.Application.Features.Users.Commands.DeleteUser;
+﻿using IzTek.Carbon.Footprint.Application.Features.Users.Commands.DeleteUser;
 using IzTek.Carbon.Footprint.Domain.Events.User;
 using Microsoft.AspNetCore.Identity;
 using Wolverine;
 
-namespace Iztek.Carbon.Footprint.Application.Features.Users.Commands.Delete;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Delete;
 
 public class DeleteUserCommandHandler(
     UserManager<User> userManager,

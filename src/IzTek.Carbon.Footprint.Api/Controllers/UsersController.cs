@@ -1,10 +1,11 @@
-﻿using Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
-using Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
+﻿using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
+using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
+using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Create;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.DonateTrees;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Password;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetDonationHistory;
-using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
+
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
@@ -14,49 +15,77 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 [Route("api/v{version:apiVersion}/users")]
 public class UsersController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
-    // --- Authentication & Password Management ---
+    // ──────────────────────────────────────────
+    // AUTH
+    // ──────────────────────────────────────────
 
+    /// <summary>
+    /// BizİZmir üyeliği ile yeni kullanıcı kaydı oluşturur.
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterAsync([FromBody] CreateUserCommand command)
+        => CreateActionResultInstance(await bus.InvokeAsync<Result<Guid>>(command));
+
+    /// <summary>
+    /// Kullanıcı girişi yapar ve JWT token döner.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> LoginAsync(LoginCommand command)
+    public async Task<IActionResult> LoginAsync([FromBody] LoginCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result<LoginCommand>>(command));
 
+    /// <summary>
+    /// Şifremi unuttum: kullanıcının e-postasına/TC'ye sıfırlama linki gönderir.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("password/forgot")]
-    public async Task<IActionResult> ForgotPasswordAsync(ForgotPasswordCommand command)
+    public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
 
+    /// <summary>
+    /// Şifre sıfırlama tokenı ile yeni şifreyi kaydeder.
+    /// </summary>
+    [AllowAnonymous]
     [HttpPost("password/reset")]
-    public async Task<IActionResult> ResetPasswordAsync(ResetPasswordCommand command)
+    public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
 
-    // --- User Queries ---
+    // ──────────────────────────────────────────
+    // ME  (token sahibi kullanıcı)
+    // ──────────────────────────────────────────
 
-    [HttpGet("profile")]
+    /// <summary>
+    /// Token sahibi kullanıcının BizİZmir profil bilgilerini getirir.
+    /// </summary>
+    [HttpGet("me/profile")]
     [EnableRateLimiting("user")]
     public async Task<IActionResult> GetProfileAsync()
-        // Kullanıcı ID'si genellikle Token'dan (User.Identity) alınır, 
-        // Query içinde bunu handle ettiğinizi varsayıyorum.
         => CreateActionResultInstance(await bus.InvokeAsync<Result<GetUserProfileResponse>>(new GetUserProfileQuery()));
 
-    [HttpGet("detailed")]
-    [Authorize(Roles = "Admin")] // Sadece adminlerin detaylı listeyi görebildiğini varsayalım
-    public async Task<IActionResult> GetDetailedListAsync([FromQuery] GetUsersDetailedQuery query)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<List<GetUsersDetailedResponse>>>(query));
-
     /// <summary>
-    /// Kullanıcının tüm puanlarını ağaç bağışına dönüştürür.
+    /// Token sahibi kullanıcının geçmiş ağaç bağışlarını listeler.
     /// </summary>
-    [HttpPost("donate-trees")]
-    public async Task<IActionResult> DonateTreesAsync()
-        => CreateActionResultInstance(
-            await bus.InvokeAsync<Result<DonateTreesResponse>>(new DonateTreesCommand()));
-
-    /// <summary>
-    /// Kullanıcının bağış geçmişini getirir.
-    /// </summary>
-    [HttpGet("donation-history")]
+    [HttpGet("me/donations")]
     public async Task<IActionResult> GetDonationHistoryAsync([FromQuery] GetDonationHistoryQuery query)
-        => CreateActionResultInstance(
-            await bus.InvokeAsync<Result<GetDonationHistoryResponse>>(query));
+        => CreateActionResultInstance(await bus.InvokeAsync<Result<GetDonationHistoryResponse>>(query));
+
+    /// <summary>
+    /// Token sahibi kullanıcının birikmiş puanlarını ağaç bağışına dönüştürür.
+    /// </summary>
+    [HttpPost("me/donations")]
+    public async Task<IActionResult> DonateTreesAsync()
+        => CreateActionResultInstance(await bus.InvokeAsync<Result<DonateTreesResponse>>(new DonateTreesCommand()));
+
+    // ──────────────────────────────────────────
+    // ADMIN
+    // ──────────────────────────────────────────
+
+    /// <summary>
+    /// Admin — tüm kullanıcıların detaylı listesini getirir.
+    /// </summary>
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllAsync([FromQuery] GetUsersDetailedQuery query)
+        => CreateActionResultInstance(await bus.InvokeAsync<Result<List<GetUsersDetailedResponse>>>(query));
 }
