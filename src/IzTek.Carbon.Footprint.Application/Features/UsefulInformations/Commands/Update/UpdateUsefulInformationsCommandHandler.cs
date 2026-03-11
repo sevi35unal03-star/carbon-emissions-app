@@ -1,4 +1,4 @@
-namespace Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Update;
+namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Update;
 
 public static class UpdateUsefulInformationCommandHandler
 {
@@ -8,7 +8,7 @@ public static class UpdateUsefulInformationCommandHandler
         CancellationToken cancellationToken)
     {
         var info = await context.UsefulInformations
-            .FirstOrDefaultAsync(x => x.PollQuestionId == command.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
 
         if (info is null)
         {
@@ -17,7 +17,7 @@ public static class UpdateUsefulInformationCommandHandler
 
         
         var isTitleExists = await context.UsefulInformations
-            .AnyAsync(x => x.Title == command.Title && x.PollQuestionId != command.Id, cancellationToken);
+            .AnyAsync(x => x.Title == command.Title && x.Id != command.Id, cancellationToken);
 
         if (isTitleExists)
         {

@@ -1,5 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetDailyActivities;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyActivities;
 

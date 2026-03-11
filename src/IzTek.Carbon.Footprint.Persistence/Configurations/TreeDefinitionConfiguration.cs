@@ -6,7 +6,7 @@ public class TreeDefinitionConfiguration : IEntityTypeConfiguration<TreeDefiniti
     {
         builder.ToTable("TreeDefinitions");
 
-        builder.HasKey(x => x.PollQuestionId);
+        builder.HasKey(x => x.Id);
 
         builder.Property(x => x.PointUnit)
             .IsRequired()
@@ -29,10 +29,10 @@ public class TreeDefinitionConfiguration : IEntityTypeConfiguration<TreeDefiniti
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(100);
 
-        builder.Property(x => x.LastModifiedAt);
+        //builder.Property(x => x.LastModifiedAt);
 
-        builder.Property(x => x.LastModifiedBy)
-            .HasMaxLength(100);
+        //builder.Property(x => x.LastModifiedBy)
+           // .HasMaxLength(100);
 
         // Aynı anda sadece 1 aktif tanım olabilmesi için index
         builder.HasIndex(x => x.IsActive)

@@ -18,7 +18,7 @@ public class DeleteUsefulInformationsCommandHandler
         CancellationToken ct)
     {
         var info = await context.UsefulInformations
-            .FirstOrDefaultAsync(x => x.PollQuestionId == command.Id, ct);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, ct);
 
         if (info == null) return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
 

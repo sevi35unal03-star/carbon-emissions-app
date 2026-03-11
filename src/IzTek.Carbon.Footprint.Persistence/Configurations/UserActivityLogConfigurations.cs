@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Iztek.Carbon.Footprint.Domain.Entities;
-
+﻿
 namespace IzTek.Carbon.Footprint.Persistence.Configurations;
 
 public class UserActivityLogConfigurations : IEntityTypeConfiguration<UserActivityLog>

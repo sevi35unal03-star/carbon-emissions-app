@@ -3,7 +3,7 @@ using IzTek.Carbon.Footprint.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
 
 public class GetUsersDetailedQueryHandler(UserManager<User> userManager)
 {

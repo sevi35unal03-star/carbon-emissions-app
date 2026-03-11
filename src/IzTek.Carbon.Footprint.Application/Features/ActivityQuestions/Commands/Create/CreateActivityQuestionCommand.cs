@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Create;
-
-namespace Iztek.Carbon.Footprint.Application.Features.AcitivityQuestions.Commands.Create;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Create;
 
 public class CreateActivityQuestionCommand
 {

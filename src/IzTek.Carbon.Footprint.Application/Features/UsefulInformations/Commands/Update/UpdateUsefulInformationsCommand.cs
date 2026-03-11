@@ -1,10 +1,6 @@
-using FluentValidation;
-using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using IzTek.Carbon.Footprint.Application.Common.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
 
-namespace Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Update;
+
+namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Update;
 
 public class UpdateUsefulInformationsCommand
 {

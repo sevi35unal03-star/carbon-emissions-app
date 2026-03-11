@@ -1,11 +1,6 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using IzTek.Carbon.Footprint.Application.Features.Polls.Events;
-using Microsoft.EntityFrameworkCore;
-using Wolverine;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Delete;
 
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Delete;
-
-public class DeletePollSetCommandHandler
+public static class DeletePollSetCommandHandler
 {
     public static async Task<Result> Handle(
     DeletePollSetCommand command,
@@ -16,7 +11,7 @@ public class DeletePollSetCommandHandler
         var pollSet = await context.PollSets
             .Include(x => x.Questions)
             .ThenInclude(q => q.Options)
-            .FirstOrDefaultAsync(x => x.PollQuestionId == command.PollSetId, ct);
+            .FirstOrDefaultAsync(x => x.Id == command.PollSetId, ct);
 
         if (pollSet == null)
             return Result.Failure(

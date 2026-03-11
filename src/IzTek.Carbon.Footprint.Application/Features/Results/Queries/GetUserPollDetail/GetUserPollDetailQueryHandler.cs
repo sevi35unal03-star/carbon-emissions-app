@@ -2,46 +2,46 @@
 
 public static class GetUserPollDetailQueryHandler
 {
-
-    public static async Task<Result<UserPollDetailResponse>> HandleAsync(
-    GetUserPollDetailQuery query,
-    IApplicationDbContext context,
-    CancellationToken ct)
+    public static async Task<Result<UserPollDetailResponse>> Handle(
+        GetUserPollDetailQuery query,
+        IApplicationDbContext context,
+        ICurrentUserService currentUserService,
+        CancellationToken ct)
     {
-        // 1. Kullanıcının o aydaki ana sonucunu getir
-        var pollSummary = await context.UserPollResults
-            .FirstOrDefaultAsync(x => x.UserId == query.UserId &&
-                                     x.Month == query.Month &&
-                                     x.Year == query.Year, ct);
+        // User/Admin ayrımı:
+        // Normal kullanıcı → token'dan userId alınır, TargetUserId gönderemez
+        // Admin            → TargetUserId varsa onu kullanır, yoksa kendi token'ından alır
+        var isAdmin = currentUserService.IsInRole("Admin");
+        var resolvedUserId = (isAdmin && query.TargetUserId.HasValue)
+            ? query.TargetUserId.Value
+            : currentUserService.UserId!.Value;
 
-        if (pollSummary == null)
+        // Kullanıcının o aydaki anket özetini cevaplarıyla birlikte getir
+        var pollResult = await context.UserPollResults
+            .AsNoTracking()
+            .Include(x => x.Answers)
+            .FirstOrDefaultAsync(x => x.UserId == resolvedUserId &&
+                                      x.Month == query.Month &&
+                                      x.Year == query.Year, ct);
+
+        if (pollResult is null)
             return Result<UserPollDetailResponse>.Failure(
                 SystemErrorCodes.PollResultNotFound, HttpStatusCode.NotFound);
 
-        // 2. UserAnswer üzerinden soru ve seçenek bilgilerini join ile getir
-        var answers = await context.UserActivityAnswers
-            .Where(x => x.UserId == query.UserId)
-            .Join(context.PollQuestions,
-                answer => answer.QuestionId,
-                question => question.Id,
-                (answer, question) => new { answer, question })
-            .Join(context.PollOptions,
-                combined => combined.answer.SelectedOptionId,
-                option => option.Id,
-                (combined, option) => new PollAnswerDetailDto
-                {
-                    QuestionText = combined.question.Text,
-                    SelectedOptionText = option.Text,
-                    CarbonValue = option.CarbonValue
-                })
-            .ToListAsync(ct);
+        var answers = pollResult.Answers
+            .Select(x => new PollAnswerDetailDto
+            {
+                QuestionText = x.QuestionText,
+                SelectedOptionText = x.SelectedOptionText,
+                CarbonValue = x.CarbonValue
+            })
+            .ToList();
 
-        // 3. Sonucu birleştir
         var response = new UserPollDetailResponse(
-            query.UserName,
-            pollSummary.TotalScore,
-            pollSummary.TreeCount,
-            answers);
+            UserName: $"{pollResult.Name} {pollResult.Surname}",
+            TotalScore: pollResult.TotalScore,
+            TreeCount: pollResult.TreeCount,
+            Answers: answers);
 
         return Result<UserPollDetailResponse>.Success(response);
     }

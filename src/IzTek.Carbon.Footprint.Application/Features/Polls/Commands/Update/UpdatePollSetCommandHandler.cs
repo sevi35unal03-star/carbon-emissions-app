@@ -1,8 +1,8 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Update;
 
-public class UpdatePollSetCommandHandler
+public static class UpdatePollSetCommandHandler
 {
-    public async Task<Result> HandleAsync(
+    public static  async Task<Result> HandleAsync(
         UpdatePollSetCommand command,
         IApplicationDbContext context,
         CancellationToken ct)

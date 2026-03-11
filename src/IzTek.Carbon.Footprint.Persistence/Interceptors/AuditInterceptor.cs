@@ -1,8 +1,8 @@
-﻿using Iztek.Carbon.Footprint.Persistence.Interceptors;
+﻿using IzTek.Carbon.Footprint.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Iztek.Carbon.Footprint.Persistence.Interceptors;
+namespace IzTek.Carbon.Footprint.Persistence.Interceptors;
 
 public class AuditInterceptor : SaveChangesInterceptor
 {

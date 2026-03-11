@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using IzTek.Carbon.Footprint.Domain.Events.Poll;
+using Microsoft.Extensions.Logging;
 
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Events;
+namespace IzTek.Carbon.Footprint.Application.Features.Polls.Notifications.Create;
 
 public class PollQuestionCreatedDomainEventHandler
 {

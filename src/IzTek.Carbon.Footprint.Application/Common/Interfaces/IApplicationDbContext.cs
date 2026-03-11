@@ -1,4 +1,4 @@
-using Iztek.Carbon.Footprint.Domain.Entities;
+
 namespace IzTek.Carbon.Footprint.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
@@ -7,7 +7,6 @@ public interface IApplicationDbContext
     DbSet<User> Users { get; }
     DbSet<UserActivityAnswer> UserActivityAnswers { get; }
     DbSet<Goal> Goals { get; }
-    DbSet<Product> Products { get; }
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<ActivityQuestion> ActivityQuestions { get; }
     DbSet<ActivityOption> ActivityOptions { get; }

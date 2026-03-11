@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Update;
+﻿using IzTek.Carbon.Footprint.Domain.Events.Activity;
+
+namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Update;
 
 public static class UpdateActivityQuestionCommandHandler
 {
@@ -11,7 +13,7 @@ public static class UpdateActivityQuestionCommandHandler
         // 1. Soruyu ve Mevcut Seçeneklerini Getir (Tracking Açık)
         var question = await context.ActivityQuestions
             .Include(x => x.Options)
-            .FirstOrDefaultAsync(x => x.PollQuestionId == command.Id, ct);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, ct);
 
         if (question == null)
             return Result.Failure(SystemErrorCodes.ActivityQuestionNotFound, HttpStatusCode.NotFound);
@@ -34,7 +36,7 @@ public static class UpdateActivityQuestionCommandHandler
             .ToList();
 
         var optionsToRemove = question.Options
-            .Where(x => !incomingOptionIds.Contains(x.PollQuestionId))
+            .Where(x => !incomingOptionIds.Contains(x.Id))
             .ToList();
 
         foreach (var opt in optionsToRemove)
@@ -50,7 +52,7 @@ public static class UpdateActivityQuestionCommandHandler
             if (optReq.Id.HasValue)
             {
                 // Mevcut olanı bul ve güncelle (Kırılım/NextQuestionId dahil)
-                var existingOpt = question.Options.FirstOrDefault(x => x.PollQuestionId == optReq.Id.Value);
+                var existingOpt = question.Options.FirstOrDefault(x => x.Id == optReq.Id.Value);
                 existingOpt?.UpdateDetails(optReq.Text, optReq.CarbonValue, optReq.NextQuestionId);
             }
             else
@@ -62,7 +64,7 @@ public static class UpdateActivityQuestionCommandHandler
 
         // 4. Domain Event: Zamanlayıcı (Push Notification) güncellenmeli
         // NotificationTime veya Text değiştiyse yeni bir push planlanması tetiklenir
-        question.AddDomainEvent(new ActivityQuestionUpdatedDomainEvent(question.PollQuestionId));
+        question.AddDomainEvent(new ActivityQuestionUpdatedDomainEvent(question.Id));
 
         var result = await context.SaveChangesAsync(ct);
 

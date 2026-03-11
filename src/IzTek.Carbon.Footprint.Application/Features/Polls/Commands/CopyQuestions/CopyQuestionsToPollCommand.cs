@@ -1,5 +1,7 @@
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.CopyQuestions;
 
-public record CopyQuestionsToPollCommand(
-    Guid PollSetId,
-    List<Guid> SourceQuestionIds);
+public class CopyQuestionsToPollCommand
+{
+    public Guid PollSetId { get; set; }
+    public List<Guid> SourceQuestionIds { get; set; } = [];
+}

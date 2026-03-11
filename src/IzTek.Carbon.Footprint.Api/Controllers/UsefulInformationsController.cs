@@ -1,13 +1,7 @@
-﻿using Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Create;
-using Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Update;
-using Iztek.Carbon.Footprint.Application.Features.UsefulInformations.Queries.GetList;
-using IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands;
-using IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Delete;
+﻿using IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Create;
+using IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Update;
 using IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Queries.GetList;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Wolverine;
+using IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Delete;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
@@ -29,16 +23,18 @@ public class UsefulInformationsController(IMessageBus bus, IStringLocalizer<Reso
     /// </summary>
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateAsync(CreateUsefulInformationsCommand command)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateUsefulInformationsCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
 
     /// <summary>
     /// Admin mevcut bir bilgiyi günceller (Başlık, İçerik vb.).
     /// </summary>
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateAsync(UpdateUsefulInformationsCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateUsefulInformationsCommand command)
+    {     command.Id = id;
+        return CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
+    }
 
     /// <summary>
     /// Admin bir bilgiyi siler.

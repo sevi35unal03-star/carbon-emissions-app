@@ -1,5 +1,4 @@
-﻿using Iztek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
-using Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
+﻿
 using Spectre.Console;
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 

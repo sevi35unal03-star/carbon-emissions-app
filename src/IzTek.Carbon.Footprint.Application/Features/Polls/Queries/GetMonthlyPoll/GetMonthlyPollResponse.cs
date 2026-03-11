@@ -1,4 +1,4 @@
-using Iztek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
+
 
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 

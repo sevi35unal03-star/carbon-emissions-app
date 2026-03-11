@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Domain.Entities;
+﻿using IzTek.Carbon.Footprint.Domain.Events.User;
+
+namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class TreeDonation : BaseAuditableEntity
 {
@@ -15,5 +17,11 @@ public class TreeDonation : BaseAuditableEntity
         TreeCount = treeCount;
         PointsSpent = pointsSpent;
         DonationDate = DateTime.UtcNow;
+
+        AddDomainEvent(new TreesDonatedDomainEvent(
+            userId,
+            treeCount,
+            pointsSpent,
+            DonationDate));
     }
 }

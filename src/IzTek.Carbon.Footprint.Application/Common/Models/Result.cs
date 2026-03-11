@@ -42,10 +42,10 @@ public class Result
         return new Result { Errors = [error], StatusCode = HttpStatusCode.InternalServerError, IsSuccessful = false };
     }
 
-    internal static Result Failure(string v, HttpStatusCode notFound)
-    {
-        throw new NotImplementedException();
-    }
+    //internal static Result Failure(string v, HttpStatusCode notFound)
+    //{
+        //throw new NotImplementedException();
+    //}
 }
 
 public class Result<T> : Result

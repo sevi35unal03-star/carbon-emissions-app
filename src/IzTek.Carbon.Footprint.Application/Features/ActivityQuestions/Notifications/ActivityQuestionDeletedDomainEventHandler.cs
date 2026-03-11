@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using IzTek.Carbon.Footprint.Domain.Events.Activity;
+using Microsoft.Extensions.Logging;
 
-namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.EventHandlers;
+namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Notifications;
 
 public class ActivityQuestionDeletedDomainEventHandler(
     ILogger<ActivityQuestionDeletedDomainEventHandler> logger,

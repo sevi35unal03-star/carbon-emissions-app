@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
+﻿using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyQuestions;
+
+namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
 
 public class SubmitActivityAnswerResponse
 {

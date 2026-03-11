@@ -1,4 +1,4 @@
-namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.SubmitAnswer;
+namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
 
 public record SubmitActivityAnswerCommand(
     Guid QuestionId,

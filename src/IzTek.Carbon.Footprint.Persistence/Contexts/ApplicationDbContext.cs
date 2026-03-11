@@ -1,9 +1,4 @@
-﻿using System.Reflection;
-using Iztek.Carbon.Footprint.Domain.Entities;
-using IzTek.Carbon.Footprint.Persistence.Interceptors; 
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Wolverine;
+﻿
 
 namespace IzTek.Carbon.Footprint.Persistence.Contexts;
 
@@ -21,21 +16,24 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplic
         _currentUserService = currentUserService;
     }
 
-    public DbSet<Product> Products => Set<Product>();
-    public DbSet<UserActivityAnswer> UserActivityAnswers => Set<UserActivityAnswer>();
-    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    // IdentityDbContext zaten Users ve Roles DbSet'lerini sağlıyor — tekrar tanımlamaya gerek yok
+    // Product kaldırıldı — bu projede yok
+
     public DbSet<ActivityQuestion> ActivityQuestions => Set<ActivityQuestion>();
     public DbSet<ActivityOption> ActivityOptions => Set<ActivityOption>();
+    public DbSet<UserActivityAnswer> UserActivityAnswers => Set<UserActivityAnswer>();
     public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();
-    public DbSet<UsefulInformation> UsefulInformations => Set<UsefulInformation>();
-    public DbSet<PollOption> PollOptions => Set<PollOption>();
     public DbSet<PollSet> PollSets => Set<PollSet>();
     public DbSet<PollQuestion> PollQuestions => Set<PollQuestion>();
-    public DbSet<TreeDefinition> TreeDefinitions => Set<TreeDefinition>();
+    public DbSet<PollOption> PollOptions => Set<PollOption>();
     public DbSet<UserPollResult> UserPollResults => Set<UserPollResult>();
-    public DbSet<Goal> Goals => Set<Goal>();
+    public DbSet<UserPollAnswer> UserPollAnswers => Set<UserPollAnswer>();
+    public DbSet<TreeDefinition> TreeDefinitions => Set<TreeDefinition>();
     public DbSet<TreeDonation> TreeDonations => Set<TreeDonation>();
+    public DbSet<UsefulInformation> UsefulInformations => Set<UsefulInformation>();
+    public DbSet<Goal> Goals => Set<Goal>();
     public DbSet<ScoringSetting> ScoringSettings => Set<ScoringSetting>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,7 +1,7 @@
 ﻿using IzTek.Carbon.Footprint.Domain.Events.User;
 using Microsoft.Extensions.Logging;
 
-namespace Iztek.Carbon.Footprint.Application.Features.Users.Notifications;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Notifications;
 
 public class UserDeletedDomainEventHandler
 {

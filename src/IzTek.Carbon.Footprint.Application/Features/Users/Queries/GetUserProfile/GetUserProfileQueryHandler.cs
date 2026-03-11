@@ -1,4 +1,4 @@
-using Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
+using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 using Microsoft.AspNetCore.Identity;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;

@@ -1,4 +1,4 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetDailyActivities;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyActivities;
 
 public record DailyActivityResponse(
     List<PendingQuestionDto> PendingQuestions,

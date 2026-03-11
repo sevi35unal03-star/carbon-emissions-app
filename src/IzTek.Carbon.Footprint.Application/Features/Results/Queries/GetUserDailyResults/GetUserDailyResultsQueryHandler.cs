@@ -35,12 +35,12 @@ public class GetUserDailyResultsHandler(IApplicationDbContext context)
             from u in context.Users.AsNoTracking()
 
             join activity in todayActivityQuery
-                on u.PollQuestionId equals activity.UserId into actJoin
+                on u.Id equals activity.UserId into actJoin
             from activity in actJoin.DefaultIfEmpty()
 
             select new UserDailyResultResponse
             {
-                Id = u.PollQuestionId,
+                Id = u.Id,
                 LastLoginDate = u.LastLoginDate,
                 CarbonFootprintScore = activity != null ? activity.CarbonScore : 0,
                 DailyActivitiesCount = activity != null ? activity.Count : 0,

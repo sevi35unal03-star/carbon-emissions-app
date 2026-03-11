@@ -1,28 +1,26 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.CopyQuestions;
+﻿
+namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.CopyQuestions;
 
 public class CopyQuestionsToPollCommandHandler(IApplicationDbContext context)
 {
     private readonly IApplicationDbContext _context = context;
 
-    public async Task<Result> HandleAsync(
-        CopyQuestionsToPollRequest request,
-        CancellationToken ct)
+    public async Task<Result> Handle(CopyQuestionsToPollCommand command, CancellationToken ct)
     {
         // 1. Boş liste kontrolü
-        if (request.SourceQuestionIds is null || !request.SourceQuestionIds.Any())
-            return Result.Failure(
-                SystemErrorCodes.SourceQuestionIdsEmpty, HttpStatusCode.BadRequest);
+        if (command.SourceQuestionIds is null || !command.SourceQuestionIds.Any())
+            return Result.Failure(SystemErrorCodes.SourceQuestionIdsEmpty, HttpStatusCode.BadRequest);
 
         // 2. Kaynak soruları ve seçeneklerini getir
         var sourceQuestions = await _context.ActivityQuestions
             .AsNoTracking()
             .Include(x => x.Options)
-            .Where(x => request.SourceQuestionIds.Contains(x.PollQuestionId))
+            .Where(x => command.SourceQuestionIds.Contains(x.Id)) // ✅ PollQuestionId → Id
             .ToListAsync(ct);
 
         // 3. Kısmi eşleşme kontrolü
-        var missingIds = request.SourceQuestionIds
-            .Except(sourceQuestions.Select(x => x.PollQuestionId))
+        var missingIds = command.SourceQuestionIds
+            .Except(sourceQuestions.Select(x => x.Id)) // ✅ PollQuestionId → Id
             .ToList();
 
         if (missingIds.Any())
@@ -33,7 +31,7 @@ public class CopyQuestionsToPollCommandHandler(IApplicationDbContext context)
 
         // 4. Her soruyu domain factory metodu ile klonla
         var pollQuestions = sourceQuestions
-            .Select(sourceQ => PollQuestion.CloneFrom(sourceQ, request.PollSetId))
+            .Select(sourceQ => PollQuestion.CloneFrom(sourceQ, command.PollSetId))
             .ToList();
 
         await _context.PollQuestions.AddRangeAsync(pollQuestions, ct);

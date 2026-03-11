@@ -1,21 +1,30 @@
-﻿namespace Iztek.Carbon.Footprint.Domain.Entities;
+﻿using IzTek.Carbon.Footprint.Domain.Events.Activity;
 
-public class UserActivityAnswer
+namespace IzTek.Carbon.Footprint.Domain.Entities;
+
+public class UserActivityAnswer : BaseAuditableEntity
 {
-    public Guid Id { get; private set; }
     public Guid UserId { get; private set; }
     public Guid QuestionId { get; private set; }
     public Guid SelectedOptionId { get; private set; }
+    public double CarbonValue { get; private set; }
     public DateTime AnsweredAt { get; private set; }
 
     private UserActivityAnswer() { }
 
-    public UserActivityAnswer(Guid userId, Guid questionId, Guid selectedOptionId, DateTime answeredAt)
+    public UserActivityAnswer(Guid userId, Guid questionId, Guid selectedOptionId, double carbonValue, DateTime answeredAt)
     {
-        Id = Guid.NewGuid();
         UserId = userId;
         QuestionId = questionId;
         SelectedOptionId = selectedOptionId;
+        CarbonValue = carbonValue;
         AnsweredAt = answeredAt;
+
+        AddDomainEvent(new ActivityAnsweredDomainEvent(
+            userId,
+            questionId,
+            selectedOptionId,
+            carbonValue,
+            answeredAt));
     }
 }

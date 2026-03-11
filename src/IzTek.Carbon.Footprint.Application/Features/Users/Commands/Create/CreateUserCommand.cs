@@ -6,14 +6,14 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Create;
 
 public class CreateUserCommand : BaseEntity
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string IdentityNumber { get; set; }
-    public string PhoneNumber { get; set; }
+    public string FirstName { get; set; } = string.Empty;       
+    public string LastName { get; set; } = string.Empty;
+    public string IdentityNumber { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } 
     public DateTime BirthDate { get; set; }
-    public string Password { get; set; }
-    public string ConfirmPassword { get; set; }
-    public string Email { get; set; }
+    public string Password { get; set; } = string.Empty;
+    public string ConfirmPassword { get; set; } = string.Empty;
+    public string Email { get; set; } 
     public bool IsKvkkApproved { get; set; }
 }
 
@@ -40,7 +40,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
             .NotEmpty().WithMessage("Last name is required.");
 
         RuleFor(x => x.BirthDate)
-            .NotEmpty().WithMessage("Birth date is required.")
+            .NotEmpty().WithMessage("Birth date is required.");
             
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required.")

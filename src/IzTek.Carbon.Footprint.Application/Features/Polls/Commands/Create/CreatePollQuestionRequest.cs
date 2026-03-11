@@ -1,10 +1,10 @@
-using IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetDailyPoll;
+
 
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Create;
 
 public class CreatePollQuestionRequest
 {
-    public string Text { get; set; }
+    public string Text { get; set; } = default!;
     public int DisplayOrder { get; set; }
 
     public List<CreatePollOptionRequest> Options { get; set; } = [];

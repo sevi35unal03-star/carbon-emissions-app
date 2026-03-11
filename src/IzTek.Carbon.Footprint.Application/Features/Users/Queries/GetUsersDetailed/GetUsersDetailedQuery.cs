@@ -1,4 +1,4 @@
-namespace Iztek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
 
 public record GetUsersDetailedQuery(
     int PageNumber = 1,
