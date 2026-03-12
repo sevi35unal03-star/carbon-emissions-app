@@ -2,9 +2,10 @@ namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserPol
 
 public record GetUserPollDetailQuery
 {
-    public Guid? TargetUserId { get; init; } // Sadece Admin kullanır, opsiyonel — normal kullanıcı göndermez
-    public int Month { get; init; }
-    public int Year { get; init; }
+    public Guid PollSetId { get; set; }
+    public int Month { get; set; }
+    public int Year { get; set; }
+    public Guid? TargetUserId { get; set; }
 }
 
 public record PollAnswerDetailDto

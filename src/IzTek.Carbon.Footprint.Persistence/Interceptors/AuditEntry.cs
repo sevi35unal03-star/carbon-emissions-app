@@ -3,18 +3,19 @@ using Newtonsoft.Json;
 
 namespace IzTek.Carbon.Footprint.Persistence.Interceptors;
 
-public class AuditEntry
+public class AuditEntry(EntityEntry entry)
 {
-    public AuditEntry(EntityEntry entry) => Entry = entry;
-    public EntityEntry Entry { get; }
-    public string UserId { get; set; }
-    public string TableName { get; set; }
-    public string Operation { get; set; }
-    public Dictionary<string, object> OldValues { get; } = new();
-    public Dictionary<string, object> NewValues { get; } = new();
+    public EntityEntry Entry { get; } = entry;
+    public string UserId { get; set; } = null!; 
+    public string UserName { get; set; } = null!;   
+    public string TableName { get; set; } = null!;
+    public string Operation { get; set; } = null!; // "Create", "Update", "Delete"
+    public Dictionary<string, object> OldValues { get; } = [];
+    public Dictionary<string, object> NewValues { get; } = [];
 
-    public AuditLog ToAuditLog() => new AuditLog(
+    public AuditLog ToAuditLog() => new(
     userId: UserId,
+    userName: UserName,
     operation: Operation,
     tableName: TableName,
     oldValues: OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues),

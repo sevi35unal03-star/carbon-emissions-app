@@ -23,11 +23,11 @@ public static async Task<Result<MonthlyActivityResponse>> Handle(
             .Where(x => x.UserId == userId &&
                         x.ActivityDate >= monthStart &&
                         x.ActivityDate <= monthEnd)
-            .Select(x => new { x.ActivityDate, x.Score })
+            .Select(x => new { x.ActivityDate, x.TotalCarbonScore })
             .ToListAsync(ct);
 
         // 4. Ayın genel toplamını hesapla (Tasarımın en üstündeki değer)
-        int totalMonthlyScore = allMonthLogs.Sum(x => x.Score);
+        double totalMonthlyScore = allMonthLogs.Sum(x => x.TotalCarbonScore);
 
         // 5. Sadece seçili döneme (Period) ait olanları filtrele ve grupla
         var dailyScores = allMonthLogs
@@ -35,13 +35,13 @@ public static async Task<Result<MonthlyActivityResponse>> Handle(
             .GroupBy(x => x.ActivityDate.Date)
             .Select(g => new DailyScoreDto(
                 Date: g.Key,
-                TotalScore: g.Sum(s => s.Score)
+                TotalScore: g.Sum(s => s.TotalCarbonScore)
             ))
             .OrderBy(x => x.Date)
             .ToList();
 
         // 6. Dönem toplamını hesapla
-        int totalPeriodScore = dailyScores.Sum(x => x.TotalScore);
+        double totalPeriodScore = dailyScores.Sum(x => x.TotalScore);
 
         return Result<MonthlyActivityResponse>.Success(
             new MonthlyActivityResponse(totalMonthlyScore, totalPeriodScore, dailyScores));

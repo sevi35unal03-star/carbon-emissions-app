@@ -1,4 +1,4 @@
-﻿namespace IzTek.Carbon.Footprint.Infrastructure.Persistence.Configurations;
+﻿namespace IzTek.Carbon.Footprint.Persistence.Configurations;
 
 public class TreeDefinitionConfiguration : IEntityTypeConfiguration<TreeDefinition>
 {
@@ -28,11 +28,6 @@ public class TreeDefinitionConfiguration : IEntityTypeConfiguration<TreeDefiniti
 
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(100);
-
-        //builder.Property(x => x.LastModifiedAt);
-
-        //builder.Property(x => x.LastModifiedBy)
-           // .HasMaxLength(100);
 
         // Aynı anda sadece 1 aktif tanım olabilmesi için index
         builder.HasIndex(x => x.IsActive)

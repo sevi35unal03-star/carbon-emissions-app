@@ -1,7 +1,6 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using IzTek.Carbon.Footprint.Domain.Events.User;
+﻿using IzTek.Carbon.Footprint.Domain.Events.User;
 
-namespace IzTek.Carbon.Footprint.Application.Features.Users.EventHandlers;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Notifications;
 
 /// <summary>
 /// Kullanıcı ağaç bağışı yaptığında:

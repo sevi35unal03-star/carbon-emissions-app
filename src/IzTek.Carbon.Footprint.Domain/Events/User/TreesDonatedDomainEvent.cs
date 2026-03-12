@@ -8,22 +8,14 @@ namespace IzTek.Carbon.Footprint.Domain.Events.User;
 /// → TotalPoints sıfırlama
 /// → Bağış bildirimi
 /// </summary>
-public class TreesDonatedDomainEvent : BaseEvent
+public class TreesDonatedDomainEvent(
+    Guid userId,
+    int treeCount,
+    double pointsSpent,
+    DateTime donationDate) : BaseEvent
 {
-    public Guid UserId { get; init; }
-    public int TreeCount { get; init; }
-    public double PointsSpent { get; init; }
-    public DateTime DonationDate { get; init; }
-
-    public TreesDonatedDomainEvent(
-        Guid userId,
-        int treeCount,
-        double pointsSpent,
-        DateTime donationDate)
-    {
-        UserId = userId;
-        TreeCount = treeCount;
-        PointsSpent = pointsSpent;
-        DonationDate = donationDate;
-    }
+    public Guid UserId { get; init; } = userId;
+    public int TreeCount { get; init; } = treeCount;
+    public double PointsSpent { get; init; } = pointsSpent;
+    public DateTime DonationDate { get; init; } = donationDate;
 }

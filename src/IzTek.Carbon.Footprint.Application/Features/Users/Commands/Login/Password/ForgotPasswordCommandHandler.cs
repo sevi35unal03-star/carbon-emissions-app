@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Password;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
 
 public class ForgotPasswordCommandHandler(
     UserManager<User> userManager,
@@ -40,11 +40,11 @@ public class ForgotPasswordCommandHandler(
 
         if (result is null || !result.IsSuccessful)
         {
-            logger.LogError("ForgotPassword email failed → UserId: {UserId}", user.PollQuestionId);
+            logger.LogError("ForgotPassword email failed → UserId: {UserId}", user.Id);
             return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
         }
 
-        logger.LogInformation("ForgotPassword OTP sent → UserId: {UserId}", user.PollQuestionId);
+        logger.LogInformation("ForgotPassword OTP sent → UserId: {UserId}", user.Id);
 
         return Result.Success();
     }

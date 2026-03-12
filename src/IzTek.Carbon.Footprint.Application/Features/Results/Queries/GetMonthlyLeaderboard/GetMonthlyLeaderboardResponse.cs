@@ -2,22 +2,10 @@
 
 namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
 
-public record GetMonthlyLeaderboardResponse
-{
-    public GetMonthlyLeaderboardResponse(
-        int yearlyTargetTreeCount,
-        int monthlyTargetTreeCount,
-        List<LeaderboardItemDto> leaders,
-        UserRankDto? currentUserRank)
-    {
-        YearlyTargetTreeCount = yearlyTargetTreeCount;
-        MonthlyTargetTreeCount = monthlyTargetTreeCount;
-        Leaders = leaders;
-        CurrentUserRank = currentUserRank;
-    }
-
-    public int YearlyTargetTreeCount { get; init; }
-    public int MonthlyTargetTreeCount { get; init; }
-    public List<LeaderboardItemDto> Leaders { get; init; }
-    public UserRankDto? CurrentUserRank { get; init; }
-}
+public record GetMonthlyLeaderboardResponse(
+    int YearlyTargetTreeCount,
+    int MonthlyTargetTreeCount,
+    int RemainingTreeCount,
+    int TotalDonatedThisMonth,// ← "120.000 ağaç kaldı"
+    List<LeaderboardItemDto> Leaders,
+    UserRankDto? CurrentUserRank);

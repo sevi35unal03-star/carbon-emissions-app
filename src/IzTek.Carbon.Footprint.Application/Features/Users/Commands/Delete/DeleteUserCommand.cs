@@ -1,3 +1,3 @@
-namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.DeleteUser;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Delete;
 
 public record DeleteUserCommand(Guid UserId);

@@ -1,17 +1,15 @@
-﻿
-
-namespace IzTek.Carbon.Footprint.Domain.Entities;
+﻿namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class PollSet : BaseAuditableEntity
 {
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public int DisplayOrder { get; private set; }
-    public new bool IsActive { get; private set; } // ✅ new keyword eklendi
+    public new bool IsActive { get; private set; }
     public int Month { get; private set; }
     public int Year { get; private set; }
 
-    private readonly List<PollQuestion> _questions = new();
+    private readonly List<PollQuestion> _questions = [];
     public IReadOnlyCollection<PollQuestion> Questions => _questions.AsReadOnly();
 
     private PollSet() { }

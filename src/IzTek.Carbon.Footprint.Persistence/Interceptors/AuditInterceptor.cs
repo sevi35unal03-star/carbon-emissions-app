@@ -1,17 +1,8 @@
-﻿using IzTek.Carbon.Footprint.Persistence.Interceptors;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿namespace IzTek.Carbon.Footprint.Persistence.Interceptors;
 
-namespace IzTek.Carbon.Footprint.Persistence.Interceptors;
-
-public class AuditInterceptor : SaveChangesInterceptor
+public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInterceptor
 {
-    private readonly ICurrentUserService _currentUser;
-
-    public AuditInterceptor(ICurrentUserService currentUser)
-    {
-        _currentUser = currentUser;
-    }
+    private readonly ICurrentUserService _currentUser = currentUser;
 
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {

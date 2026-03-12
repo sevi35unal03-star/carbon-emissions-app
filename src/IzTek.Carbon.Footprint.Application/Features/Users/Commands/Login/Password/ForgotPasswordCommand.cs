@@ -1,4 +1,4 @@
-namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Password;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
 
 public class ForgotPasswordCommand
 {

@@ -1,8 +1,11 @@
-public enum ScoringCategory
+namespace IzTek.Carbon.Footprint.Domain.Enums
 {
-    General = 1,
-    Transport = 2,
-    Energy = 3,
-    Nutrition = 4,
-    Waste = 5
+    public enum ScoringCategory
+    {
+        General = 1,
+        Transport = 2,
+        Energy = 3,
+        Nutrition = 4,
+        Waste = 5
+    }
 }

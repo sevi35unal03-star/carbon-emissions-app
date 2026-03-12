@@ -1,6 +1,6 @@
 using IzTek.Carbon.Footprint.Application.Common.Validators;
 
-namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Password;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
 
 public class ResetPasswordCommand
 {

@@ -2,8 +2,6 @@
 
 public class ActivityOption : BaseAuditableEntity
 {
-    // private set -> Encapsulation
-    // dışarıdan doğrudan değiştirilemez.
     public string Text { get; private set; } = null!;
     public double CarbonValue { get; private set; }
     public Guid ActivityQuestionId { get; private set; }
@@ -14,14 +12,14 @@ public class ActivityOption : BaseAuditableEntity
     //      Soru 1 → Seçenek B → NextQuestionId null → Flow bitti
     /// </summary>
     public Guid? NextQuestionId { get; private set; }
-    public ActivityQuestion? NextQuestion { get; private set; }
+    public ActivityQuestion? NextQuestion { get; set; }
     public int DisplayOrder { get; internal set; }
 
     /// <summary>
     /// EF Core, veritabanından veri çekerken parametresiz constructor ile instance oluşturur.
     /// private veya protected yapılır ki dışarıdan new ActivityOption() ile boş nesne oluşturulmasın.
     /// </summary>
-    private ActivityOption() { }  // ✅ protected → private (EF Core private constructor'ı destekler)
+    private ActivityOption() { } 
 
     public ActivityOption(string text, double carbonValue, Guid activityQuestionId, Guid? nextQuestionId = null)
     {
@@ -44,10 +42,3 @@ public class ActivityOption : BaseAuditableEntity
         NextQuestionId = nextQuestionId;
     }
 }
-
-/*
- private set      → Dışarıdan değiştirilemez (Encapsulation)
-protected()      → EF Core kullanabilir, dışarıdan new'lenemez  
-UpdateDetails()  → Validasyon tek yerde, constructor da kullanır
-Guid? Next       → Soru akışı için opsiyonel zincir
-default!         → Null safety uyarısını bastırır*/

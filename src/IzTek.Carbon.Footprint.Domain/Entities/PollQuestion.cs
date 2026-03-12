@@ -1,5 +1,3 @@
-
-
 namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class PollQuestion : BaseAuditableEntity
@@ -11,7 +9,7 @@ public class PollQuestion : BaseAuditableEntity
     // Navigation property
     public PollSet PollSet { get; private set; } = null!;
 
-    private readonly List<PollOption> _options = new();
+    private readonly List<PollOption> _options = [];
     public IReadOnlyCollection<PollOption> Options => _options.AsReadOnly();
 
     private PollQuestion() { }
@@ -23,7 +21,6 @@ public class PollQuestion : BaseAuditableEntity
         DisplayOrder = displayOrder;
     }
 
-    // ✅ CloneFrom düzeltildi
     public static PollQuestion CloneFrom(ActivityQuestion source, Guid pollSetId)
     {
         var question = new PollQuestion(
@@ -32,7 +29,6 @@ public class PollQuestion : BaseAuditableEntity
             displayOrder: source.DisplayOrder
         );
 
-        // ✅ question.Id kullanıldı
         foreach (var option in source.Options)
             question._options.Add(PollOption.CloneFrom(option, question.Id));
 
@@ -41,7 +37,6 @@ public class PollQuestion : BaseAuditableEntity
 
     public void AddOption(string text, double carbonValue, Guid? nextQuestionId, int displayOrder)
     {
-        // ✅ Id kullanıldı
         _options.Add(new PollOption(Id, text, carbonValue, nextQuestionId, displayOrder));
     }
 

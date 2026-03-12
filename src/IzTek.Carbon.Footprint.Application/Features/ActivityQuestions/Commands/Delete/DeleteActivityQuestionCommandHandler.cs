@@ -1,6 +1,5 @@
 ﻿
-
-using IzTek.Carbon.Footprint.Domain.Events.ActivityQuestion;
+using IzTek.Carbon.Footprint.Domain.Events.Activity;
 
 namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Delete;
 

@@ -1,14 +1,8 @@
 ﻿
 namespace IzTek.Carbon.Footprint.Domain.Events.TreeDefinition;
 
-public class TreeDefinitionCreatedDomainEvent : BaseEvent 
+public class TreeDefinitionCreatedDomainEvent(double pointUnit, int treeCount) : BaseEvent 
 {
-    public TreeDefinitionCreatedDomainEvent(double pointUnit, int treeCount)
-    {
-        PointUnit = pointUnit;
-        TreeCount = treeCount;
-    }
-
-    public double PointUnit { get; }
-    public int TreeCount { get; }
+    public double PointUnit { get; } = pointUnit;
+    public int TreeCount { get; } = treeCount;
 }

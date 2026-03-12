@@ -4,7 +4,7 @@ public class PollOption : BaseAuditableEntity
 {
     public Guid PollQuestionId { get; private set; }
     public string Text { get; private set; } = null!;
-    public double CarbonValue { get; private set; }
+    public double CarbonValue { get; private set; } // TotalCarbonScore hesaplaması için
     public Guid? NextPollQuestionId { get; private set; }
     public int DisplayOrder { get; private set; }
 
@@ -13,17 +13,15 @@ public class PollOption : BaseAuditableEntity
 
     private PollOption() { }
 
-    // ✅ Constructor düzeltildi
     public PollOption(Guid pollQuestionId, string text, double carbonValue, Guid? nextPollQuestionId = null, int displayOrder = 0)
     {
-        PollQuestionId = pollQuestionId;  // ✅ base.PollQuestionId değil
+        PollQuestionId = pollQuestionId; 
         Text = text;
         CarbonValue = carbonValue;
-        NextPollQuestionId = nextPollQuestionId; // ✅ this.nextQuestionId değil
+        NextPollQuestionId = nextPollQuestionId; 
         DisplayOrder = displayOrder;
     }
 
-    // ✅ CloneFrom düzeltildi
     public static PollOption CloneFrom(ActivityOption source, Guid pollQuestionId)
     {
         return new PollOption(

@@ -1,34 +1,53 @@
-﻿
-namespace IzTek.Carbon.Footprint.Persistence.Configurations;
+﻿namespace IzTek.Carbon.Footprint.Persistence.Configurations;
 
-public class UserActivityLogConfigurations : IEntityTypeConfiguration<UserActivityLog>
+/// <summary>
+/// UserActivityLog — Admin raporlama ve audit amaçlı.
+/// Navigation property'ler içerir (User, ActivityQuestion, ActivityOption).
+///
+/// UserActivityAnswer — Domain event + takvim/pending sorguları için.
+/// Navigation property içermez, snapshot CarbonValue tutar.
+///
+/// İkisi birbirini tamamlar, çakışmaz:
+/// - UserActivityAnswer: hızlı sorgu, event fırlatma, takvim
+/// - UserActivityLog: admin panel, detaylı raporlama, join'li görünümler
+/// </summary>
+public class UserActivityLogConfiguration : IEntityTypeConfiguration<UserActivityLog>
 {
     public void Configure(EntityTypeBuilder<UserActivityLog> builder)
     {
-        builder.Property(x => x.SelectedOptionText)
-               .HasMaxLength(256)
-               .IsRequired();
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.TotalCarbonScore)
+            .IsRequired();
 
         builder.Property(x => x.CarbonValue)
-               .IsRequired();
+            .IsRequired();
 
-        // ek kısıtlamalar veya indexler eklenebilir.
-        builder.Property(x => x.UserId)
-               .IsRequired();
+        builder.Property(x => x.SelectedOptionText)
+            .IsRequired()
+            .HasMaxLength(500);
 
-        builder.Property(x => x.ActivityQuestionId)
-               .IsRequired();
+        builder.Property(x => x.ActivityDate)
+            .IsRequired();
 
-        // Eğer projenizde Log seviyeleri veya tipleri Enum ise örnekteki gibi kullanabilirsiniz:
-        // builder.Property(p => p.Status)
-        //        .HasConversion(s => s.ToString(),
-        //                       p => Enum.Parse<LogStatusType>(p))
-        //        .HasMaxLength(32);
+        // Admin raporlarında UserId + ActivityDate üzerinden sık sorgu yapılır
+        builder.HasIndex(x => new { x.UserId, x.ActivityDate });
 
-        // İlişki Tanımlamaları (Opsiyonel ama veri bütünlüğü için önerilir)
-        builder.HasOne<ActivityQuestion>()
-               .WithMany()
-               .HasForeignKey(x => x.ActivityQuestionId)
-               .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.ActivityQuestion)
+            .WithMany()
+            .HasForeignKey(x => x.ActivityQuestionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.ActivityOption)
+            .WithMany()
+            .HasForeignKey(x => x.ActivityOptionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.ToTable("UserActivityLogs");
     }
 }

@@ -3,11 +3,21 @@ using Microsoft.Extensions.Logging;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Notifications;
 
-public class UserDeletedDomainEventHandler
+/// <summary>
+/// Kullanıcı silindiğinde (soft delete):
+/// 1. Kullanıcıya ait tüm cache'leri temizler
+/// 2. Silme işlemini loglar
+/// </summary>
+public class UserDeletedDomainEventHandler(
+    ICacheService cacheService,
+    ILogger<UserDeletedDomainEventHandler> logger)
 {
-    public void Handle(UserDeletedDomainEvent @event, ILogger<UserDeletedDomainEventHandler> logger)
+    public async Task Handle(UserDeletedDomainEvent @event, CancellationToken ct)
     {
-        logger.LogWarning("User {UserId} has self-deleted their account at {Time}",
-            @event.UserId, @event.DeletedAt);
+        logger.LogInformation("User deleted: {UserId} at {DeletedAt}", @event.UserId, @event.DeletedAt);
+
+        // Kullanıcıya ait tüm cache'leri temizle
+        await cacheService.RemoveAsync($"user-profile:{@event.UserId}", ct);
+        await cacheService.RemoveByPrefixAsync($"pending-questions:{@event.UserId}", ct);
     }
 }

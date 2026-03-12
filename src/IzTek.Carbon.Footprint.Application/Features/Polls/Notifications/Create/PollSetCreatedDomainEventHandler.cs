@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Notifications.Create;
 
-public  class PollSetCreatedDomainEventHandler
+public record class PollSetCreatedDomainEventHandler
 {
     public static Task Handle(PollSetCreatedDomainEvent @event, ILogger<PollSetCreatedDomainEventHandler> logger)
     {

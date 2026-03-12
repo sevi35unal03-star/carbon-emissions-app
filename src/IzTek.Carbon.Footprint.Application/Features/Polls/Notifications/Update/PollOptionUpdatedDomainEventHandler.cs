@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Notifications.Update;
 
-public class PollOptionUpdatedDomainEventHandler
+public record class PollOptionUpdatedDomainEventHandler
 {
     public static Task Handle(
         PollOptionUpdatedDomainEvent @event,
