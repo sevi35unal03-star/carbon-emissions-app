@@ -1,104 +1,50 @@
-﻿// ─────────────────────────────────────────────────────────────
-// Poll Events — Domain layer'a taşındı (Application'dan)
+﻿namespace IzTek.Carbon.Footprint.Domain.Events.Poll;
 
-// ─────────────────────────────────────────────────────────────
-
-namespace IzTek.Carbon.Footprint.Domain.Events.Poll;
-
-public class PollSetCreatedDomainEvent : BaseEvent
+public class PollSetCreatedDomainEvent(Guid pollSetId, string name) : BaseEvent
 {
-    public Guid PollSetId { get; init; }
-    public string Name { get; init; } = default!;
-
-    public PollSetCreatedDomainEvent(Guid pollSetId, string name)
-    {
-        PollSetId = pollSetId;
-        Name = name;
-    }
+    public Guid PollSetId { get; init; } = pollSetId;
+    public string Name { get; init; } = name;
 }
 
-public class PollSetUpdatedDomainEvent : BaseEvent
+public class PollSetUpdatedDomainEvent(Guid pollSetId, string name) : BaseEvent
 {
-    public Guid PollSetId { get; init; }
-    public string Name { get; init; } = default!;
-
-    public PollSetUpdatedDomainEvent(Guid pollSetId, string name)
-    {
-        PollSetId = pollSetId;
-        Name = name;
-    }
+    public Guid PollSetId { get; init; } = pollSetId;
+    public string Name { get; init; } = name;
 }
 
-public class PollSetDeletedDomainEvent : BaseEvent
+public class PollSetDeletedDomainEvent(Guid pollSetId) : BaseEvent
 {
-    public Guid PollSetId { get; init; }
-
-    public PollSetDeletedDomainEvent(Guid pollSetId)
-    {
-        PollSetId = pollSetId;
-    }
+    public Guid PollSetId { get; init; } = pollSetId;
 }
 
-public class PollQuestionCreatedDomainEvent : BaseEvent
+public class PollQuestionCreatedDomainEvent(Guid pollQuestionId, Guid pollSetId) : BaseEvent
 {
-    public Guid PollQuestionId { get; init; }
-    public Guid PollSetId { get; init; }
-
-    public PollQuestionCreatedDomainEvent(Guid pollQuestionId, Guid pollSetId)
-    {
-        PollQuestionId = pollQuestionId;
-        PollSetId = pollSetId;
-    }
+    public Guid PollQuestionId { get; init; } = pollQuestionId;
+    public Guid PollSetId { get; init; } = pollSetId;
 }
 
-public class PollQuestionUpdatedDomainEvent : BaseEvent
+public class PollQuestionUpdatedDomainEvent(Guid pollQuestionId) : BaseEvent
 {
-    public Guid PollQuestionId { get; init; }
-
-    public PollQuestionUpdatedDomainEvent(Guid pollQuestionId)
-    {
-        PollQuestionId = pollQuestionId;
-    }
+    public Guid PollQuestionId { get; init; } = pollQuestionId;
 }
 
-public class PollQuestionDeletedDomainEvent : BaseEvent
+public class PollQuestionDeletedDomainEvent(Guid pollQuestionId) : BaseEvent
 {
-    public Guid PollQuestionId { get; init; }
-
-    public PollQuestionDeletedDomainEvent(Guid pollQuestionId)
-    {
-        PollQuestionId = pollQuestionId;
-    }
+    public Guid PollQuestionId { get; init; } = pollQuestionId;
 }
 
-public class PollOptionCreatedDomainEvent : BaseEvent
+public class PollOptionCreatedDomainEvent(Guid pollOptionId, Guid pollQuestionId) : BaseEvent
 {
-    public Guid PollOptionId { get; init; }
-    public Guid PollQuestionId { get; init; }
-
-    public PollOptionCreatedDomainEvent(Guid pollOptionId, Guid pollQuestionId)
-    {
-        PollOptionId = pollOptionId;
-        PollQuestionId = pollQuestionId;
-    }
+    public Guid PollOptionId { get; init; } = pollOptionId;
+    public Guid PollQuestionId { get; init; } = pollQuestionId;
 }
 
-public class PollOptionUpdatedDomainEvent : BaseEvent
+public class PollOptionUpdatedDomainEvent(Guid pollOptionId) : BaseEvent
 {
-    public Guid PollOptionId { get; init; }
-
-    public PollOptionUpdatedDomainEvent(Guid pollOptionId)
-    {
-        PollOptionId = pollOptionId;
-    }
+    public Guid PollOptionId { get; init; } = pollOptionId;
 }
 
-public class PollOptionDeletedDomainEvent : BaseEvent
+public class PollOptionDeletedDomainEvent(Guid pollOptionId) : BaseEvent
 {
-    public Guid PollOptionId { get; init; }
-
-    public PollOptionDeletedDomainEvent(Guid pollOptionId)
-    {
-        PollOptionId = pollOptionId;
-    }
+    public Guid PollOptionId { get; init; } = pollOptionId;
 }

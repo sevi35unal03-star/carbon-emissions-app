@@ -4,7 +4,6 @@ namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class TreeDefinition : BaseAuditableEntity
 {
-    // LastModifiedAt/By kaldırıldı — BaseAuditableEntity'de UpdatedAt/UpdatedBy olarak zaten var
     public double PointUnit { get; private set; }
     public int TreeCount { get; private set; }
 

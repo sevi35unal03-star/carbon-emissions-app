@@ -22,9 +22,6 @@ builder.Host.UseWolverine(opts =>
     opts.Policies.AddMiddleware<CachingBehavior>();
     opts.Policies.AddMiddleware<CacheInvalidationBehavior>();
 
-    // Wolverine içindeki mesajlar için Fluent Validation'ı aktif et
-    //opts.UseFluentValidation(typeof(CreateProductCommand).Assembly);
-
 });
 
 // 2. OpenTelemetry Yapılandırması
@@ -62,7 +59,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(
-    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
+   await ConnectionMultiplexer.ConnectAsync(builder.Configuration.GetConnectionString("Redis")!));
 
 
 // Cache servisi
@@ -99,8 +96,6 @@ await app.InitializeDatabaseAsync();
 app.UseHttpsRedirection();
 app.UseLocalization();
 
-// Identity API Endpoint'leri
-//app.MapGroup("auth").MapIdentityApi<User>();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -110,4 +105,4 @@ app.UseRateLimiter();
 app.MapControllers();
 app.UseHealthCheckEndpoint();
 
-app.Run();
+await app.RunAsync();

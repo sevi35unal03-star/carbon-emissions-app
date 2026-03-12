@@ -26,7 +26,7 @@ public class UpdateScoringSettingsHandler
 
         // 2. DB'den mevcut kayıtları getir
         var existingSettings = await _context.ScoringSettings
-            .Where(s => settingIds.Contains(s.PollQuestionId))
+            .Where(s => settingIds.Contains(s.Id))
             .ToListAsync(ct);
 
         if (!existingSettings.Any())
@@ -35,7 +35,7 @@ public class UpdateScoringSettingsHandler
 
         // 3. Kısmi güncelleme kontrolü
         var missingIds = settingIds
-            .Except(existingSettings.Select(s => s.PollQuestionId))
+            .Except(existingSettings.Select(s => s.Id))
             .ToList();
 
         if (missingIds.Any())
@@ -48,7 +48,7 @@ public class UpdateScoringSettingsHandler
         foreach (var setting in existingSettings)
         {
             var newValue = command.Settings
-                .First(x => x.Id == setting.PollQuestionId).Value;
+                .First(x => x.Id == setting.Id).Value;
 
             setting.UpdateValue(newValue);
         }

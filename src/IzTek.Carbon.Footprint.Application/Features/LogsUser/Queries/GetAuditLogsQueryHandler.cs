@@ -1,8 +1,8 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.LogsUser.Queries;
 
-public class GetAuditLogsQueryHandler
+public static class GetAuditLogsQueryHandler
 {
-    public async Task<PagedResult<List<GetAuditLogResponse>>> HandleAsync(
+    public static async Task<PagedResult<List<GetAuditLogResponse>>> HandleAsync(
         GetAuditLogsQuery query,
         IApplicationDbContext context,
         CancellationToken ct)

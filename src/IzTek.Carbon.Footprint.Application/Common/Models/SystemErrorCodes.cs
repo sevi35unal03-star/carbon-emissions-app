@@ -24,6 +24,7 @@ public static class SystemErrorCodes
     public static readonly ErrorCode ProductAlreadyExists = new SystemErrorCode(1302, nameof(ProductAlreadyExists));
 
     public static readonly ErrorCode RoleAlreadyExists = new SystemErrorCode(1303, nameof(RoleAlreadyExists));
+    public static readonly ErrorCode RoleNotFound = new SystemErrorCode(1304, nameof(RoleNotFound));
 
     // User hata kodları
     public static readonly ErrorCode UserNotFound = new SystemErrorCode(2001, nameof(UserNotFound));
@@ -51,7 +52,7 @@ public static class SystemErrorCodes
     public static readonly ErrorCode PollSetDeleteFailed = new SystemErrorCode(5008, nameof(PollSetDeleteFailed));
     public static readonly ErrorCode InvalidPollAnswers = new SystemErrorCode(5009, nameof(InvalidPollAnswers));
     public static readonly ErrorCode ActivePollNotFound = new SystemErrorCode(5010, nameof(ActivePollNotFound));
-
+    public static readonly ErrorCode PollAlreadyAnswered = new SystemErrorCode(5011, nameof(PollAlreadyAnswered));
     // Scoring hata kodları
     public static readonly ErrorCode ScoringSettingsNotFound = new SystemErrorCode(6001, nameof(ScoringSettingsNotFound));
     public static readonly ErrorCode ScoringSettingsPartialNotFound = new SystemErrorCode(6002, nameof(ScoringSettingsPartialNotFound));

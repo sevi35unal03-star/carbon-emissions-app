@@ -1,8 +1,10 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
+﻿using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyQuestions;
 
-public class SubmitActivityAnswerHandler
+namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
+
+public static class SubmitActivityAnswerHandler
 {
-    public async Task<Result<SubmitActivityAnswerResponse>> HandleAsync(
+    public static  async Task<Result<SubmitActivityAnswerResponse>> HandleAsync(
         SubmitActivityAnswerCommand command,
         IApplicationDbContext context,
         CancellationToken ct)
@@ -22,9 +24,11 @@ public class SubmitActivityAnswerHandler
         var log = new UserActivityLog(
             command.UserId,
             command.QuestionId,
-            command.SelectedOptionId,
-            option.CarbonValue);
-
+            command.SelectedOptionId,      // optionId
+            option.CarbonValue,            // score
+            command.SelectedOptionId,      // selectedOptionId
+            option.Text,                   // selectedOptionText  ← option entity'sinden al
+            option.CarbonValue);           // carbonValue
         context.UserActivityLogs.Add(log);
         await context.SaveChangesAsync(ct);
 

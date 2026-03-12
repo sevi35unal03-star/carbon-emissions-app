@@ -1,7 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Models;
-using IzTek.Carbon.Footprint.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
 
@@ -35,18 +32,18 @@ public class GetUsersDetailedQueryHandler(UserManager<User> userManager)
 
         // 5. Sayfalama ve Projeksiyon
         var users = await query
-            .OrderByDescending(x => x.TotalCarbonScore)
+            .OrderByDescending(x => x.TotalPoints)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(user => new GetUsersDetailedResponse
             {
-                Id = user.PollQuestionId,
+                Id = user.Id,
                 Name = user.Name,
                 Surname = user.Surname,
                 Email = user.Email ?? "",
                 PhoneNumber = user.PhoneNumber,
                 IdentityNumber = user.IdentityNumber,
-                TotalCarbonScore = user.TotalCarbonScore,
+                TotalCarbonScore = user.TotalPoints,
                 IsKvkkApproved = user.IsKvkkApproved,
                 BirthDate = user.BirthDate,
                 IsDeleted = user.IsDeleted,

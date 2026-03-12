@@ -33,20 +33,12 @@ public static class GetActivityCalendarQueryHandler
             endDate = new DateTime(query.Year, 12, 31, 23, 59, 59, DateTimeKind.Utc);
         }
 
-        // SelectedOptionId üzerinden ActivityOption'a join yaparak CarbonValue'yu al
+        // CarbonValue snapshot olarak UserActivityAnswer'da tutuluyor — join gerekmez
         var items = await context.UserActivityAnswers
             .AsNoTracking()
             .Where(a => a.UserId == userId
                      && a.AnsweredAt >= startDate
                      && a.AnsweredAt <= endDate)
-            .Join(context.ActivityOptions,
-                answer => answer.SelectedOptionId,
-                option => option.Id,
-                (answer, option) => new
-                {
-                    answer.AnsweredAt,
-                    option.CarbonValue
-                })
             .GroupBy(x => x.AnsweredAt.Date)
             .Select(g => new CalendarItemDto
             {

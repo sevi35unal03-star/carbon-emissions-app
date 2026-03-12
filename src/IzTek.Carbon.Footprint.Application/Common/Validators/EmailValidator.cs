@@ -43,7 +43,7 @@ public static partial class EmailValidator
     /// </summary>
     public static bool IsValidMailAddress(
         [NotNullWhen(true)] string email,
-        [NotNullWhen(true)] out MailAddress mailAddress)
+        [NotNullWhen(true)] out MailAddress? mailAddress)
     {
         mailAddress = null;
 

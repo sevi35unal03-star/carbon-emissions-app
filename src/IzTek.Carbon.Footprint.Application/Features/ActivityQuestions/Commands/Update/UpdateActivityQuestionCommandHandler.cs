@@ -64,13 +64,16 @@ public static class UpdateActivityQuestionCommandHandler
 
         // 4. Domain Event: Zamanlayıcı (Push Notification) güncellenmeli
         // NotificationTime veya Text değiştiyse yeni bir push planlanması tetiklenir
-        question.AddDomainEvent(new ActivityQuestionUpdatedDomainEvent(question.Id));
+        question.AddDomainEvent(new ActivityQuestionUpdatedDomainEvent(
+            question.Id,
+            question.Text,
+            question.ScheduledTime));
 
         var result = await context.SaveChangesAsync(ct);
 
         if (result > 0)
         {
-            await cacheService.RemoveAsync("all_activity_questions");
+            await cacheService.RemoveAsync("all_activity_questions",ct);
             return Result.Success();
         }
 

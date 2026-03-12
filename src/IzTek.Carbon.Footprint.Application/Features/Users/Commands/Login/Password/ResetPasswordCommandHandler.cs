@@ -1,7 +1,6 @@
-﻿using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Password;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.ResetPassword;
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
 
 public class ResetPasswordCommandHandler(UserManager<User> userManager)
 {
@@ -30,8 +29,7 @@ public class ResetPasswordCommandHandler(UserManager<User> userManager)
 
         if (!identityResult.Succeeded)
         {
-            var error = identityResult.Errors.First().Description;
-            return Result.Failure(error, HttpStatusCode.ExpectationFailed);
+            return Result.Failure(SystemErrorCodes.SystemError, HttpStatusCode.ExpectationFailed);
         }
 
         // 5. GÜVENLİK: Kullanılan kodu veritabanından temizle (Tekrar kullanılamasın)

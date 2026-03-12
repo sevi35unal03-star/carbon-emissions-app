@@ -2,24 +2,20 @@
 
 public class ActivityQuestion : BaseAuditableEntity
 {
-    public string Text { get; private set; } = default!;
+    public string Text { get; private set; } = null!;
     public int DisplayOrder { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
     public TimeSpan ScheduledTime { get; private set; }
 
-    private readonly List<ActivityOption> _options = new();
+    private readonly List<ActivityOption> _options = [];
     public IReadOnlyCollection<ActivityOption> Options => _options;
 
-    public bool IsRoot => ParentOptionId == null;
-    public Guid? ParentOptionId { get; private set; }
-    public ActivityOption? ParentOption { get; private set; }
 
     private ActivityQuestion() { }
 
-    public ActivityQuestion(string text, TimeSpan scheduledTime, int displayOrder, DateTime startDate, DateTime endDate, Guid? parentOptionId = null)
+    public ActivityQuestion(string text, TimeSpan scheduledTime, int displayOrder, DateTime startDate, DateTime endDate)
     {
-        ParentOptionId = parentOptionId;
         UpdateDetails(text, displayOrder, startDate, endDate, scheduledTime);
     }
 

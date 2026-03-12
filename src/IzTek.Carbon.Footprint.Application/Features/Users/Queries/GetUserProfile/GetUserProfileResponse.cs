@@ -1,18 +1,11 @@
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 
-public class GetUserProfileResponse
+public class GetUserProfileResponse( string identityNumber, string name, string surname, DateTime? birthDate)
 {
-    public GetUserProfileResponse(string v, string? name, string? surname, DateTime? birthDate)
-    {
-        Name = name; 
-        Surname = surname;
-        BirthDate = birthDate;
-    }
-
-    public string IdentityNumber {  get; set; }
-     public string Name { get; set; } 
-    public string Surname { get; set; }
-    public DateTime? BirthDate { get; set; }
+    public string IdentityNumber { get; set; } = identityNumber;
+    public string Name { get; set; } = name;
+    public string Surname { get; set; } = surname;
+    public DateTime? BirthDate { get; set; } = birthDate;
 
 }
   

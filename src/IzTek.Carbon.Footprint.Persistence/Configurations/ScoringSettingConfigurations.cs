@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using IzTek.Carbon.Footprint.Domain.Entities;
-
-namespace IzTek.Carbon.Footprint.Persistence.Configurations;
+﻿namespace IzTek.Carbon.Footprint.Persistence.Configurations;
 
 public class ScoringSettingConfigurations : IEntityTypeConfiguration<ScoringSetting>
 {

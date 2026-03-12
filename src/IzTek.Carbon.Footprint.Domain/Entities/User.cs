@@ -1,13 +1,13 @@
-﻿
+﻿using IzTek.Carbon.Footprint.Domain.Events.User;
 
 namespace IzTek.Carbon.Footprint.Domain.Entities;
 
 public class User : IdentityUser<Guid>
 {
-    public string? Name { get; private set; }
-    public string? Surname { get; private set; }
-    public DateTime? BirthDate { get; private set; }
-    public string? IdentityNumber { get; private set; }
+    public string? Name { get; private set; } = null!;
+    public string? Surname { get; private set; } = null!;   
+    public DateTime? BirthDate { get; private set; } = null!;   
+    public string? IdentityNumber { get; private set; } = null!;    
     public bool IsKvkkApproved { get; private set; } = false;
     public DateTime? KvkkApprovalDate { get; private set; }
     public double TotalPoints { get; private set; }         // Biriktirilen toplam puan — liderboard + profil
@@ -47,6 +47,8 @@ public class User : IdentityUser<Guid>
         IsKvkkApproved = isKvkkApproved;
         KvkkApprovalDate = isKvkkApproved ? DateTime.UtcNow : null;
         EmailConfirmed = false;
+
+        AddDomainEvent(new UserRegisteredDomainEvent(Id, email, $"{name} {surname}"));
     }
 
     public void ConfirmEmail()
@@ -87,5 +89,6 @@ public class User : IdentityUser<Guid>
     {
         IsDeleted = true;
         DeletedDate = DateTime.UtcNow;
+        AddDomainEvent(new UserDeletedDomainEvent(Id, DeletedDate.Value));
     }
 }

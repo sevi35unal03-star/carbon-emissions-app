@@ -1,9 +1,5 @@
 ﻿using IzTek.Carbon.Footprint.Application.Features.Definitions.Commands.SetTreeDefinition;
 using IzTek.Carbon.Footprint.Application.Features.Definitions.Commands.UpdateScoringSettings;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Wolverine;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 

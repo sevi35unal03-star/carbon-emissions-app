@@ -8,21 +8,23 @@ public static class GetUserPollDetailQueryHandler
         ICurrentUserService currentUserService,
         CancellationToken ct)
     {
-        // User/Admin ayrımı:
-        // Normal kullanıcı → token'dan userId alınır, TargetUserId gönderemez
-        // Admin            → TargetUserId varsa onu kullanır, yoksa kendi token'ından alır
+        // User/Admin ayirimi:
+        // Normal kullanici -> JWT'den userId alinir, TargetUserId gonderse bile dikkate alinmaz
+        // Admin            -> TargetUserId varsa o kullanicinin sonucu, yoksa kendi sonucu
         var isAdmin = currentUserService.IsInRole("Admin");
         var resolvedUserId = (isAdmin && query.TargetUserId.HasValue)
             ? query.TargetUserId.Value
             : currentUserService.UserId!.Value;
 
-        // Kullanıcının o aydaki anket özetini cevaplarıyla birlikte getir
+        // PollSetId + UserId + Month + Year kombinasyonu unique olmali
         var pollResult = await context.UserPollResults
             .AsNoTracking()
             .Include(x => x.Answers)
-            .FirstOrDefaultAsync(x => x.UserId == resolvedUserId &&
-                                      x.Month == query.Month &&
-                                      x.Year == query.Year, ct);
+            .FirstOrDefaultAsync(x =>
+                x.PollSetId == query.PollSetId &&
+                x.UserId == resolvedUserId &&
+                x.Month == query.Month &&
+                x.Year == query.Year, ct);
 
         if (pollResult is null)
             return Result<UserPollDetailResponse>.Failure(
@@ -37,12 +39,10 @@ public static class GetUserPollDetailQueryHandler
             })
             .ToList();
 
-        var response = new UserPollDetailResponse(
+        return Result<UserPollDetailResponse>.Success(new UserPollDetailResponse(
             UserName: $"{pollResult.Name} {pollResult.Surname}",
             TotalScore: pollResult.TotalScore,
             TreeCount: pollResult.TreeCount,
-            Answers: answers);
-
-        return Result<UserPollDetailResponse>.Success(response);
+            Answers: answers));
     }
 }

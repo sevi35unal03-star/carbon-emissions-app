@@ -5,11 +5,11 @@ namespace IzTek.Carbon.Footprint.Application.Common.Models;
 public class ErrorResult
 {
     [JsonPropertyName("code")] public int Code { get; set; }
-    [JsonPropertyName("type")] public string Type { get; set; }
+    [JsonPropertyName("type")] public string? Type { get; set; }
     [JsonPropertyName("service")] public string Service { get; set; }
     [JsonPropertyName("isShow")] public bool IsShow { get; set; }
     [JsonPropertyName("message")] public string Message { get; set; }
-    [JsonIgnore] public string[] MessageArgs { get; set; }
+    [JsonIgnore] public string[]? MessageArgs { get; set; }
 
     public ErrorResult()
     {

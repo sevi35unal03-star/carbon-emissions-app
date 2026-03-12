@@ -10,7 +10,6 @@ public class DeleteUsefulInfoValidator : AbstractValidator<DeleteUsefulInformati
 
 public class DeleteUsefulInformationsCommandHandler
 {
-    private readonly bool success;
 
     public async Task<Result> Handle(
         DeleteUsefulInformationsCommand command, 

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Notifications.Delete;
 
-public class PollOptionDeletedDomainEventHandler
+public record class PollOptionDeletedDomainEventHandler
 {
     public static Task Handle(PollOptionDeletedDomainEvent @event, ILogger<PollOptionDeletedDomainEventHandler> logger)
     {

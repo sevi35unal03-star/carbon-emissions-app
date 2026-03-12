@@ -1,6 +1,4 @@
-﻿
-
-namespace IzTek.Carbon.Footprint.Domain.Events.Activity;
+﻿namespace IzTek.Carbon.Footprint.Domain.Events.Activity;
 
 /// <summary>
 /// Kullanıcı günlük aktivite sorusunu cevapladığında fırlatılır.

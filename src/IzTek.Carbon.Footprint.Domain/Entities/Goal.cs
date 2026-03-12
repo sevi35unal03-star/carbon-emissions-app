@@ -6,6 +6,7 @@ public class Goal : BaseAuditableEntity
     public int Year { get; private set; }
     public int TargetTreeCount { get; private set; }
     public bool IsCompleted { get; private set; }
+    public DateTime? CompletedDate { get; private set; }
 
     private Goal() { }
 
@@ -20,6 +21,7 @@ public class Goal : BaseAuditableEntity
     public void Complete()
     {
         IsCompleted = true;
+        CompletedDate = DateTime.UtcNow;
     }
 
     public void UpdateTarget(int targetTreeCount)

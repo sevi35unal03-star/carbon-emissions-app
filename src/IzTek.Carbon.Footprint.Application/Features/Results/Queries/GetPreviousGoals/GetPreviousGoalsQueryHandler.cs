@@ -2,9 +2,9 @@
 
 namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetPreviousGoals;
 
-public class GetPreviousGoalsQueryHandler
+public static class GetPreviousGoalsQueryHandler
 {
-    public async Task<Result<GetPreviousGoalsResponse>> Handle(
+    public static async Task<Result<GetPreviousGoalsResponse>> HandleAsync(
         GetPreviousGoalsQuery query,
         IApplicationDbContext context,
         CancellationToken ct)

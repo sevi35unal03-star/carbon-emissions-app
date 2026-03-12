@@ -1,7 +1,9 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Roles.Commands.Create;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Roles.Commands.Create;
 
 public class UpdateRoleCommandHandler(RoleManager<Role> roleManager)
-    : IRequestHandler<UpdateRoleCommand, Result>
+   
 {
     public async Task<Result> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
     {
@@ -9,7 +11,7 @@ public class UpdateRoleCommandHandler(RoleManager<Role> roleManager)
         var role = await roleManager.FindByIdAsync(request.Id.ToString());
 
         if (role == null)
-            return Result.Failure("Role not found.");
+            return Result.Failure(SystemErrorCodes.RoleNotFound, HttpStatusCode.NotFound);
 
         // 2. Değerleri güncelle
         role.Name = request.Name;
@@ -20,8 +22,8 @@ public class UpdateRoleCommandHandler(RoleManager<Role> roleManager)
 
         if (!result.Succeeded)
         {
-            var firstError = result.Errors.First().Description;
-            return Result.Failure(firstError);
+            
+            return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
         }
 
         return Result.Success();

@@ -27,9 +27,10 @@ public class PollAnsweredDomainEventHandler(
             return;
 
         // 3. O ay toplam bağışlanan ağaç sayısını hesapla
-        var totalTrees = await context.UserPollResults
-            .Where(r => r.Month == @event.Month && r.Year == @event.Year)
-            .SumAsync(r => r.TreeCount, ct);
+        var totalTrees = await context.TreeDonations
+    .Where(r => r.DonationDate.Month == @event.Month
+             && r.DonationDate.Year == @event.Year)
+    .SumAsync(r => r.TreeCount, ct);
 
         // 4. Hedefe ulaşıldıysa tamamla
         if (totalTrees >= goal.TargetTreeCount)

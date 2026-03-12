@@ -31,14 +31,14 @@ public class LoginCommandHandler(
         var isPasswordValid = await userManager.CheckPasswordAsync(user, command.Password);
         if (!isPasswordValid)
         {
-            logger.LogWarning("Login failed: Invalid password → UserId: {UserId}", user.PollQuestionId);
+            logger.LogWarning("Login failed: Invalid password → UserId: {UserId}", user.Id);
             return Result<TokenResponse>.Failure(SystemErrorCodes.ValidationError, HttpStatusCode.Unauthorized);
         }
 
         // 5. Token oluştur
         var token = await tokenService.CreateTokenAsync(user);
 
-        logger.LogInformation("Login successful → UserId: {UserId}", user.PollQuestionId);
+        logger.LogInformation("Login successful → UserId: {UserId}", user.Id);
 
         return Result<TokenResponse>.Success(token);
     }

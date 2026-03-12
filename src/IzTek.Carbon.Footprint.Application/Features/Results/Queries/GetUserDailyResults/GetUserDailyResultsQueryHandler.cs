@@ -44,9 +44,9 @@ public class GetUserDailyResultsHandler(IApplicationDbContext context)
                 LastLoginDate = u.LastLoginDate,
                 CarbonFootprintScore = activity != null ? activity.CarbonScore : 0,
                 DailyActivitiesCount = activity != null ? activity.Count : 0,
-                TotalCurrentScore = u.TotalPoints,
-                DonatedTreeCount = (int)(u.TotalPoints / pointPerTree),
-                EquivalentPoints = u.TotalPoints
+                TotalCurrentScore = u.TotalPoints,        // birikmiş puan
+                DonatedTreeCount = u.DonatedTreeCount,   // ✅ entity'den al
+                EquivalentPoints = u.TotalPoints,        // veya kaldır — TotalCurrentScore ile aynı
             }
         ).ToListAsync(ct);
 

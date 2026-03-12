@@ -30,134 +30,134 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <!-- Sistem Hata Kodları -->
+  <!-- System Error Codes -->
   <data name="SystemError" xml:space="preserve">
-    <value>Beklenmeyen bir sistem hatası oluştu.</value>
+    <value>An unexpected system error occurred.</value>
   </data>
   <data name="NotFound" xml:space="preserve">
-    <value>İstenen kaynak bulunamadı.</value>
+    <value>The requested resource was not found.</value>
   </data>
   <data name="BadRequest" xml:space="preserve">
-    <value>İstek geçersiz.</value>
+    <value>The request is invalid.</value>
   </data>
   <data name="ValidationError" xml:space="preserve">
-    <value>Bir veya daha fazla doğrulama hatası oluştu.</value>
+    <value>One or more validation errors occurred.</value>
   </data>
   <data name="ConflictError" xml:space="preserve">
-    <value>Mevcut durum ile çakışma oluştu.</value>
+    <value>A conflict occurred with the current state.</value>
   </data>
   <data name="QuestionCreationFailed" xml:space="preserve">
-    <value>Soru oluşturma işlemi başarısız oldu.</value>
+    <value>Failed to create the question.</value>
   </data>
   <data name="Unauthorized" xml:space="preserve">
-    <value>Bu işlem için yetkiniz bulunmamaktadır.</value>
+    <value>You are not authorized.</value>
   </data>
   <data name="AccessDenied" xml:space="preserve">
-    <value>Erişim reddedildi.</value>
+    <value>Access denied.</value>
   </data>
   <data name="SessionExpired" xml:space="preserve">
-    <value>Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.</value>
+    <value>Your session has expired. Please log in again.</value>
   </data>
   <data name="TooManyRequests" xml:space="preserve">
-    <value>Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.</value>
+    <value>Too many requests. Please try again later.</value>
   </data>
   <data name="InvalidParameter" xml:space="preserve">
-    <value>Bir veya daha fazla parametre geçersiz.</value>
+    <value>One or more parameters are invalid.</value>
   </data>
   <data name="ProductAlreadyExists" xml:space="preserve">
-    <value>Bu ürün zaten mevcut.</value>
+    <value>This product already exists.</value>
   </data>
   <data name="RoleAlreadyExists" xml:space="preserve">
-    <value>Bu rol zaten mevcut.</value>
+    <value>This role already exists.</value>
   </data>
-  <!-- Kullanıcı Hata Kodları -->
+  <!-- User Error Codes -->
   <data name="UserNotFound" xml:space="preserve">
-    <value>Kullanıcı bulunamadı.</value>
+    <value>User not found.</value>
   </data>
   <data name="NoPointsToDonat" xml:space="preserve">
-    <value>Bağış yapılacak puan bulunmuyor.</value>
+    <value>No points available for donation.</value>
   </data>
   <data name="TreeDefinitionNotFound" xml:space="preserve">
-    <value>Ağaç tanımı bulunamadı.</value>
+    <value>Tree definition not found.</value>
   </data>
-  <!-- Faydalı Bilgi Hata Kodları -->
+  <!-- UsefulInformation Error Codes -->
   <data name="InformationAlreadyExists" xml:space="preserve">
-    <value>Bu bilgi zaten mevcut.</value>
+    <value>This information already exists.</value>
   </data>
   <data name="DeleteFailed" xml:space="preserve">
-    <value>Silme işlemi başarısız oldu.</value>
+    <value>Delete operation failed.</value>
   </data>
   <data name="InformationNotFound" xml:space="preserve">
-    <value>Bilgi bulunamadı.</value>
+    <value>Information not found.</value>
   </data>
   <data name="InformationTitleAlreadyExists" xml:space="preserve">
-    <value>Bu başlığa sahip bir bilgi zaten mevcut.</value>
+    <value>An information entry with this title already exists.</value>
   </data>
   <data name="UpdateFailed" xml:space="preserve">
-    <value>Güncelleme işlemi başarısız oldu.</value>
+    <value>Update operation failed.</value>
   </data>
-  <!-- Hedef Hata Kodları -->
+  <!-- Goal Error Codes -->
   <data name="GoalDataNotFound" xml:space="preserve">
-    <value>Bu döneme ait hedef verisi bulunamadı.</value>
+    <value>No goal data found for this period.</value>
   </data>
   <data name="GoalAlreadyExists" xml:space="preserve">
-    <value>Bu aya ait hedef zaten mevcut.</value>
+    <value>A goal already exists for this month.</value>
   </data>
   <data name="GoalNotFound" xml:space="preserve">
-    <value>Hedef bulunamadı.</value>
+    <value>Goal not found.</value>
   </data>
-  <!-- Anket Hata Kodları -->
+  <!-- Poll Error Codes -->
   <data name="PollResultNotFound" xml:space="preserve">
-    <value>Bu döneme ait anket sonucu bulunamadı.</value>
+    <value>Poll result not found for this period.</value>
   </data>
   <data name="SourceQuestionIdsEmpty" xml:space="preserve">
-    <value>Kopyalanacak soru ID'leri boş olamaz.</value>
+    <value>Source question IDs cannot be empty.</value>
   </data>
   <data name="SourceQuestionsNotFound" xml:space="preserve">
-    <value>Bazı kaynak sorular bulunamadı.</value>
+    <value>Some source questions could not be found.</value>
   </data>
   <data name="PollQuestionNotFound" xml:space="preserve">
-    <value>Anket sorusu bulunamadı.</value>
+    <value>Poll question not found.</value>
   </data>
   <data name="PollSetNotFound" xml:space="preserve">
-    <value>Anket seti bulunamadı.</value>
+    <value>Poll set not found.</value>
   </data>
   <data name="PollOptionNotFound" xml:space="preserve">
-    <value>Anket seçeneği bulunamadı.</value>
+    <value>Poll option not found.</value>
   </data>
   <data name="PollQuestionDeleteFailed" xml:space="preserve">
-    <value>Anket sorusu silinemedi.</value>
+    <value>Failed to delete the poll question.</value>
   </data>
   <data name="PollSetDeleteFailed" xml:space="preserve">
-    <value>Anket seti silinemedi.</value>
+    <value>Failed to delete the poll set.</value>
   </data>
   <data name="InvalidPollAnswers" xml:space="preserve">
-    <value>Gönderilen anket cevapları geçersiz.</value>
+    <value>The provided poll answers are invalid.</value>
   </data>
   <data name="ActivePollNotFound" xml:space="preserve">
-    <value>Bu dönem için aktif anket bulunamadı.</value>
+    <value>No active poll found for this period.</value>
   </data>
-  <!-- Puanlama Hata Kodları -->
+  <!-- Scoring Error Codes -->
   <data name="ScoringSettingsNotFound" xml:space="preserve">
-    <value>Puanlama ayarları bulunamadı.</value>
+    <value>Scoring settings not found.</value>
   </data>
   <data name="ScoringSettingsPartialNotFound" xml:space="preserve">
-    <value>Bazı puanlama ayarları bulunamadı.</value>
+    <value>Some scoring settings could not be found.</value>
   </data>
-  <!-- Aktivite Hata Kodları -->
+  <!-- Activity Error Codes -->
   <data name="InvalidActivityOption" xml:space="preserve">
-    <value>Seçilen aktivite seçeneği geçersiz.</value>
+    <value>The selected activity option is invalid.</value>
   </data>
   <data name="ActivityNotFound" xml:space="preserve">
-    <value>Bu tarihe ait aktivite bulunamadı.</value>
+    <value>No activity found for this date.</value>
   </data>
   <data name="PreviousAnswersNotFound" xml:space="preserve">
-    <value>Daha önce cevaplanmış aktivite bulunamadı.</value>
+    <value>No previous answers found.</value>
   </data>
   <data name="ActivityQuestionNotFound" xml:space="preserve">
-    <value>Aktivite sorusu bulunamadı.</value>
+    <value>Activity question not found.</value>
   </data>
   <data name="RoleNotFound" xml:space="preserve">
-    <value>Rol bulunamadı.</value>
+    <value>Role is not found.</value>
   </data>
 </root>

@@ -2,9 +2,9 @@
 
 public class GetAuditLogResponse
 {
-    public string UserName { get; set; } = string.Empty;
-    public string Operation { get; set; } = string.Empty;
-    public string TableName { get; set; } = string.Empty;
+    public string UserName { get; set; } = null!;
+    public string Operation { get; set; } = null!;
+    public string TableName { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
-    public string Details { get; set; } = string.Empty;
+    public string Details { get; set; } = null!;
 }

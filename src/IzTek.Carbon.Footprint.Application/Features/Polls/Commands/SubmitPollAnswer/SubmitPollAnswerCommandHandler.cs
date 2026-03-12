@@ -13,7 +13,19 @@ public static class SubmitPollAnswerCommandHandler
             .Select(a => a.OptionId)
             .ToList();
 
-        // 2. Seçilen seçenekleri soru bilgisiyle birlikte getir (snapshot için)
+        // 2. Mükerrer kayıt kontrolü — kullanıcı bu anketi bu ay zaten cevapladıysa 409
+        var now = DateTime.UtcNow;
+        var alreadyAnswered = await context.UserPollResults
+            .AnyAsync(r => r.UserId == currentUser.UserId!.Value
+                        && r.PollSetId == command.PollSetId
+                        && r.Month == now.Month
+                        && r.Year == now.Year, ct);
+
+        if (alreadyAnswered)
+            return Result<SubmitPollAnswerResponse>.Failure(
+                SystemErrorCodes.PollAlreadyAnswered, HttpStatusCode.Conflict);
+
+        // 3. Seçilen seçenekleri soru bilgisiyle birlikte getir (snapshot için)
         var options = await context.PollOptions
             .Include(o => o.PollQuestion)
             .Where(o => optionIds.Contains(o.Id))
@@ -23,19 +35,19 @@ public static class SubmitPollAnswerCommandHandler
             return Result<SubmitPollAnswerResponse>.Failure(
                 SystemErrorCodes.InvalidPollAnswers, HttpStatusCode.BadRequest);
 
-        // 3. Aktif TreeDefinition getir
+        // 4. Aktif TreeDefinition getir
         var treeDef = await context.TreeDefinitions
             .FirstOrDefaultAsync(x => x.IsActive, ct);
 
-        // 4. Toplam karbon skoru hesapla
+        // 5. Toplam karbon skoru hesapla
         double totalCarbonScore = options.Sum(x => x.CarbonValue);
 
-        // 5. Ağaç karşılığını hesapla
+        // 6. Ağaç karşılığını hesapla
         int calculatedTrees = treeDef is not null && treeDef.PointUnit > 0
             ? (int)((totalCarbonScore / treeDef.PointUnit) * treeDef.TreeCount)
             : 0;
 
-        // 6. Kullanıcı bilgilerini getir (Name/Surname için)
+        // 7. Kullanıcı bilgilerini getir (Name/Surname için)
         var user = await context.Users
             .FirstOrDefaultAsync(x => x.Id == currentUser.UserId, ct);
 
@@ -43,7 +55,7 @@ public static class SubmitPollAnswerCommandHandler
             return Result<SubmitPollAnswerResponse>.Failure(
                 SystemErrorCodes.UserNotFound, HttpStatusCode.NotFound);
 
-        // 7. UserPollResult kaydet
+        // 8. UserPollResult kaydet
         var pollResult = new UserPollResult(
             name: user.Name,
             surname: user.Surname,
@@ -54,7 +66,7 @@ public static class SubmitPollAnswerCommandHandler
 
         context.UserPollResults.Add(pollResult);
 
-        // 8. Her cevap için UserPollAnswer kaydet (snapshot)
+        // 9. Her cevap için UserPollAnswer kaydet (snapshot)
         foreach (var answer in command.Answers)
         {
             var option = options.FirstOrDefault(o => o.Id == answer.OptionId);
@@ -68,7 +80,7 @@ public static class SubmitPollAnswerCommandHandler
                 carbonValue: option.CarbonValue);
         }
 
-        // 9. User profilini güncelle
+        // 10. User profilini güncelle
         user.UpdateMonthlyCarbonResult(totalCarbonScore);
 
         // 10. Kaydet

@@ -2,7 +2,7 @@
 
 public class ScoringSetting : BaseAuditableEntity
 {
-    public string Key { get; private set; } = default!; // ✅ non-nullable warning düzeltildi
+    public string Key { get; private set; } = default!; 
     public double Value { get; private set; }
     public ScoringCategory Category { get; private set; }
 
