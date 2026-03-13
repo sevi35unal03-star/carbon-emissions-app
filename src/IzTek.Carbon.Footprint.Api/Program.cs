@@ -2,11 +2,15 @@
 using IzTek.Carbon.Footprint.Application.Common.Behaviors;
 using IzTek.Carbon.Footprint.Application.Common.Interfaces;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
+using IzTek.Carbon.Footprint.Infrastructure.Options;
 using IzTek.Carbon.Footprint.Infrastructure.Services;
 using IzTek.Carbon.Footprint.Infrastructure.Validators;
-
+using IzTek.Carbon.Footprint.Persistence.Interceptors;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using StackExchange.Redis;
+using System.Text;
 using Wolverine;
 
 using DomainRole = IzTek.Carbon.Footprint.Domain.Entities.Role;
@@ -64,12 +68,42 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(
 
 // Cache servisi
 builder.Services.AddScoped<ICacheService, CacheService>();
-
-
+builder.Services.AddScoped<AuditInterceptor>(); 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// JWT Settings'i DI'a kaydet
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection(JwtSettings.SectionName));
+
+// JWT Authentication
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        var jwtSettings = builder.Configuration
+            .GetSection(JwtSettings.SectionName)
+            .Get<JwtSettings>()!;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+            ClockSkew = TimeSpan.Zero  // Default 5 dk tolerans — kapatıyoruz
+        };
+    });
 
 // --- Middleware Hattı ---
 
