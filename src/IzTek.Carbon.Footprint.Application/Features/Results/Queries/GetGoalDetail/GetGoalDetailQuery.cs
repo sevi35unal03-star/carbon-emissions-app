@@ -1,7 +1,9 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
+﻿using IzTek.Carbon.Footprint.Application.Common.Constants;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
 
 public record GetGoalDetailQuery(int Month, int Year) : ICacheableQuery
 {
-    public string CacheKey => $"goal-detail:{Month}:{Year}";
+    public string CacheKey => CacheKeys.Goals.Detail(Month, Year);
     public TimeSpan? Expiry => TimeSpan.FromHours(12);
 }
