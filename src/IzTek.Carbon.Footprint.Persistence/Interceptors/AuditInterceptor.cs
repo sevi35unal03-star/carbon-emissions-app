@@ -30,7 +30,7 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
             var auditEntry = new AuditEntry(entry)
             {
                 TableName = entry.Entity.GetType().Name,
-                UserId = _currentUser.UserId.ToString()
+                UserId = _currentUser.UserId?.ToString() ?? "system"
             };
             auditEntries.Add(auditEntry);
 

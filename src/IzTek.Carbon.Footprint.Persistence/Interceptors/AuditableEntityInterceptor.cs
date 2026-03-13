@@ -18,31 +18,28 @@ public class AuditableEntityInterceptor(ICurrentUserService currentUserService) 
 
     private void UpdateEntities(DbContext? context)
     {
-        if (context == null)
-        {
-            return;
-        }
+        if (context == null) return;
 
         foreach (var entry in context.ChangeTracker.Entries<BaseAuditableEntity>())
         {
-            if (entry.State == EntityState.Added)
+            switch (entry.State)
             {
-                entry.Entity.CreatedBy = currentUserService!.UserId.ToString();
-                entry.Entity.CreatedAt = DateTime.UtcNow;
-            }
+                case EntityState.Added:
+                    entry.Entity.CreatedBy = currentUserService.UserId?.ToString();
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    break;
 
-            if (entry.State is EntityState.Added or EntityState.Modified)
-            {
-                entry.Entity.UpdatedBy = currentUserService!.UserId.ToString();
-                entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
-            }
+                case EntityState.Modified:
+                    entry.Entity.UpdatedBy = currentUserService.UserId?.ToString();
+                    entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
+                    break;
 
-            if (entry.State == EntityState.Deleted)
-            {
-                entry.State = EntityState.Modified;
-                entry.Entity.IsDeleted = true;
-                entry.Entity.DeletedAt = DateTimeOffset.UtcNow;
-                entry.Entity.DeletedBy = currentUserService!.UserId.ToString();
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
+                    entry.Entity.DeletedAt = DateTimeOffset.UtcNow;
+                    entry.Entity.DeletedBy = currentUserService.UserId?.ToString();
+                    break;
             }
         }
     }
