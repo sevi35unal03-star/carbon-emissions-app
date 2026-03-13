@@ -18,22 +18,20 @@ public class DispatchDomainEventsInterceptor(IMessageBus bus) : SaveChangesInter
 
     private async Task DispatchDomainEventsAsync(DbContext? context)
     {
-        if (context == null)
-        {
-            return;
-        }
+        if (context == null) return;
 
-        var entities = context.ChangeTracker
-            .Entries<BaseEntity>()
+        // Artık IDomainEventContainer tarıyor — BaseEntity VE User ikisi de yakalanır
+        var containers = context.ChangeTracker
+            .Entries<IDomainEventContainer>()
             .Where(e => e.Entity.DomainEvents.Count != 0)
             .Select(e => e.Entity)
             .ToList();
 
-        var domainEvents = entities
+        var domainEvents = containers
             .SelectMany(e => e.DomainEvents)
             .ToList();
 
-        entities.ForEach(e => e.ClearDomainEvents());
+        containers.ForEach(e => e.ClearDomainEvents());
 
         foreach (var domainEvent in domainEvents)
         {

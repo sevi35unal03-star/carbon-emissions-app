@@ -2,7 +2,7 @@
 
 namespace IzTek.Carbon.Footprint.Domain.Entities;
 
-public class User : IdentityUser<Guid>
+public class User : IdentityUser<Guid>, IDomainEventContainer
 {
     public string? Name { get; private set; } = null!;
     public string? Surname { get; private set; } = null!;   
