@@ -1,5 +1,6 @@
-﻿
-using Spectre.Console;
+﻿// using Spectre.Console; ← KALDIRILDI (B-19)
+using IzTek.Carbon.Footprint.Application.Common.Constants;
+
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 
 public class GetMonthlyPollQueryHandler
@@ -9,7 +10,7 @@ public class GetMonthlyPollQueryHandler
         ICacheService cacheService,
         CancellationToken ct)
     {
-        var cacheKey = "active_daily_poll";
+        var cacheKey = CacheKeys.Poll.ActiveMonthly;  // ← merkezi sınıftan
 
         var cachedPoll = await cacheService.GetAsync<GetMonthlyPollResponse>(cacheKey);
         if (cachedPoll != null)
@@ -40,7 +41,7 @@ public class GetMonthlyPollQueryHandler
                     })
                     .ToList()
             ))
-                        .FirstOrDefaultAsync(ct);
+            .FirstOrDefaultAsync(ct);
 
         if (response == null)
             return Result<GetMonthlyPollResponse>.Failure(
