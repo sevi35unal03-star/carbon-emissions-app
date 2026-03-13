@@ -57,6 +57,8 @@ public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resourc
             return CreateActionResultInstance(
                 await bus.InvokeAsync<Result<DailyActivityDetailsResponse>>(new GetDailyActivityDetailsQuery(date.Value)));
 
-        return BadRequest("Query parametresi gerekli: ?status=pending veya ?date=yyyy-MM-dd");
+        // ← string yerine Result.Failure
+        return CreateActionResultInstance(
+            Result.Failure(SystemErrorCodes.InvalidParameter, HttpStatusCode.BadRequest));
     }
 }
