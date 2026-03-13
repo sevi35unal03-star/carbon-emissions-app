@@ -4,7 +4,7 @@ using IzTek.Carbon.Footprint.Domain.Common;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Create;
 
-public class CreateUserCommand : BaseEntity
+public class CreateUserCommand
 {
     public string FirstName { get; set; } = string.Empty;       
     public string LastName { get; set; } = string.Empty;
