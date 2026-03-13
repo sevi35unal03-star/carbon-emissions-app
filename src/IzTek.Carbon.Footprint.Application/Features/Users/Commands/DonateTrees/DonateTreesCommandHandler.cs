@@ -9,8 +9,7 @@ public static class DonateTreesCommandHandler
         CancellationToken ct)
     {
         var user = await context.Users
-            .FirstOrDefaultAsync(x => x.Id == currentUser.UserId, ct);
-
+    .FirstOrDefaultAsync(x => x.Id == currentUser.UserId, ct);
         if (user is null)
             return Result<DonateTreesResponse>.Failure(
                 SystemErrorCodes.UserNotFound, HttpStatusCode.NotFound);
@@ -20,21 +19,20 @@ public static class DonateTreesCommandHandler
                 SystemErrorCodes.NoPointsToDonat, HttpStatusCode.BadRequest);
 
         var treeDef = await context.TreeDefinitions
-    .FirstOrDefaultAsync(x => x.IsActive, ct);
-
-
+            .FirstOrDefaultAsync(x => x.IsActive, ct);
         if (treeDef is null)
             return Result<DonateTreesResponse>.Failure(
                 SystemErrorCodes.TreeDefinitionNotFound, HttpStatusCode.NotFound);
 
         var treeCount = (int)treeDef.CalculateTreeCount(user.TotalPoints);
 
+        // ← Önce harcanan puanı kaydet, sonra sıfırla
+        var pointsSpent = user.TotalPoints;
         user.DonateAllPoints(treeCount);
 
-        // Bağış geçmişine kaydet
-        var donation = new TreeDonation(user.Id, treeCount, user.TotalPoints);
+        // Artık pointsSpent doğru değeri taşıyor
+        var donation = new TreeDonation(user.Id, treeCount, pointsSpent);
         await context.TreeDonations.AddAsync(donation, ct);
-
         await context.SaveChangesAsync(ct);
 
         return Result<DonateTreesResponse>.Success(
