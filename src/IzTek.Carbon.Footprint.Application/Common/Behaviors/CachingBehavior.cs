@@ -1,25 +1,31 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Common.Behaviors;
+﻿using Wolverine.Runtime.Handlers;
+
+namespace IzTek.Carbon.Footprint.Application.Common.Behaviors;
 
 public class CachingBehavior(ICacheService cache)
 {
-    public async Task<T?> HandleAsync<T>(
+    private object? _cachedResult;
+
+    public async Task<HandlerContinuation> Before<T>(
         ICacheableQuery query,
-        Func<Task<T?>> next,
+        IMessageContext context,
         CancellationToken ct)
     {
-        // 1. Cache'de var mı?
         var cached = await cache.GetAsync<T>(query.CacheKey, ct);
         if (cached is not null)
-            return cached;
+        {
+            _cachedResult = cached;
+            return HandlerContinuation.Stop; // Cache hit — handler'ı atla
+        }
+        return HandlerContinuation.Continue; // Cache miss — devam et
+    }
 
-        // 2. Yoksa handler'ı çalıştır
-        var result = await next();
-
-        // 3. Sonucu cache'e yaz
-        if (result is not null)
+    public async Task Finally<T>(
+        ICacheableQuery query,
+        T? result,
+        CancellationToken ct)
+    {
+        if (result is not null && _cachedResult is null)
             await cache.SetAsync(query.CacheKey, result, query.Expiry, ct);
-
-        return result;
     }
 }
-

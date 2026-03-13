@@ -21,11 +21,13 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Wolverine Yapılandırması
 builder.Host.UseWolverine(opts =>
 {
-    // Command/Query handler'larını tara
     opts.Discovery.IncludeAssembly(typeof(LoginCommand).Assembly);
-    opts.Policies.AddMiddleware<CachingBehavior>();
-    opts.Policies.AddMiddleware<CacheInvalidationBehavior>();
 
+    opts.Policies.ForMessagesOfType<ICacheableQuery>()
+        .AddMiddleware<CachingBehavior>();
+
+    opts.Policies.ForMessagesOfType<ICacheInvalidator>()
+        .AddMiddleware<CacheInvalidationBehavior>();
 });
 
 // 2. OpenTelemetry Yapılandırması
