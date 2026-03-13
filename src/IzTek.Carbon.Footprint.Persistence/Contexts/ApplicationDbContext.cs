@@ -4,20 +4,10 @@ namespace IzTek.Carbon.Footprint.Persistence.Contexts;
 
 public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplicationDbContext
 {
-    private readonly IMessageBus _bus;
-    private readonly ICurrentUserService _currentUserService;
-
     public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options,
-        IMessageBus bus,
-        ICurrentUserService currentUserService) : base(options)
+        DbContextOptions<ApplicationDbContext> options) : base(options)
     {
-        _bus = bus;
-        _currentUserService = currentUserService;
     }
-
-    // IdentityDbContext zaten Users ve Roles DbSet'lerini sağlıyor — tekrar tanımlamaya gerek yok
-    // Product kaldırıldı — bu projede yok
 
     public DbSet<ActivityQuestion> ActivityQuestions => Set<ActivityQuestion>();
     public DbSet<ActivityOption> ActivityOptions => Set<ActivityOption>();
@@ -39,14 +29,6 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplic
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(builder);
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.AddInterceptors(
-            new DispatchDomainEventsInterceptor(_bus),
-            new AuditableEntityInterceptor(_currentUserService));
-        base.OnConfiguring(optionsBuilder);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
