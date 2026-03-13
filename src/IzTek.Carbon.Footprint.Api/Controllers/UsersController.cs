@@ -26,8 +26,7 @@ public class UsersController(IMessageBus bus, IStringLocalizer<Resource> localiz
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<LoginCommand>>(command));
-
+    => CreateActionResultInstance(await bus.InvokeAsync<Result<TokenResponse>>(command)); // ← LoginCommand → TokenResponse
     /// <summary>Sifremi unuttum: e-posta/TC kimligine sifirlama linki gonderir.</summary>
     [AllowAnonymous]
     [HttpPost("password/forgot")]
