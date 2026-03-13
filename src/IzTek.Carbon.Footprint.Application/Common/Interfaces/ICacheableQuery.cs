@@ -3,7 +3,7 @@
 // Cache'lenmesini istediğin Query'ler bu interface'i implemente eder
 public interface ICacheableQuery
 {
-    string CacheKey { get; }
+    string CacheKey { get; } 
     TimeSpan? Expiry => TimeSpan.FromMinutes(30);
 }
 
