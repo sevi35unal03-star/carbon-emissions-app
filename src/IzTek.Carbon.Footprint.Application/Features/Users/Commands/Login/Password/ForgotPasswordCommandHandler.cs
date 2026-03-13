@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
 
@@ -23,7 +24,7 @@ public class ForgotPasswordCommandHandler(
         }
 
         // 2. OTP kodu oluştur
-        var resetCode = new Random().Next(10000, 99999).ToString();
+        var resetCode = RandomNumberGenerator.GetInt32(10000, 99999).ToString();
 
         // 3. Kodu Identity'nin token tablosuna kaydet
         await userManager.SetAuthenticationTokenAsync(
