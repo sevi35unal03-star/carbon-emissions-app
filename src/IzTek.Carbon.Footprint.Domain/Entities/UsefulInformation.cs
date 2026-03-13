@@ -5,7 +5,7 @@ public class UsefulInformation : BaseAuditableEntity
     public string Title { get; private set; } = default!;
     public string Content { get; private set; } = default!;
     public int DisplayOrder { get; private set; }
-    public new bool IsActive { get; private set; } 
+  
 
     private UsefulInformation() { }
 
