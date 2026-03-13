@@ -4,7 +4,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.S
 
 public static class SubmitActivityAnswerHandler
 {
-    public static  async Task<Result<SubmitActivityAnswerResponse>> HandleAsync(
+    public static async Task<Result<SubmitActivityAnswerResponse>> HandleAsync(
         SubmitActivityAnswerCommand command,
         IApplicationDbContext context,
         CancellationToken ct)
@@ -20,19 +20,31 @@ public static class SubmitActivityAnswerHandler
             return Result<SubmitActivityAnswerResponse>.Failure(
                 SystemErrorCodes.InvalidActivityOption, HttpStatusCode.BadRequest);
 
-        // 2. Cevabı kaydet
+        // 2. UserActivityAnswer — takvim ve pending sorgular buradan çekiyor
+        var answer = new UserActivityAnswer(
+            userId: command.UserId,
+            questionId: command.QuestionId,
+            selectedOptionId: command.SelectedOptionId,
+            carbonValue: option.CarbonValue,
+            answeredAt: DateTime.UtcNow);
+
+        context.UserActivityAnswers.Add(answer);
+
+        // 3. UserActivityLog — admin paneli raporlama için
         var log = new UserActivityLog(
-            command.UserId,
-            command.QuestionId,
-            command.SelectedOptionId,      // optionId
-            option.CarbonValue,            // score
-            command.SelectedOptionId,      // selectedOptionId
-            option.Text,                   // selectedOptionText  ← option entity'sinden al
-            option.CarbonValue);           // carbonValue
+            userId: command.UserId,
+            questionId: command.QuestionId,
+            optionId: command.SelectedOptionId,
+            score: option.CarbonValue,
+            selectedOptionId: command.SelectedOptionId,
+            selectedOptionText: option.Text,
+            carbonValue: option.CarbonValue);
+
         context.UserActivityLogs.Add(log);
+
         await context.SaveChangesAsync(ct);
 
-        // 3. Bugünkü toplam karbon hesapla
+        // 4. Bugünkü toplam karbon hesapla
         var today = DateTime.UtcNow.Date;
         var totalCarbon = await context.UserActivityLogs
             .Where(x => x.UserId == command.UserId &&
@@ -40,7 +52,7 @@ public static class SubmitActivityAnswerHandler
                         x.ActivityDate < today.AddDays(1))
             .SumAsync(x => x.TotalCarbonScore, ct);
 
-        // 4. Flow bitti mi?
+        // 5. Flow bitti mi?
         if (option.NextQuestionId is null)
         {
             return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
@@ -51,7 +63,7 @@ public static class SubmitActivityAnswerHandler
             });
         }
 
-        // 5. NextQuestion getir
+        // 6. NextQuestion getir
         var nextQuestion = await context.ActivityQuestions
             .AsNoTracking()
             .Include(q => q.Options)
@@ -67,7 +79,7 @@ public static class SubmitActivityAnswerHandler
             });
         }
 
-        // 6. NextQuestion ile devam et
+        // 7. NextQuestion ile devam et
         return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
         {
             NextQuestion = new DailyQuestionResponse(
