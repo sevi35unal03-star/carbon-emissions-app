@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.DonateTrees;
+﻿using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.DonateTrees;
 
 public static class DonateTreesCommandHandler
 {
@@ -28,9 +30,17 @@ public static class DonateTreesCommandHandler
 
         // ← Önce harcanan puanı kaydet, sonra sıfırla
         var pointsSpent = user.TotalPoints;
-        user.DonateAllPoints(treeCount);
 
-        // Artık pointsSpent doğru değeri taşıyor
+        try
+        {
+            user.DonatePoints(pointsSpent, treeCount);
+        }
+        catch (DomainException)
+        {
+            return Result<DonateTreesResponse>.Failure(
+                SystemErrorCodes.InsufficientPoints, HttpStatusCode.BadRequest);
+        }
+
         var donation = new TreeDonation(user.Id, treeCount, pointsSpent);
         await context.TreeDonations.AddAsync(donation, ct);
         await context.SaveChangesAsync(ct);

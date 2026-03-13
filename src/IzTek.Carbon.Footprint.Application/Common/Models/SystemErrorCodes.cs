@@ -29,7 +29,8 @@ public static class SystemErrorCodes
     // User hata kodları
     public static readonly ErrorCode UserNotFound = new SystemErrorCode(2001, nameof(UserNotFound));
     public static readonly ErrorCode NoPointsToDonat = new SystemErrorCode(2002, nameof(NoPointsToDonat));
-    public static readonly ErrorCode TreeDefinitionNotFound = new SystemErrorCode(2003, nameof(TreeDefinitionNotFound));
+    public static readonly ErrorCode InsufficientPoints = new SystemErrorCode(2003, nameof(InsufficientPoints)); // ← YENİ
+    public static readonly ErrorCode TreeDefinitionNotFound = new SystemErrorCode(2004, nameof(TreeDefinitionNotFound)); // 2003 → 2004
 
     // UsefulInformation hata kodları
     public static readonly ErrorCode InformationAlreadyExists = new SystemErrorCode(3001, nameof(InformationAlreadyExists));
