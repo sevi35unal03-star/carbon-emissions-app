@@ -3,17 +3,24 @@
 public static class UpdateGoalCommandHandler
 {
     public static async Task<Result<UpdateGoalResponse>> HandleAsync(
-        UpdateGoalCommand command,
-        IApplicationDbContext context,
-        CancellationToken ct)
+    UpdateGoalCommand command,
+    IApplicationDbContext context,
+    ICurrentUserService currentUser,
+    CancellationToken ct)
     {
+        if (currentUser.UserId is null)
+            return Result<UpdateGoalResponse>.Failure(
+                SystemErrorCodes.Unauthorized, HttpStatusCode.Unauthorized);
+
+        var userId = currentUser.UserId.Value;
+
         var goal = await context.Goals
-            .FirstOrDefaultAsync(x => x.Id == command.Id, ct);
+            .FirstOrDefaultAsync(x => x.Id == command.Id
+                                   && x.UserId == userId, ct);
 
         if (goal is null)
             return Result<UpdateGoalResponse>.Failure(
-                SystemErrorCodes.GoalNotFound,
-                HttpStatusCode.NotFound);
+                SystemErrorCodes.GoalNotFound, HttpStatusCode.NotFound);
 
         goal.UpdateTarget(command.TargetTreeCount);
         await context.SaveChangesAsync(ct);
