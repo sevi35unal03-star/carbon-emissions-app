@@ -1,37 +1,44 @@
-using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 using Microsoft.AspNetCore.Identity;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 
 public class GetUserProfileQueryHandler(
     UserManager<User> userManager,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    IApplicationDbContext context)  // ← TreeDefinition için eklendi
 {
     public async Task<Result<GetUserProfileResponse>> HandleAsync(
         GetUserProfileQuery request,
         CancellationToken ct)
     {
         var userId = currentUserService.UserId;
-
-        if (string.IsNullOrEmpty(userId.ToString()))
+        if (userId is null)
             return Result<GetUserProfileResponse>.Failure(
                 SystemErrorCodes.Unauthorized,
                 HttpStatusCode.Unauthorized);
 
-        // ✅ Guid → string dönüşümü
         var user = await userManager.FindByIdAsync(userId.ToString());
-
         if (user is null || user.IsDeleted)
             return Result<GetUserProfileResponse>.Failure(
                 SystemErrorCodes.NotFound,
                 HttpStatusCode.NotFound);
 
-        var response = new GetUserProfileResponse(
-            user.IdentityNumber ?? string.Empty,
-            user.Name,
-            user.Surname,
-            user.BirthDate);
+        // Aktif ağaç tanımı — kaç ağaç bağışlanabilir hesabı için
+        var treeDef = await context.TreeDefinitions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.IsActive, ct);
 
-        return Result<GetUserProfileResponse>.Success(response);
+        var availableTreeCount = treeDef is not null
+            ? (int)treeDef.CalculateTreeCount(user.TotalPoints)
+            : 0;
+
+        return Result<GetUserProfileResponse>.Success(new GetUserProfileResponse(
+            identityNumber: user.IdentityNumber ?? string.Empty,
+            name: user.Name,
+            surname: user.Surname,
+            birthDate: user.BirthDate,
+            totalPoints: user.TotalPoints,
+            donatedTreeCount: user.DonatedTreeCount,
+            availableTreeCount: availableTreeCount));
     }
 }
