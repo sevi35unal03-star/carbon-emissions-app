@@ -3,19 +3,27 @@
 public static class CreateGoalCommandHandler
 {
     public static async Task<Result<CreateGoalResponse>> HandleAsync(
-        CreateGoalCommand command,
-        IApplicationDbContext context,
-        CancellationToken ct)
+     CreateGoalCommand command,
+     IApplicationDbContext context,
+     ICurrentUserService currentUser,
+     CancellationToken ct)
     {
-        // Aynı ay/yıl için hedef var mı?
+        if (currentUser.UserId is null)
+            return Result<CreateGoalResponse>.Failure(
+                SystemErrorCodes.Unauthorized, HttpStatusCode.Unauthorized);
+
+        var userId = currentUser.UserId.Value;
+
         var exists = await context.Goals
-            .AnyAsync(x => x.Month == command.Month && x.Year == command.Year, ct);
+            .AnyAsync(x => x.UserId == userId
+                        && x.Month == command.Month
+                        && x.Year == command.Year, ct);
 
         if (exists)
             return Result<CreateGoalResponse>.Failure(
                 SystemErrorCodes.GoalAlreadyExists, HttpStatusCode.Conflict);
 
-        var goal = new Goal(command.Month, command.Year, command.TargetTreeCount);
+        var goal = new Goal(userId, command.Month, command.Year, command.TargetTreeCount);
         await context.Goals.AddAsync(goal, ct);
         await context.SaveChangesAsync(ct);
 

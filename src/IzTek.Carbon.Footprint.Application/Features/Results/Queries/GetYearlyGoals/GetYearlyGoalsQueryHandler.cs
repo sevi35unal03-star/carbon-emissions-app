@@ -3,11 +3,15 @@
 public class GetYearlyGoalsQueryHandler(IApplicationDbContext context)
 {
     public async Task<Result<GetYearlyGoalsResponse>> HandleAsync(
-        GetYearlyGoalsQuery query,
-        CancellationToken ct)
+    GetYearlyGoalsQuery query,
+    ICurrentUserService currentUser,
+    CancellationToken ct)
     {
+        var userId = currentUser.UserId;
+
         var goals = await context.Goals
-            .Where(x => x.Year == query.Year)
+            .Where(x => x.UserId == userId   // ← UserId filtresi
+                     && x.Year == query.Year)
             .OrderBy(x => x.Month)
             .Select(x => new MonthlyGoalDto(
                 x.Month,
