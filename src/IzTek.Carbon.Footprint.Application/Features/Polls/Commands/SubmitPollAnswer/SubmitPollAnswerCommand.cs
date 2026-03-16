@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.SubmitPollAnswer;
+﻿using AppCacheKeys = IzTek.Carbon.Footprint.Application.Common.Constants.CacheKeys;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.SubmitPollAnswer;
 
 public record PollAnswerItem(Guid QuestionId, Guid OptionId);
 
@@ -7,12 +9,11 @@ public record SubmitPollAnswerCommand(
     List<PollAnswerItem> Answers) : ICacheInvalidator
 {
     public IEnumerable<string> CacheKeys =>
-        [$"monthly-leaderboard:{DateTime.Now.Month}:{DateTime.Now.Year}",
-         $"goal-detail:{DateTime.Now.Month}:{DateTime.Now.Year}"];
+    [
+        AppCacheKeys.Leaderboard.Monthly(DateTime.UtcNow.Month, DateTime.UtcNow.Year),
+        AppCacheKeys.Goals.Detail(DateTime.UtcNow.Month, DateTime.UtcNow.Year)
+    ];
 }
-
-
-//SubmitPollAnswer Validator ekle
 
 public class SubmitPollAnswerValidator : AbstractValidator<SubmitPollAnswerCommand>
 {
@@ -24,10 +25,9 @@ public class SubmitPollAnswerValidator : AbstractValidator<SubmitPollAnswerComma
         _context = context;
         _currentUser = currentUser;
 
-        // PollSetId için özel bir kural tanımlıyoruz
         RuleFor(x => x.PollSetId)
             .MustAsync(BeFirstTimeThisMonth)
-                .WithMessage("Bu anketi bu ay zaten cevapladınız. Yeni ayda tekrar deneyebilirsiniz.");
+            .WithMessage("Bu anketi bu ay zaten cevapladınız. Yeni ayda tekrar deneyebilirsiniz.");
 
         RuleFor(x => x.Answers)
             .NotEmpty().WithMessage("Anket cevapları boş olamaz.");
@@ -35,19 +35,12 @@ public class SubmitPollAnswerValidator : AbstractValidator<SubmitPollAnswerComma
 
     private async Task<bool> BeFirstTimeThisMonth(Guid pollSetId, CancellationToken ct)
     {
-        // 1. İçinde bulunduğumuz ayı ve yılı al
-        int currentMonth = DateTime.UtcNow.Month;
-        int currentYear = DateTime.UtcNow.Year;
-
-        // 2. Yeni oluşturduğumuz UserPollResults tablosuna bak
-        // Bu kullanıcı, bu ay, bu anket setini çözmüş mü?
-        bool alreadyAnswered = await _context.UserPollResults
+        var now = DateTime.UtcNow;
+        var alreadyAnswered = await _context.UserPollResults
             .AnyAsync(x => x.UserId == _currentUser.UserId &&
                            x.PollSetId == pollSetId &&
-                           x.Month == currentMonth &&
-                           x.Year == currentYear, ct);
-
-        // Eğer cevaplanmamışsa (false ise) kuraldan geçer (true döner)
+                           x.Month == now.Month &&
+                           x.Year == now.Year, ct);
         return !alreadyAnswered;
     }
 }
