@@ -30,7 +30,8 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
             var auditEntry = new AuditEntry(entry)
             {
                 TableName = entry.Entity.GetType().Name,
-                UserId = _currentUser.UserId?.ToString() ?? "system"
+                UserId = _currentUser.UserId?.ToString() ?? "system",
+                UserName = _currentUser.UserName ?? "system",  // ← eklendi
             };
             auditEntries.Add(auditEntry);
 
@@ -45,10 +46,12 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
                         auditEntry.Operation = "Ekleme";
                         auditEntry.NewValues[propertyName] = property.CurrentValue;
                         break;
+
                     case EntityState.Deleted:
                         auditEntry.Operation = "Silme";
                         auditEntry.OldValues[propertyName] = property.OriginalValue;
                         break;
+
                     case EntityState.Modified:
                         if (property.IsModified)
                         {
