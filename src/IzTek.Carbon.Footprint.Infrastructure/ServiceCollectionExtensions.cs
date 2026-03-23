@@ -34,19 +34,26 @@ public static class ServiceCollectionExtensions
             cfg.BaseAddress = new Uri("http://localhost");
         }).ConfigureResilience();
 
-        builder.Services.ConfigureServices();
+        builder.Services.ConfigureServices(builder.Configuration);
 
         return builder;
     }
 
-    public static IServiceCollection ConfigureServices(this IServiceCollection services)
+    public static IServiceCollection ConfigureServices(
+    this IServiceCollection services,
+    IConfiguration configuration)
     {
-        //services.AddTransient<IEmailSender, EmailSender>();
-        services.AddScoped<ITokenService, TokenService>()
-                .AddScoped<IPlatformService, PlatformService>()
-                .AddScoped<PlatformClientCredentialTokenHandler>()
-                .AddScoped<ICurrentUserService, CurrentUserService>()
-                .AddScoped<IFileStorageService, MinioFileStorageService>();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<PlatformClientCredentialTokenHandler>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IFileStorageService, MinioFileStorageService>();
+
+        // Development'ta mock, production'da gerçek
+        var useMock = configuration.GetValue<bool>("UseMockPlatformService");
+        if (useMock)
+            services.AddScoped<IPlatformService, MockPlatformService>();
+        else
+            services.AddScoped<IPlatformService, PlatformService>();
 
         return services;
     }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 namespace IzTek.Carbon.Footprint.Persistence;
@@ -45,5 +46,34 @@ public static class ServiceCollectionExtensions  // ← class eklendi
         var appDbContext = serviceScope.ServiceProvider
             .GetRequiredService<ApplicationDbContext>();
         await appDbContext.Database.MigrateAsync();
+    }
+
+    public static async Task InitializeAssetsAsync(this IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices
+            .GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+        var fileStorage = scope.ServiceProvider
+            .GetRequiredService<IFileStorageService>();
+
+        // Assets bucket'ını public olarak oluştur
+        //await fileStorage.EnsureAssetsBucketAsync();
+    }
+
+    public static async Task SeedRolesAsync(this IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices
+            .GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+        var roleManager = scope.ServiceProvider
+            .GetRequiredService<RoleManager<Role>>();
+
+        string[] roles = ["Admin", "User"];
+
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+                await roleManager.CreateAsync(new Role { Name = role });
+        }
     }
 }
