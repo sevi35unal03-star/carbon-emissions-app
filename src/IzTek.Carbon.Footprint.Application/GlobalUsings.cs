@@ -3,7 +3,7 @@ global using FluentValidation;
 global using IzTek.Carbon.Footprint.Application.Common.Interfaces;
 global using IzTek.Carbon.Footprint.Application.Common.Models;
 global using IzTek.Carbon.Footprint.Application.Common.Options;
-global using IzTek.Carbon.Footprint.Application.Features.Products.Queries.GetAll;
+
 global using IzTek.Carbon.Footprint.Domain.Entities;
 global using IzTek.Carbon.Footprint.Domain.Enums;
 global using IzTek.Carbon.Footprint.Domain.Events;

@@ -10,7 +10,7 @@ public class MinioFileStorageService(IMinioClient minioClient, IOptions<FileStor
         try
         {
             var bucketName = bucket ?? _options.DefaultBucket;
-            await EnsureBucketExistsAsync(bucketName, cancellationToken);
+            await EnsureBucketExistsAsync(bucketName,false, cancellationToken);
 
             var putObjectArgs = new PutObjectArgs()
                 .WithBucket(bucketName)
@@ -124,7 +124,10 @@ public class MinioFileStorageService(IMinioClient minioClient, IOptions<FileStor
         }
     }
 
-    private async Task EnsureBucketExistsAsync(string bucketName, CancellationToken cancellationToken)
+    private async Task EnsureBucketExistsAsync(
+    string bucketName,
+    bool isPublic = false,
+    CancellationToken cancellationToken = default)
     {
         var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
         var exists = await _minioClient.BucketExistsAsync(bucketExistsArgs, cancellationToken);
@@ -134,5 +137,44 @@ public class MinioFileStorageService(IMinioClient minioClient, IOptions<FileStor
             var makeBucketArgs = new MakeBucketArgs().WithBucket(bucketName);
             await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
         }
+
+        // Public bucket — herkes okuyabilir (assets için)
+        if (isPublic)
+        {
+            var policy = $$"""
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"AWS": ["*"]},
+                    "Action": ["s3:GetObject"],
+                    "Resource": ["arn:aws:s3:::{{bucketName}}/*"]
+                }
+            ]
+        }
+        """;
+
+            var setPolicyArgs = new SetPolicyArgs()
+                .WithBucket(bucketName)
+                .WithPolicy(policy);
+
+            await _minioClient.SetPolicyAsync(setPolicyArgs, cancellationToken);
+        }
+    }
+
+    public string GetAssetUrl(string fileName)
+    {
+        var protocol = _options.UseSSL ? "https" : "http";
+        return $"{protocol}://{_options.Endpoint}/{_options.AssetsBucket}/{fileName}";
+    }
+
+    public async Task EnsureAssetsBucketAsync(CancellationToken cancellationToken = default)
+    {
+        await EnsureBucketExistsAsync(
+            _options.AssetsBucket,
+            isPublic: true,
+            cancellationToken);
     }
 }
+

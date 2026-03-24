@@ -76,4 +76,43 @@ public static class ServiceCollectionExtensions  // ← class eklendi
                 await roleManager.CreateAsync(new Role { Name = role });
         }
     }
+
+    public static async Task SeedAdminUserAsync(this IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices
+            .GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        const string adminEmail = "admin@iztek.com";
+        const string adminPassword = "Sifre123!";
+
+        var existingUser = await userManager.FindByEmailAsync(adminEmail);
+
+        if (existingUser is not null)
+        {
+            // Kullanıcı var ama rolü yoksa ekle
+            var existingRoles = await userManager.GetRolesAsync(existingUser);
+            if (!existingRoles.Contains("Admin"))
+                await userManager.AddToRoleAsync(existingUser, "Admin");
+            return;
+        }
+
+        var adminUser = new User(
+            email: adminEmail,
+            name: "Admin",
+            surname: "User",
+            birthDate: DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc),
+            identityNumber: "67890123452",
+            phoneNumber: "+905001234567",
+            isKvkkApproved: true
+        );
+
+        adminUser.ClearDomainEvents();
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(adminUser, "Admin"); // ← Bu satır eksikti
+    }
 }

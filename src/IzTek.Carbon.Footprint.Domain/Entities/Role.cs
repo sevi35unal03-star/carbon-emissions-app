@@ -7,4 +7,14 @@ public class Role : IdentityRole<Guid>
     public string? DeletedBy { get; set; }
     public RoleType Type { get; set; }
 
+    public Role()
+    {
+        
+    }
+
+    public Role(string? name, RoleType type)
+    {
+        Name = name;
+        Type = type;
+    }
 }

@@ -6,6 +6,7 @@ public class TreeDefinition : BaseAuditableEntity
 {
     public double PointUnit { get; private set; }
     public int TreeCount { get; private set; }
+    public int GlobalTargetTreeCount { get; private set; }  // ← YENİ: Admin belirler
 
     public double CalculateTreeCount(double totalPoints)
     {
@@ -15,18 +16,20 @@ public class TreeDefinition : BaseAuditableEntity
 
     private TreeDefinition() { }
 
-    public TreeDefinition(double pointUnit, int treeCount)
+    public TreeDefinition(double pointUnit, int treeCount, int globalTargetTreeCount)
     {
         PointUnit = pointUnit;
         TreeCount = treeCount;
+        GlobalTargetTreeCount = globalTargetTreeCount;
         IsActive = true;
         AddDomainEvent(new TreeDefinitionCreatedDomainEvent(pointUnit, treeCount));
     }
 
-    public void Update(double pointUnit, int treeCount)
+    public void Update(double pointUnit, int treeCount, int globalTargetTreeCount)
     {
         PointUnit = pointUnit;
         TreeCount = treeCount;
+        GlobalTargetTreeCount = globalTargetTreeCount;
         AddDomainEvent(new TreeDefinitionUpdatedDomainEvent(pointUnit, treeCount));
     }
 }

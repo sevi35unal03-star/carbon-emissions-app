@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using TokenResponse = IzTek.Carbon.Footprint.Application.Common.Models.TokenResponse;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 

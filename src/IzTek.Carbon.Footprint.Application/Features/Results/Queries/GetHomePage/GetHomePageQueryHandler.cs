@@ -1,4 +1,7 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
+﻿using IzTek.Carbon.Footprint.Application.Common.Constants;
+using IzTek.Carbon.Footprint.Application.Common.Extensions;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
 
 public static class GetHomePageQueryHandler
 {
@@ -6,9 +9,15 @@ public static class GetHomePageQueryHandler
     GetHomePageQuery query,
     IApplicationDbContext context,
     ICurrentUserService currentUser,
+    ICacheService cache,
     CancellationToken ct)
     {
         var now = DateTime.UtcNow;
+        var cacheKey = CacheKeys.HomePage.Data(now.Month, now.Year);
+
+        // Cache check
+        if (await cache.GetCachedResultAsync<GetHomePageResponse>(cacheKey, ct) is { } hit)
+            return hit;
 
         // 1. Aktif TreeDefinition
         var treeDef = await context.TreeDefinitions
@@ -37,26 +46,37 @@ public static class GetHomePageQueryHandler
                      && x.UserId == null)
             .Select(x => x.TargetTreeCount)
             .FirstOrDefaultAsync(ct);
-        // 5. Ana sayfa liderboard preview — bu aya ait ilk 2 kişi
+
+        // 5. Ana sayfa liderboard preview
         var currentUserId = currentUser.UserId;
 
-        // Tüm sıralamayı çek — kullanıcının sırasını bulmak için
-        var allRankingsRaw = await (
-            from d in context.TreeDonations.AsNoTracking()
-            where d.DonationDate.Month == now.Month
-               && d.DonationDate.Year == now.Year
-            group d by d.UserId into g
-            join u in context.Users on g.Key equals u.Id
-            orderby g.Sum(x => x.TreeCount) descending
-            select new
+        var donations = await context.TreeDonations
+            .AsNoTracking()
+            .Where(x => x.DonationDate.Month == now.Month
+                     && x.DonationDate.Year == now.Year)
+            .GroupBy(x => x.UserId)
+            .Select(g => new
             {
                 UserId = g.Key,
-                TotalTrees = g.Sum(x => x.TreeCount),
-                FullName = u.Name + " " + u.Surname
+                TotalTrees = g.Sum(x => x.TreeCount)
             })
             .ToListAsync(ct);
 
-        // İlk 2 — önizleme
+        var userIds = donations.Select(x => x.UserId).ToList();
+        var users = await context.Users
+            .AsNoTracking()
+            .Where(u => userIds.Contains(u.Id))
+            .Select(u => new { u.Id, FullName = u.Name + " " + u.Surname })
+            .ToListAsync(ct);
+
+        var allRankingsRaw = donations
+            .Join(users,
+                d => d.UserId,
+                u => u.Id,
+                (d, u) => new { d.UserId, d.TotalTrees, u.FullName })
+            .OrderByDescending(x => x.TotalTrees)
+            .ToList();
+
         var topLeaders = allRankingsRaw
             .Take(2)
             .Select((x, i) => new HomeLeaderItemDto(
@@ -66,7 +86,6 @@ public static class GetHomePageQueryHandler
                 IsCurrentUser: x.UserId == currentUserId))
             .ToList();
 
-        // Kullanıcının sırası
         var userEntry = allRankingsRaw
             .Select((x, i) => new { x.UserId, x.TotalTrees, Rank = i + 1 })
             .FirstOrDefault(x => x.UserId == currentUserId);
@@ -87,20 +106,25 @@ public static class GetHomePageQueryHandler
             ? Math.Min(100, Math.Round((double)totalDonatedThisMonth / monthlyGoal * 100, 1))
             : 0;
 
-        return Result<GetHomePageResponse>.Success(new GetHomePageResponse(
-     GlobalTarget: new GlobalTargetDto(
-         TargetTreeCount: globalTarget,
-         DonatedTreeCount: totalDonatedAllTime,
-         RemainingTreeCount: Math.Max(0, globalTarget - totalDonatedAllTime),
-         ProgressPercent: globalProgress),
-     MonthlyTarget: new MonthlyTargetDto(
-         Month: now.Month,
-         Year: now.Year,
-         TargetTreeCount: monthlyGoal,
-         DonatedTreeCount: totalDonatedThisMonth,
-         RemainingTreeCount: Math.Max(0, monthlyGoal - totalDonatedThisMonth),
-         ProgressPercent: monthlyProgress),
-     TopLeaders: topLeaders,
-     CurrentUserRank: currentUserRank));
+        var result = Result<GetHomePageResponse>.Success(new GetHomePageResponse(
+            GlobalTarget: new GlobalTargetDto(
+                TargetTreeCount: globalTarget,
+                DonatedTreeCount: totalDonatedAllTime,
+                RemainingTreeCount: Math.Max(0, globalTarget - totalDonatedAllTime),
+                ProgressPercent: globalProgress),
+            MonthlyTarget: new MonthlyTargetDto(
+                Month: now.Month,
+                Year: now.Year,
+                TargetTreeCount: monthlyGoal,
+                DonatedTreeCount: totalDonatedThisMonth,
+                RemainingTreeCount: Math.Max(0, monthlyGoal - totalDonatedThisMonth),
+                ProgressPercent: monthlyProgress),
+            TopLeaders: topLeaders,
+            CurrentUserRank: currentUserRank));
+
+        // Cache set
+        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromMinutes(30), ct);
+
+        return result;
     }
 }

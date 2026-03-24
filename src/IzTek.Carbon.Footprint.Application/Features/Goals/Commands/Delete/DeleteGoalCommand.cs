@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Delete;
+﻿using AppCacheKeys = IzTek.Carbon.Footprint.Application.Common.Constants.CacheKeys;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Delete;
 
 public record DeleteGoalCommand(
     Guid Id,
@@ -6,6 +8,9 @@ public record DeleteGoalCommand(
     int Year) : ICacheInvalidator
 {
     public IEnumerable<string> CacheKeys =>
-        [$"yearly-goals:{Year}",
-         $"monthly-leaderboard:{Month}:{Year}"];
+    [
+        AppCacheKeys.Goals.Detail(Month, Year),
+        AppCacheKeys.Goals.Yearly(Year),
+        AppCacheKeys.HomePage.Data(Month, Year)
+    ];
 }

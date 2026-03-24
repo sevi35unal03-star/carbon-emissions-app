@@ -1,10 +1,13 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Delete;
+﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Delete;
 
 public static class DeleteGoalCommandHandler
 {
-    public static async Task<Result> HandleAsync(
+    public static async Task<Result> Handle(
         DeleteGoalCommand command,
         IApplicationDbContext context,
+        ICacheService cache,
         CancellationToken ct)
     {
         var goal = await context.Goals
@@ -16,6 +19,9 @@ public static class DeleteGoalCommandHandler
 
         context.Goals.Remove(goal);
         await context.SaveChangesAsync(ct);
+
+        // Cache invalidation
+        await cache.InvalidateAsync(command, ct);
 
         return Result.Success();
     }

@@ -53,10 +53,10 @@ public class UsersController(IMessageBus bus,
 
     /// <summary>Token sahibi kullanıcının geçmiş ağaç bağışlarını listeler.</summary>
     [HttpGet("me/donations")]
-    public async Task<IActionResult> GetDonationHistoryAsync()  // ← [FromQuery] kaldırıldı
+    public async Task<IActionResult> GetDonationHistoryAsync()
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<GetDonationHistoryResponse>>(
-                new GetDonationHistoryQuery(currentUser.UserId!.Value)));  // ← token'dan
+                new GetDonationHistoryQuery()));  // ← UserId kaldırıldı
 
     /// <summary>Birikimli puanlari agac bagisina donusturur. Body gerekmez.</summary>
     ///

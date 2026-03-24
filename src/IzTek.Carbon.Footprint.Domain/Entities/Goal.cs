@@ -2,6 +2,7 @@
 
 public class Goal : BaseAuditableEntity
 {
+    public Guid? UserId { get; private set; }  // null = global hedef
     public int Month { get; private set; }
     public int Year { get; private set; }
     public int TargetTreeCount { get; private set; }
@@ -10,8 +11,20 @@ public class Goal : BaseAuditableEntity
 
     private Goal() { }
 
+    // Kişisel hedef — kullanıcı oluşturur
+    public Goal(Guid userId, int month, int year, int targetTreeCount)
+    {
+        UserId = userId;
+        Month = month;
+        Year = year;
+        TargetTreeCount = targetTreeCount;
+        IsCompleted = false;
+    }
+
+    // Global hedef — admin oluşturur, UserId = null
     public Goal(int month, int year, int targetTreeCount)
     {
+        UserId = null;
         Month = month;
         Year = year;
         TargetTreeCount = targetTreeCount;

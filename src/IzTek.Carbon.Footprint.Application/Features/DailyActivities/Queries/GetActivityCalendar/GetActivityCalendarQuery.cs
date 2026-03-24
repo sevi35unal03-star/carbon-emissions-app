@@ -3,13 +3,7 @@
 public record GetActivityCalendarQuery(
     int Year,
     int? Month,
-    int Period = 1) : ICacheableQuery
-{
-    public string CacheKey => Month.HasValue
-        ? $"activity-calendar:{Year}:{Month}"
-        : $"activity-calendar:{Year}";
-    public TimeSpan? Expiry => TimeSpan.FromMinutes(15);
-}
+    int Period = 1);
 
 public class CalendarResponse
 {
@@ -25,4 +19,3 @@ public class CalendarItemDto
 
     public bool HasDetails { get; set; }
 };
-

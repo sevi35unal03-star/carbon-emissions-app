@@ -1,17 +1,27 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetYearlyGoals;
+﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
 
-public class GetYearlyGoalsQueryHandler(IApplicationDbContext context)
+namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetYearlyGoals;
+
+public static class GetYearlyGoalsQueryHandler
 {
-    public async Task<Result<GetYearlyGoalsResponse>> HandleAsync(
-    GetYearlyGoalsQuery query,
-    ICurrentUserService currentUser,
-    CancellationToken ct)
+    public static async Task<Result<GetYearlyGoalsResponse>> Handle(
+        GetYearlyGoalsQuery query,
+        IApplicationDbContext context,
+        ICurrentUserService currentUser,
+        ICacheService cache,
+        CancellationToken ct)
     {
         var userId = currentUser.UserId;
 
+        var cacheKey = $"yearly-goals:{userId}:{query.Year}";
+
+        // Cache check
+        if (await cache.GetCachedResultAsync<GetYearlyGoalsResponse>(cacheKey, ct) is { } hit)
+            return hit;
+
         var goals = await context.Goals
-            .Where(x => x.UserId == userId   // ← UserId filtresi
-                     && x.Year == query.Year)
+            .AsNoTracking()
+            .Where(x => x.UserId == userId && x.Year == query.Year)
             .OrderBy(x => x.Month)
             .Select(x => new MonthlyGoalDto(
                 x.Month,
@@ -22,7 +32,12 @@ public class GetYearlyGoalsQueryHandler(IApplicationDbContext context)
 
         var yearlyTarget = goals.Sum(x => x.TargetTreeCount);
 
-        return Result<GetYearlyGoalsResponse>.Success(
+        var result = Result<GetYearlyGoalsResponse>.Success(
             new GetYearlyGoalsResponse(yearlyTarget, goals));
+
+        // Cache set — 30 dakika, hedef güncellenince invalidate edilmeli
+        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromMinutes(30), ct);
+
+        return result;
     }
 }

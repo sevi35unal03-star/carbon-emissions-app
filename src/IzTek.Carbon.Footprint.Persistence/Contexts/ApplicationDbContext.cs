@@ -1,6 +1,4 @@
-﻿
-
-namespace IzTek.Carbon.Footprint.Persistence.Contexts;
+﻿namespace IzTek.Carbon.Footprint.Persistence.Contexts;
 
 public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplicationDbContext
 {
@@ -24,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplic
     public DbSet<Goal> Goals => Set<Goal>();
     public DbSet<ScoringSetting> ScoringSettings => Set<ScoringSetting>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<AppAsset> AppAssets => Set<AppAsset>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

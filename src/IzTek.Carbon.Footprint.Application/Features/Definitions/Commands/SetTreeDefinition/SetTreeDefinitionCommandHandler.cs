@@ -16,29 +16,36 @@ public class SetTreeDefinitionCommandHandler
     }
 
     public async Task<Result<SetTreeDefinitionResponse>> HandleAsync(
-        SetTreeDefinitionCommand command,
-        CancellationToken ct)
+    SetTreeDefinitionCommand command,
+    CancellationToken ct)
+{
+    var definition = await _context.TreeDefinitions
+        .FirstOrDefaultAsync(x => x.IsActive, ct);
+
+    if (definition is null)
     {
-        var definition = await _context.TreeDefinitions
-            .FirstOrDefaultAsync(x => x.IsActive, ct);
-
-        if (definition is null)
-        {
-            definition = new TreeDefinition(command.PointUnit, command.TreeCount);
-            _context.TreeDefinitions.Add(definition);
-        }
-        else
-        {
-            definition.Update(command.PointUnit, command.TreeCount);
-        }
-
-        await _context.SaveChangesAsync(ct);
-
-        await _cacheService.RemoveAsync(CacheKeys.TreeDefinition.Ratio);
-
-        return Result<SetTreeDefinitionResponse>.Success(  
-             new SetTreeDefinitionResponse(
-                 definition.PointUnit,
-                 definition.TreeCount));
+        definition = new TreeDefinition(
+            command.PointUnit,
+            command.TreeCount,
+            command.GlobalTargetTreeCount);  // ← YENİ
+        _context.TreeDefinitions.Add(definition);
     }
+    else
+    {
+        definition.Update(
+            command.PointUnit,
+            command.TreeCount,
+            command.GlobalTargetTreeCount);  // ← YENİ
+    }
+
+    await _context.SaveChangesAsync(ct);
+    await _cacheService.RemoveAsync(CacheKeys.TreeDefinition.Ratio);
+    await _cacheService.RemoveAsync(CacheKeys.HomePage.Prefix);
+
+        return Result<SetTreeDefinitionResponse>.Success(
+        new SetTreeDefinitionResponse(
+            definition.PointUnit,
+            definition.TreeCount,
+            definition.GlobalTargetTreeCount));  // ← YENİ
+}
 }

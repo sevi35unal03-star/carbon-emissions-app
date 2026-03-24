@@ -26,7 +26,7 @@ public static class DeletePollQuestionCommandHandler
             return Result.Failure(
                 SystemErrorCodes.PollQuestionDeleteFailed, HttpStatusCode.InternalServerError);
 
-        await bus.PublishAsync(new PollQuestionDeletedDomainEvent(command.QuestionId), ct);
+        await bus.PublishAsync(new PollQuestionDeletedDomainEvent(command.QuestionId));
 
         return Result.NoContent();
     }
