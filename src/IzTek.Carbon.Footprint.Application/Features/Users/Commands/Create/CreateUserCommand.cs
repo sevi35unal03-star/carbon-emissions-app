@@ -6,15 +6,15 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Create;
 
 public class CreateUserCommand
 {
-    public string FirstName { get; set; } = string.Empty;       
-    public string LastName { get; set; } = string.Empty;
-    public string IdentityNumber { get; set; } = string.Empty;
+    public string FirstName { get; init; } = string.Empty;       
+    public string LastName { get; init; } = string.Empty;
+    public string IdentityNumber { get; init; } = string.Empty;
     public string PhoneNumber { get; set; } = null!;
-    public DateTime BirthDate { get; set; }
+    public DateTime BirthDate { get; init; }
     public string Password { get; set; } = string.Empty;
     public string ConfirmPassword { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public bool IsKvkkApproved { get; set; }
+    public bool IsKvkkApproved { get; init; }
 }
 
 public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>

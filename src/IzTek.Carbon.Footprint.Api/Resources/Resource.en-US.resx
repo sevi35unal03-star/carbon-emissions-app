@@ -238,6 +238,6 @@
     <value>Information not found.</value>
   </data>
   <data name="RoleNotFound" xml:space="preserve">
-    <value>Role is not found</value>
+    <value>Role is not found.</value>
   </data>
 </root>

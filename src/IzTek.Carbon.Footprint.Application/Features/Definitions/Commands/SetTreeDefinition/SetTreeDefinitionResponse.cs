@@ -2,4 +2,5 @@
 
 public record SetTreeDefinitionResponse(
     double PointUnit,
-    int TreeCount);
+    int TreeCount,
+    int GlobalTargetTreeCount);  // ← YENİ

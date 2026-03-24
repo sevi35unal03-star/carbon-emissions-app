@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Create;
+﻿using AppCacheKeys = IzTek.Carbon.Footprint.Application.Common.Constants.CacheKeys;
+
+namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Create;
 
 public record CreateGoalCommand(
     int Month,
@@ -6,6 +8,9 @@ public record CreateGoalCommand(
     int TargetTreeCount) : ICacheInvalidator
 {
     public IEnumerable<string> CacheKeys =>
-        [$"yearly-goals:{Year}",
-         $"monthly-leaderboard:{Month}:{Year}"];
+    [
+        AppCacheKeys.Goals.Yearly(Year),
+        AppCacheKeys.Leaderboard.Monthly(Month, Year),
+        AppCacheKeys.HomePage.Data(Month, Year)
+    ];
 }

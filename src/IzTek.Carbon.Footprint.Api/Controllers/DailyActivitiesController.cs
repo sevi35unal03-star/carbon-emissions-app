@@ -19,7 +19,9 @@ public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resourc
     /// </summary>
     [HttpGet("questions")]
     public async Task<IActionResult> GetDailyQuestionsAsync()
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<List<ActivityQuestionResponse>>>(new GetDailyQuestionsQuery()));
+    => CreateActionResultInstance(
+        await bus.InvokeAsync<Result<List<DailyQuestionResponse>>>(
+            new GetDailyQuestionsQuery()));
 
     /// <summary>
     /// Kullanicinin bir soruya verdigi cevabi kaydeder.

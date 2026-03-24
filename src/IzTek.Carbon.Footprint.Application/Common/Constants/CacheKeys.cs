@@ -23,6 +23,7 @@ public static class CacheKeys
     public static class ActivityQuestions
     {
         public const string Prefix = "activity-questions:";
+
         public static string ById(Guid id) => $"activity-questions:{id}";
     }
 
@@ -37,7 +38,11 @@ public static class CacheKeys
     public static class Goals
     {
         public static string Detail(int month, int year) => $"goal-detail:{month}:{year}";
+
         public static string Yearly(int year) => $"yearly-goals:{year}";
+
+        public static string UserYearly(Guid userId, int year) => $"yearly-goals:{userId}:{year}"; // ← ekle
+
         public const string Prefix = "goal:";
     }
 
@@ -45,6 +50,7 @@ public static class CacheKeys
     public static class Leaderboard
     {
         public static string Monthly(int month, int year) => $"leaderboard:monthly:{year}:{month:D2}";
+
         public const string Prefix = "leaderboard:";
     }
 
@@ -52,6 +58,7 @@ public static class CacheKeys
     public static class User
     {
         public static string DonationHistory(Guid userId) => $"user:donation-history:{userId}";
+
         public const string Prefix = "user:";
     }
 
@@ -60,5 +67,27 @@ public static class CacheKeys
     {
         public const string List = "useful-information:list";
         public const string Prefix = "useful-information:";
+    }
+
+    public static class HomePage
+    {
+        public static string Data(int month, int year)
+            => $"home-page:{year}:{month:D2}";
+
+        public const string Prefix = "home-page:";
+    }
+
+    public static class Assets
+    {
+        public const string All = "assets:all";
+        public const string Prefix = "assets:";
+    }
+
+    public static class ActivityCalendar
+    {
+        public static string Data(Guid userId, int year, int? month, int period)
+            => $"activity-calendar:{userId}:{year}:{month}:{period}";
+
+        public static string UserPrefix(Guid userId) => $"activity-calendar:{userId}:";
     }
 }

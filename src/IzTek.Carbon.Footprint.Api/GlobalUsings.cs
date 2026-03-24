@@ -6,8 +6,6 @@ global using IzTek.Carbon.Footprint.Api.Options;
 global using IzTek.Carbon.Footprint.Application.Common.Exceptions;
 global using IzTek.Carbon.Footprint.Application.Common.Extensions;
 global using IzTek.Carbon.Footprint.Application.Common.Models;
-global using IzTek.Carbon.Footprint.Application.Features.Products.Commands.Create;
-global using IzTek.Carbon.Footprint.Application.Features.Products.Queries.GetAll;
 global using IzTek.Carbon.Footprint.Domain.Entities;
 global using IzTek.Carbon.Footprint.Infrastructure;
 global using IzTek.Carbon.Footprint.Persistence;

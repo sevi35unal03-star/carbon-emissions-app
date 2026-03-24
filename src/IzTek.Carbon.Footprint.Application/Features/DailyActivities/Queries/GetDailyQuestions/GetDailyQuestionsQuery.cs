@@ -11,6 +11,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.Ge
         Guid Id,
         string Text,
         int DisplayOrder,
-        List<DailyOptionResponse> Options
+        List<DailyOptionResponse> Options,
+        long RemainingSeconds
     );
 }

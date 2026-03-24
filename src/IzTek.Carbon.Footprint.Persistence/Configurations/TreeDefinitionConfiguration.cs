@@ -34,5 +34,10 @@ public class TreeDefinitionConfiguration : IEntityTypeConfiguration<TreeDefiniti
             .HasFilter("\"IsActive\" = true")
             .IsUnique()
             .HasDatabaseName("IX_TreeDefinitions_SingleActive");
+
+        builder.Property(x => x.GlobalTargetTreeCount)
+    .IsRequired()
+    .HasDefaultValue(0)
+    .HasComment("Ana sayfada gösterilecek genel hedef ağaç sayısı. Admin belirler.");
     }
 }

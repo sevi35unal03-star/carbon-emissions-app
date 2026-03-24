@@ -1,3 +1,5 @@
+using AppCacheKeys = IzTek.Carbon.Footprint.Application.Common.Constants.CacheKeys;
+
 namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
 
 public record SubmitActivityAnswerCommand(
@@ -7,6 +9,7 @@ public record SubmitActivityAnswerCommand(
 ) : ICacheInvalidator
 {
     public IEnumerable<string> CacheKeys =>
-        [$"activity-calendar:{DateTime.Now.Year}:{DateTime.Now.Month}",
-         $"activity-calendar:{DateTime.Now.Year}"];
+    [
+        AppCacheKeys.ActivityCalendar.UserPrefix(UserId)  // prefix ile tüm kullanıcı takvim cache'lerini temizle
+    ];
 }

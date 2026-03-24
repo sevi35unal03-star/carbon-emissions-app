@@ -10,7 +10,7 @@ public static class DeletePollOptionCommandHandler
     CancellationToken ct)
     {
         var option = await context.PollOptions
-            .FirstOrDefaultAsync(x => x.PollQuestionId == command.OptionId, ct);
+            .FirstOrDefaultAsync(x => x.Id == command.OptionId, ct);
 
         if (option == null)
             return Result.Failure(

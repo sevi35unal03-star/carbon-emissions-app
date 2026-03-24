@@ -10,9 +10,9 @@ public abstract class ErrorCode(int code, string name, string service) : IEquata
 
     public static implicit operator string(ErrorCode errorCode) => errorCode.Name;
 
-    public bool Equals(ErrorCode other) => other is not null && (ReferenceEquals(this, other) || (Code == other.Code && Name == other.Name && Service == other.Service));
+    public bool Equals(ErrorCode? other) => other is not null && (ReferenceEquals(this, other) || (Code == other.Code && Name == other.Name && Service == other.Service));
 
-    public override bool Equals(object obj) => Equals(obj as ErrorCode);
+    public override bool Equals(object? obj) => Equals(obj as ErrorCode);
 
     public override int GetHashCode() => HashCode.Combine(Code, Name, Service);
 

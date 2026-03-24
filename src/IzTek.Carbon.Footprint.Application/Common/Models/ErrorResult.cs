@@ -33,7 +33,7 @@ public class ErrorResult
         Message = message;
     }
 
-    public ErrorResult(ErrorCode errorCode, string[] messageArgs = null, bool isShow = true)
+    public ErrorResult(ErrorCode errorCode, string[]? messageArgs = null, bool isShow = true)
     {
         IsShow = isShow;
         Code = errorCode.Code;

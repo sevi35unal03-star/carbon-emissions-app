@@ -7,4 +7,6 @@ public interface IFileStorageService
     Task<Result> DeleteFileAsync(string fileName, string? bucket = null, CancellationToken cancellationToken = default);
     Task<Result<string>> GetPresignedUrlAsync(string fileName, int expirationMinutes = 60, string? bucket = null, CancellationToken cancellationToken = default);
     Task<Result<bool>> FileExistsAsync(string fileName, string? bucket = null, CancellationToken cancellationToken = default);
+    string GetAssetUrl(string fileName);
+    Task EnsureAssetsBucketAsync(CancellationToken cancellationToken = default);
 }

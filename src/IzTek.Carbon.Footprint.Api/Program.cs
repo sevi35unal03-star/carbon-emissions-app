@@ -1,53 +1,45 @@
-﻿using FluentValidation;
-using IzTek.Carbon.Footprint.Application.Common.Behaviors;
+﻿using IzTek.Carbon.Footprint.Application.Common.Behaviors;
 using IzTek.Carbon.Footprint.Application.Common.Interfaces;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 using IzTek.Carbon.Footprint.Infrastructure.Options;
 using IzTek.Carbon.Footprint.Infrastructure.Services;
 using IzTek.Carbon.Footprint.Infrastructure.Validators;
-using IzTek.Carbon.Footprint.Persistence.Interceptors;
+using JasperFx.CodeGeneration;
+using Lamar.Microsoft.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Scalar.AspNetCore;
 using StackExchange.Redis;
 using System.Text;
-using Wolverine;
 
 using DomainRole = IzTek.Carbon.Footprint.Domain.Entities.Role;
 
-
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseLamar();
 
-// 1. Wolverine Yapılandırması
+// 1. Wolverine
 builder.Host.UseWolverine(opts =>
 {
     opts.Discovery.IncludeAssembly(typeof(LoginCommand).Assembly);
-
-    opts.Policies.ForMessagesOfType<ICacheableQuery>()
-        .AddMiddleware<CachingBehavior>();
-
-    opts.Policies.ForMessagesOfType<ICacheInvalidator>()
-        .AddMiddleware<CacheInvalidationBehavior>();
+    opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Dynamic;
 });
 
-// 2. OpenTelemetry Yapılandırması
+// 2. OpenTelemetry
 builder.ConfigureOpenTelemetry(cfg =>
 {
     cfg.OtlpEndpoint = builder.Configuration["OpenTelemetry:Endpoint"];
     cfg.ServiceName = builder.Configuration["OpenTelemetry:ServiceName"]!;
 });
 
-// 3. Katman Servis Kayıtları
+// 3. Katman servisleri
 builder.ConfigureApi()
     .ConfigureApplication()
     .ConfigurePersistence()
     .ConfigureInfrastructure();
 
-// 4. Fluent Validation Servis Kaydı (Kritik Eklemeler)
-// CreateProductCommand'in bulunduğu assembly'deki tüm validatorları otomatik kaydeder.
+// 4. FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<LoginCommand>();
 
-// 5. Identity ve Auth Yapılandırması
+// 5. Identity
 builder.Services
     .AddIdentity<User, DomainRole>(options =>
     {
@@ -61,26 +53,16 @@ builder.Services
     .AddPasswordValidator<PasswordValidator>()
     .AddUserValidator<UserValidator>();
 
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-
+// 6. Redis bağlantısı (IConnectionMultiplexer — CacheService için)
 builder.Services.AddSingleton<IConnectionMultiplexer>(
-   await ConnectionMultiplexer.ConnectAsync(builder.Configuration.GetConnectionString("Redis")!));
+    await ConnectionMultiplexer.ConnectAsync(
+        builder.Configuration.GetConnectionString("Redis")!));
 
-
-// Cache servisi
-builder.Services.AddScoped<ICacheService, CacheService>();
-builder.Services.AddScoped<AuditInterceptor>(); 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// JWT Settings'i DI'a kaydet
+// 7. JWT ayarları
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection(JwtSettings.SectionName));
 
-// JWT Authentication
+// 8. Authentication
 builder.Services
     .AddAuthentication(options =>
     {
@@ -103,16 +85,22 @@ builder.Services
             ValidAudience = jwtSettings.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
-            ClockSkew = TimeSpan.Zero  // Default 5 dk tolerans — kapatıyoruz
+            ClockSkew = TimeSpan.Zero
         };
     });
 
-// --- Middleware Hattı ---
+// 9. Cache servisi
+builder.Services.AddScoped<ICacheService, CacheService>();
+
+// 10. Controllers ve OpenAPI
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-
     app.MapOpenApi();
     app.MapScalarApiReference(opts =>
     {
@@ -128,16 +116,15 @@ else
 }
 
 await app.InitializeDatabaseAsync();
+await app.SeedRolesAsync();
+await app.SeedAdminUserAsync();
+await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();
 app.UseLocalization();
-
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseRateLimiter();
-
 app.MapControllers();
 app.UseHealthCheckEndpoint();
 

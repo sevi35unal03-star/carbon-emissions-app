@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetActivityCalendar;
+﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
+
+namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetActivityCalendar;
 
 public static class GetActivityCalendarQueryHandler
 {
@@ -6,9 +8,16 @@ public static class GetActivityCalendarQueryHandler
         GetActivityCalendarQuery query,
         IApplicationDbContext context,
         ICurrentUserService currentUserService,
+        ICacheService cache,
         CancellationToken ct)
     {
         var userId = currentUserService.UserId;
+
+        var cacheKey = $"activity-calendar:{userId}:{query.Year}:{query.Month}:{query.Period}";
+
+        // Cache check
+        if (await cache.GetCachedResultAsync<CalendarResponse>(cacheKey, ct) is { } hit)
+            return hit;
 
         DateTime startDate;
         DateTime endDate;
@@ -33,7 +42,6 @@ public static class GetActivityCalendarQueryHandler
             endDate = new DateTime(query.Year, 12, 31, 23, 59, 59, DateTimeKind.Utc);
         }
 
-        // CarbonValue snapshot olarak UserActivityAnswer'da tutuluyor — join gerekmez
         var items = await context.UserActivityAnswers
             .AsNoTracking()
             .Where(a => a.UserId == userId
@@ -49,12 +57,15 @@ public static class GetActivityCalendarQueryHandler
             .OrderBy(x => x.Date)
             .ToListAsync(ct);
 
-        var response = new CalendarResponse
+        var result = Result<CalendarResponse>.Success(new CalendarResponse
         {
             TotalScore = items.Sum(x => x.Score),
             Items = items
-        };
+        });
 
-        return Result<CalendarResponse>.Success(response);
+        // 15 dakika cache — kullanıcı aktivite ekleyince invalidate edilmeli
+        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromMinutes(15), ct);
+
+        return result;
     }
 }

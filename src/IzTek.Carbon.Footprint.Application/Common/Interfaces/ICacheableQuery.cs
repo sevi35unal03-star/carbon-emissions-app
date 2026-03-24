@@ -7,8 +7,3 @@ public interface ICacheableQuery
     TimeSpan? Expiry => TimeSpan.FromMinutes(30);
 }
 
-// Cache'i bozan Command'lar bu interface'i implemente eder
-public interface ICacheInvalidator
-{
-    IEnumerable<string> CacheKeys { get; }
-}

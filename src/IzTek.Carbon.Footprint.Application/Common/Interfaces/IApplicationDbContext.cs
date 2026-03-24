@@ -1,4 +1,3 @@
-
 namespace IzTek.Carbon.Footprint.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
@@ -20,6 +19,7 @@ public interface IApplicationDbContext
     DbSet<ScoringSetting> ScoringSettings { get; }
     DbSet<TreeDonation> TreeDonations { get; }
     DatabaseFacade Database { get; }
+    DbSet<AppAsset> AppAssets { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
