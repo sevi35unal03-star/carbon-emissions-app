@@ -1,6 +1,5 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
 
-// Podium (#1, #2, #3) için ayrı DTO
 public record PodiumItemDto(
     int Rank,
     string FullName,
@@ -19,10 +18,6 @@ public record UserRankDto(
     string Message);
 
 public record GetMonthlyLeaderboardResponse(
-    int YearlyTargetTreeCount,
-    int MonthlyTargetTreeCount,
-    int RemainingTreeCount,
-    int TotalDonatedThisMonth,
-    List<PodiumItemDto> Podium,         // ← YENİ: #1, #2, #3
-    List<LeaderboardItemDto> Leaders,   // ← #4 ve sonrası
+    List<PodiumItemDto> Podium,
+    List<LeaderboardItemDto> Leaders,
     UserRankDto? CurrentUserRank);

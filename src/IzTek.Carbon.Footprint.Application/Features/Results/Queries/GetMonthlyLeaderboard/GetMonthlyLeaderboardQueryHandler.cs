@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
 
 public static class GetMonthlyLeaderboardQueryHandler
 {
@@ -10,23 +8,6 @@ public static class GetMonthlyLeaderboardQueryHandler
         ICurrentUserService currentUser,
         CancellationToken ct)
     {
-        var monthlyGoal = await context.Goals
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Month == query.Month && x.Year == query.Year, ct);
-
-        var yearlyTarget = await context.Goals
-            .AsNoTracking()
-            .Where(x => x.Year == query.Year)
-            .SumAsync(x => x.TargetTreeCount, ct);
-
-        var monthlyTarget = monthlyGoal?.TargetTreeCount ?? 0;
-
-        var totalDonatedThisMonth = await context.TreeDonations
-            .AsNoTracking()
-            .Where(x => x.DonationDate.Month == query.Month
-                     && x.DonationDate.Year == query.Year)
-            .SumAsync(x => x.TreeCount, ct);
-
         var donations = await context.TreeDonations
             .AsNoTracking()
             .Where(x => x.DonationDate.Month == query.Month
@@ -70,10 +51,6 @@ public static class GetMonthlyLeaderboardQueryHandler
             : null;
 
         return Result<GetMonthlyLeaderboardResponse>.Success(new GetMonthlyLeaderboardResponse(
-            YearlyTargetTreeCount: yearlyTarget,
-            MonthlyTargetTreeCount: monthlyTarget,
-            RemainingTreeCount: Math.Max(0, monthlyTarget - totalDonatedThisMonth),
-            TotalDonatedThisMonth: totalDonatedThisMonth,
             Podium: podium,
             Leaders: leaders,
             CurrentUserRank: userRankDto));
