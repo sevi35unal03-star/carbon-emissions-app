@@ -16,8 +16,9 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
-    private void OnBeforeSaveChanges(DbContext context)
+    private void OnBeforeSaveChanges(DbContext? context)
     {
+        if (context is null) return;
         context.ChangeTracker.DetectChanges();
         var auditEntries = new List<AuditEntry>();
 

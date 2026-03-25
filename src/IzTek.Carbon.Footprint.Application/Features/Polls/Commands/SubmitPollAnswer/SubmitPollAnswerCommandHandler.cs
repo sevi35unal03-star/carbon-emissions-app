@@ -38,12 +38,12 @@ public static class SubmitPollAnswerCommandHandler
                 SystemErrorCodes.UserNotFound, HttpStatusCode.NotFound);
 
         var pollResult = new UserPollResult(
-            name: user.Name,
-            surname: user.Surname,
-            userId: currentUser.UserId!.Value,
-            pollSetId: command.PollSetId,
-            totalScore: totalCarbonScore,
-            treeCount: calculatedTrees);
+     name: user.Name ?? string.Empty,
+     surname: user.Surname ?? string.Empty,
+     userId: currentUser.UserId!.Value,
+     pollSetId: command.PollSetId,
+     totalScore: totalCarbonScore,
+     treeCount: calculatedTrees);
 
         context.UserPollResults.Add(pollResult);
 
