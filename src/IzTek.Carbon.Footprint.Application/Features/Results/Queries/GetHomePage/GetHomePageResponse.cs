@@ -26,8 +26,8 @@ public record HomeUserRankDto(
     string Message);
 
 public record GetHomePageResponse(
-    GlobalTargetDto GlobalTarget,
-    MonthlyTargetDto MonthlyTarget,
-    List<HomeLeaderItemDto> TopLeaders,
-
-    HomeUserRankDto? CurrentUserRank);  // ← Eklendi
+    bool HasCompletedPoll,              // ← Flutter buna göre ekran seçer
+    GlobalTargetDto? GlobalTarget,      // ← nullable — anketi doldurmamışsa null
+    MonthlyTargetDto? MonthlyTarget,    // ← nullable
+    List<HomeLeaderItemDto>? TopLeaders, // ← nullable
+    HomeUserRankDto? CurrentUserRank);
