@@ -1,7 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Constants;
-using IzTek.Carbon.Footprint.Application.Common.Extensions;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
 
 public static class GetHomePageQueryHandler
 {
@@ -9,15 +6,9 @@ public static class GetHomePageQueryHandler
     GetHomePageQuery query,
     IApplicationDbContext context,
     ICurrentUserService currentUser,
-    ICacheService cache,
     CancellationToken ct)
     {
         var now = DateTime.UtcNow;
-        var cacheKey = CacheKeys.HomePage.Data(now.Month, now.Year);
-
-        // Cache check
-        if (await cache.GetCachedResultAsync<GetHomePageResponse>(cacheKey, ct) is { } hit)
-            return hit;
 
         // 1. Aktif TreeDefinition
         var treeDef = await context.TreeDefinitions
@@ -106,7 +97,7 @@ public static class GetHomePageQueryHandler
             ? Math.Min(100, Math.Round((double)totalDonatedThisMonth / monthlyGoal * 100, 1))
             : 0;
 
-        var result = Result<GetHomePageResponse>.Success(new GetHomePageResponse(
+        return Result<GetHomePageResponse>.Success(new GetHomePageResponse(
             GlobalTarget: new GlobalTargetDto(
                 TargetTreeCount: globalTarget,
                 DonatedTreeCount: totalDonatedAllTime,
@@ -121,10 +112,5 @@ public static class GetHomePageQueryHandler
                 ProgressPercent: monthlyProgress),
             TopLeaders: topLeaders,
             CurrentUserRank: currentUserRank));
-
-        // Cache set
-        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromMinutes(30), ct);
-
-        return result;
     }
 }

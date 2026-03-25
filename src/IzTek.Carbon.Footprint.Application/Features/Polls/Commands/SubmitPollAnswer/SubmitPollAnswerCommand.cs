@@ -1,19 +1,10 @@
-﻿using AppCacheKeys = IzTek.Carbon.Footprint.Application.Common.Constants.CacheKeys;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.SubmitPollAnswer;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.SubmitPollAnswer;
 
 public record PollAnswerItem(Guid QuestionId, Guid OptionId);
 
 public record SubmitPollAnswerCommand(
     Guid PollSetId,
-    List<PollAnswerItem> Answers) : ICacheInvalidator
-{
-    public IEnumerable<string> CacheKeys =>
-    [
-        AppCacheKeys.Leaderboard.Monthly(DateTime.UtcNow.Month, DateTime.UtcNow.Year),
-        AppCacheKeys.Goals.Detail(DateTime.UtcNow.Month, DateTime.UtcNow.Year)
-    ];
-}
+    List<PollAnswerItem> Answers);
 
 public class SubmitPollAnswerValidator : AbstractValidator<SubmitPollAnswerCommand>
 {

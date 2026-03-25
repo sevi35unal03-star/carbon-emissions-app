@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetYearlyGoals;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetYearlyGoals;
 
 public static class GetYearlyGoalsQueryHandler
 {
@@ -8,16 +6,9 @@ public static class GetYearlyGoalsQueryHandler
         GetYearlyGoalsQuery query,
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        ICacheService cache,
         CancellationToken ct)
     {
         var userId = currentUser.UserId;
-
-        var cacheKey = $"yearly-goals:{userId}:{query.Year}";
-
-        // Cache check
-        if (await cache.GetCachedResultAsync<GetYearlyGoalsResponse>(cacheKey, ct) is { } hit)
-            return hit;
 
         var goals = await context.Goals
             .AsNoTracking()
@@ -32,12 +23,7 @@ public static class GetYearlyGoalsQueryHandler
 
         var yearlyTarget = goals.Sum(x => x.TargetTreeCount);
 
-        var result = Result<GetYearlyGoalsResponse>.Success(
+        return Result<GetYearlyGoalsResponse>.Success(
             new GetYearlyGoalsResponse(yearlyTarget, goals));
-
-        // Cache set — 30 dakika, hedef güncellenince invalidate edilmeli
-        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromMinutes(30), ct);
-
-        return result;
     }
 }
