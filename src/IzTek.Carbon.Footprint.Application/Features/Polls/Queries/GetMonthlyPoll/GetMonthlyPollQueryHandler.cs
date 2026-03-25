@@ -1,21 +1,11 @@
-﻿// using Spectre.Console; ← KALDIRILDI (B-19)
-using IzTek.Carbon.Footprint.Application.Common.Constants;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 
 public class GetMonthlyPollQueryHandler
 {
     public async Task<Result<GetMonthlyPollResponse>> HandleAsync(
         IApplicationDbContext context,
-        ICacheService cacheService,
         CancellationToken ct)
     {
-        var cacheKey = CacheKeys.Poll.ActiveMonthly;  // ← merkezi sınıftan
-
-        var cachedPoll = await cacheService.GetAsync<GetMonthlyPollResponse>(cacheKey);
-        if (cachedPoll != null)
-            return Result<GetMonthlyPollResponse>.Success(cachedPoll);
-
         var response = await context.PollSets
             .AsNoTracking()
             .Where(x => x.IsActive)
@@ -47,7 +37,6 @@ public class GetMonthlyPollQueryHandler
             return Result<GetMonthlyPollResponse>.Failure(
                 SystemErrorCodes.ActivePollNotFound, HttpStatusCode.NotFound);
 
-        await cacheService.SetAsync(cacheKey, response, TimeSpan.FromHours(1));
         return Result<GetMonthlyPollResponse>.Success(response);
     }
 }

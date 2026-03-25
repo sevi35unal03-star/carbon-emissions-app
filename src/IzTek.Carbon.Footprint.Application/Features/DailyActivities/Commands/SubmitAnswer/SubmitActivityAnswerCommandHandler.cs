@@ -71,7 +71,7 @@ public static class SubmitActivityAnswerHandler
         }
 
         var now = DateTime.UtcNow;
-        var endDateTime = nextQuestion.EndDate.Date.Add(nextQuestion.ScheduledTime);
+        var endDateTime = nextQuestion.EndDate.Date.AddDays(1);
         var remainingSeconds = (long)Math.Max(0, (endDateTime - now).TotalSeconds);
 
         return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse

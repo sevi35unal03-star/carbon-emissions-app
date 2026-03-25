@@ -8,8 +8,7 @@ public static class DeleteGlobalGoalCommandHandler
         CancellationToken ct)
     {
         var goal = await context.Goals
-            .FirstOrDefaultAsync(x => x.Id == command.Id
-                                   && x.UserId == null, ct);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, ct); // ← UserId == null kaldırıldı
 
         if (goal is null)
             return Result.Failure(

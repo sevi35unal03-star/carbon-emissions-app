@@ -22,7 +22,7 @@ public static class GetNextQuestionHandler
         if (question == null) return null;
 
         var now = DateTime.UtcNow;
-        var endDateTime = question.EndDate.Date.Add(question.ScheduledTime);
+        var endDateTime = question.EndDate.Date.AddDays(1);
         var remainingSeconds = (long)Math.Max(0, (endDateTime - now).TotalSeconds);
 
         return new DailyQuestionResponse(

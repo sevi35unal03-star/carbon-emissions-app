@@ -15,7 +15,7 @@ public class CreateUserCommandHandler(
             email: request.Email,
             name: request.FirstName,
             surname: request.LastName,
-            birthDate: request.BirthDate,
+            birthDate: DateTime.SpecifyKind(request.BirthDate, DateTimeKind.Utc),
             identityNumber: request.IdentityNumber,
             phoneNumber: request.PhoneNumber,
             isKvkkApproved: request.IsKvkkApproved

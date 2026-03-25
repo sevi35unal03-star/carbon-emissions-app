@@ -9,6 +9,22 @@ public static class GetHomePageQueryHandler
     CancellationToken ct)
     {
         var now = DateTime.UtcNow;
+        var currentUserId = currentUser.UserId;
+
+        // Kullanıcı bu ay anketi doldurdu mu?
+        var hasCompletedPoll = await context.UserPollResults
+            .AnyAsync(x => x.UserId == currentUserId
+                        && x.Month == now.Month
+                        && x.Year == now.Year, ct);
+
+        // Anketi doldurmamışsa sade ekran döndür
+        if (!hasCompletedPoll)
+            return Result<GetHomePageResponse>.Success(new GetHomePageResponse(
+                HasCompletedPoll: false,
+                GlobalTarget: null,
+                MonthlyTarget: null,
+                TopLeaders: null,
+                CurrentUserRank: null));
 
         // 1. Aktif TreeDefinition
         var treeDef = await context.TreeDefinitions
@@ -32,15 +48,11 @@ public static class GetHomePageQueryHandler
         // 4. Bu aya ait global hedef
         var monthlyGoal = await context.Goals
             .AsNoTracking()
-            .Where(x => x.Month == now.Month
-                     && x.Year == now.Year
-                     && x.UserId == null)
+            .Where(x => x.Month == now.Month && x.Year == now.Year)
             .Select(x => x.TargetTreeCount)
             .FirstOrDefaultAsync(ct);
 
         // 5. Ana sayfa liderboard preview
-        var currentUserId = currentUser.UserId;
-
         var donations = await context.TreeDonations
             .AsNoTracking()
             .Where(x => x.DonationDate.Month == now.Month
@@ -98,6 +110,7 @@ public static class GetHomePageQueryHandler
             : 0;
 
         return Result<GetHomePageResponse>.Success(new GetHomePageResponse(
+            HasCompletedPoll: true,
             GlobalTarget: new GlobalTargetDto(
                 TargetTreeCount: globalTarget,
                 DonatedTreeCount: totalDonatedAllTime,
