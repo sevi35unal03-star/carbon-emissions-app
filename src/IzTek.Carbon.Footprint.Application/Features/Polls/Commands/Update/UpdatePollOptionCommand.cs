@@ -4,8 +4,7 @@ public record UpdatePollOptionCommand(
     Guid OptionId,
     string Text,
     double Value,
+    string? Message, // ← eklendi
+    Guid? NextPollQuestionId,
     int DisplayOrder
-)
-{
-    public Guid? NextPollQuestionId { get; internal set; }
-}
+);
