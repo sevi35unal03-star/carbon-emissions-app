@@ -5,10 +5,10 @@ public record GetPreviousAnswersQuery;
 public static class GetPreviousAnswersHandler
 {
     public static async Task<Result<List<PreviousAnswerGroupDto>>> Handle(
-    GetPreviousAnswersQuery query,
-    IApplicationDbContext context,
-    ICurrentUserService currentUserService,
-    CancellationToken ct)
+        GetPreviousAnswersQuery query,
+        IApplicationDbContext context,
+        ICurrentUserService currentUserService,
+        CancellationToken ct)
     {
         var userId = currentUserService.UserId;
         if (userId is null)
@@ -33,6 +33,7 @@ public static class GetPreviousAnswersHandler
         var grouped = logs
             .GroupBy(x => x.Date.Date)
             .OrderByDescending(g => g.Key)
+            .Take(1) // ← sadece en son cevaplanmış gün
             .Select(g => new PreviousAnswerGroupDto(
                 Date: g.Key,
                 Answers: g.ToList()))
