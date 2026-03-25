@@ -1,8 +1,8 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.Create;
 
-public class CreatePollOptionCommandHandler
+public static class CreatePollOptionCommandHandler
 {
-    public async Task<Result<Guid>> HandleAsync(
+    public static async Task<Result<Guid>> Handle(
         CreatePollOptionCommand command,
         IApplicationDbContext context,
         CancellationToken ct)

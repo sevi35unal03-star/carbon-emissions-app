@@ -5,3 +5,13 @@ public record PreviousAnswersResponse(
     string SelectedOptionText,
     double Score,           // ✅ int → double, GainedScore → Score
     DateTime Date);
+
+public record PreviousAnswerItemDto(
+    string QuestionText,
+    string AnswerText,
+    double Score,
+    DateTime Date);
+
+public record PreviousAnswerGroupDto(
+    DateTime Date,
+    List<PreviousAnswerItemDto> Answers);

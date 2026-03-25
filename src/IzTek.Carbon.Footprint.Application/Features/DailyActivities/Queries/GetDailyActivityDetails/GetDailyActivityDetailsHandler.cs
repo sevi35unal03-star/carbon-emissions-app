@@ -1,8 +1,8 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyActivityDetails;
 
-public class GetDailyActivityDetailsHandler
+public static class GetDailyActivityDetailsHandler
 {
-    public async Task<Result<DailyActivityDetailsResponse>> HandleAsync(
+    public static async Task<Result<DailyActivityDetailsResponse>> Handle(
         GetDailyActivityDetailsQuery request,
         IApplicationDbContext context,
         ICurrentUserService currentUserService,
@@ -13,9 +13,12 @@ public class GetDailyActivityDetailsHandler
         var end = start.AddDays(1);
 
         // 1. Kullanıcının o güne ait loglarını getir
+        if (userId is null)
+            return Result<DailyActivityDetailsResponse>.Failure(
+                SystemErrorCodes.Unauthorized, HttpStatusCode.Unauthorized);
         var logs = await context.UserActivityLogs
             .AsNoTracking()
-            .Where(x => x.UserId == Guid.Parse(userId.ToString()) &&
+            .Where(x => x.UserId == userId &&
                         x.ActivityDate >= start &&
                         x.ActivityDate < end)
             .Select(x => new DailyActivityDetailDto(
