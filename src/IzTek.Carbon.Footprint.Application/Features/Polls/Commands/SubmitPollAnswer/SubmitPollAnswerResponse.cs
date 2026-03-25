@@ -9,6 +9,5 @@ public class SubmitPollAnswerResponse
     }
 
     public double TotalCarbonScore { get; set; }
-    public int TreeCount { get; set; }
     public int CalculatedTrees { get; }
 };

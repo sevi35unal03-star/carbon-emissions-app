@@ -12,7 +12,8 @@ public class PollQuestion : BaseAuditableEntity
     private readonly List<PollOption> _options = [];
     public IReadOnlyCollection<PollOption> Options => _options.AsReadOnly();
 
-    private PollQuestion() { }
+    private PollQuestion()
+    { }
 
     public PollQuestion(Guid pollSetId, string text, int displayOrder)
     {
@@ -35,9 +36,15 @@ public class PollQuestion : BaseAuditableEntity
         return question;
     }
 
-    public void AddOption(string text, double carbonValue, Guid? nextQuestionId, int displayOrder)
+    public void AddOption(string text, double carbonValue, string? message = null, Guid? nextQuestionId = null, int displayOrder = 0)
     {
-        _options.Add(new PollOption(Id, text, carbonValue, nextQuestionId, displayOrder));
+        _options.Add(new PollOption(
+            pollQuestionId: Id,
+            text: text,
+            carbonValue: carbonValue,
+            message: message,
+            nextPollQuestionId: nextQuestionId,
+            displayOrder: displayOrder));
     }
 
     public void UpdateDetails(string text, int displayOrder)

@@ -22,10 +22,14 @@ public class GetMonthlyPollQueryHandler
                         Text = q.Text,
                         DisplayOrder = q.DisplayOrder,
                         Options = q.Options
+                            .OrderBy(o => o.DisplayOrder)
                             .Select(o => new PollOptionResponse
                             {
                                 Id = o.Id,
-                                Text = o.Text
+                                Text = o.Text,
+                                Message = o.Message,         // ← eklendi
+                                CarbonValue = o.CarbonValue, // ← eklendi
+                                NextPollQuestionId = o.NextPollQuestionId // ← eklendi
                             })
                             .ToList()
                     })

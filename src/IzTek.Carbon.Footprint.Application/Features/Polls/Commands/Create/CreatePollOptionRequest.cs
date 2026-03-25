@@ -2,7 +2,8 @@
 
 public class CreatePollOptionRequest
 {
-    public string Text { get; set; }  = string.Empty;
-    public double Value { get; set; }       
-    public int DisplayOrder { get; set; }  
+    public string Text { get; set; } = string.Empty;
+    public double Value { get; set; }
+    public string? Message { get; set; } // ← eklendi
+    public int DisplayOrder { get; set; }
 }

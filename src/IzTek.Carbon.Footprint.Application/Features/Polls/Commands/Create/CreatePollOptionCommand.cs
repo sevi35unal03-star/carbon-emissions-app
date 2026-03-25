@@ -4,5 +4,6 @@ public record CreatePollOptionCommand(
     Guid QuestionId,
     string Text,
     double Value,
+    string? Message, // ← eklendi
     int DisplayOrder
 );

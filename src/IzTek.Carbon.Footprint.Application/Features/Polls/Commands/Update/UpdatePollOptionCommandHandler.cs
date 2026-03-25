@@ -16,10 +16,11 @@ public class UpdatePollOptionCommandHandler
 
         // 2. Domain metodu ile güncelle
         option.UpdateDetails(
-            text: command.Text,
-            carbonValue: command.Value,
-            nextPollQuestionId: command.NextPollQuestionId,
-            displayOrder: command.DisplayOrder); // ✅ Direkt property atama yerine domain metodu
+    text: command.Text,
+    carbonValue: command.Value,
+    message: command.Message, // ← eklendi
+    nextPollQuestionId: command.NextPollQuestionId,
+    displayOrder: command.DisplayOrder);
 
         await context.SaveChangesAsync(ct);
 
