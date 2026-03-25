@@ -1,5 +1,4 @@
-﻿
-using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.SendPush;
+﻿using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.SendPush;
 
 namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Create;
 
@@ -11,6 +10,15 @@ public static class CreateActivityQuestionCommandHandler
         IMessageBus bus,
         CancellationToken ct)
     {
+        // Aynı gün için maksimum 2 soru kontrolü
+        var existingCount = await context.ActivityQuestions
+            .CountAsync(x => x.IsActive
+                          && x.StartDate.Date == command.StartDate.Date, ct);
+
+        if (existingCount >= 2)
+            return Result.Failure(
+                SystemErrorCodes.MaxDailyQuestionLimitReached, HttpStatusCode.BadRequest);
+
         var question = new ActivityQuestion(
             command.Text,
             command.ScheduledTime,
@@ -22,21 +30,18 @@ public static class CreateActivityQuestionCommandHandler
             question.AddOption(opt.Text, opt.CarbonValue, opt.NextQuestionId);
 
         await context.ActivityQuestions.AddAsync(question, ct);
-       
 
-        // ✅ Zamanlanmış bildirim
+        // Zamanlanmış bildirim
         var notificationDate = command.StartDate.Date.Add(command.ScheduledTime);
         if (notificationDate > DateTime.UtcNow)
         {
             await bus.ScheduleAsync(
-                new SendQuestionPushNotificationCommand(question.Id), // ✅ PollQuestionId → Id
-                notificationDate);                                     // ✅ DeliveryOptions yerine ScheduleAsync
+                new SendQuestionPushNotificationCommand(question.Id),
+                notificationDate);
         }
 
         await context.SaveChangesAsync(ct);
 
         return Result.Created();
-
-
-    } 
+    }
 }
