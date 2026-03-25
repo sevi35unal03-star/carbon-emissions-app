@@ -1,5 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
-using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
+﻿using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.DonateTrees;
 
@@ -9,7 +8,6 @@ public static class DonateTreesCommandHandler
         DonateTreesCommand command,
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        ICacheService cache,
         CancellationToken ct)
     {
         var user = await context.Users
@@ -54,9 +52,6 @@ public static class DonateTreesCommandHandler
         var donation = new TreeDonation(user.Id, treeCount, pointsSpent);
         await context.TreeDonations.AddAsync(donation, ct);
         await context.SaveChangesAsync(ct);
-
-        // Cache invalidation
-        await cache.InvalidateAsync(command, ct);
 
         return Result<DonateTreesResponse>.Success(
             new DonateTreesResponse(treeCount, user.DonatedTreeCount));

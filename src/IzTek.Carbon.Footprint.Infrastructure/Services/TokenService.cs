@@ -33,20 +33,22 @@ public class TokenService(
         if (tokenResponse.IsError) throw new Exception(tokenResponse.Error);
         return tokenResponse.AccessToken!;
     }
+
     public async Task<TokenResponse> CreateTokenAsync(User user)
     {
         // 1. Kullanıcı rollerini ve Claim'leri hazırla
         var roles = await userManager.GetRolesAsync(user);
         var claims = new List<Claim>
     {
-        new(ClaimTypes.NameIdentifier, user.Id.ToString()), //
+        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new(ClaimTypes.Email, user.Email ?? ""),
         new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
     };
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         // 2. İmzalama anahtarını JwtSettings'ten al
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.SecretKey));
+        var key = new SymmetricSecurityKey(
+     Encoding.UTF8.GetBytes(_jwt.SecretKey ?? throw new InvalidOperationException("JWT SecretKey is not configured.")));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         // 3. Token nesnesini oluştur
