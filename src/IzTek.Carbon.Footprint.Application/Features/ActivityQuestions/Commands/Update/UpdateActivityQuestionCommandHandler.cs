@@ -7,7 +7,7 @@ public static class UpdateActivityQuestionCommandHandler
     public static async Task<Result> HandleAsync(
         UpdateActivityQuestionCommand command,
         IApplicationDbContext context,
-        ICacheService cacheService,
+
         CancellationToken ct)
     {
         // 1. Soruyu ve Mevcut Seçeneklerini Getir (Tracking Açık)
@@ -41,7 +41,7 @@ public static class UpdateActivityQuestionCommandHandler
 
         foreach (var opt in optionsToRemove)
         {
-            // Bu seçeneklere verilmiş cevap (SubmitAnswer) varsa silmek hata verebilir, 
+            // Bu seçeneklere verilmiş cevap (SubmitAnswer) varsa silmek hata verebilir,
             // ama admin panelinde "sil" dendiyse context üzerinden kaldırıyoruz.
             context.ActivityOptions.Remove(opt);
         }
@@ -73,7 +73,6 @@ public static class UpdateActivityQuestionCommandHandler
 
         if (result > 0)
         {
-            await cacheService.RemoveAsync("all_activity_questions",ct);
             return Result.Success();
         }
 

@@ -2,31 +2,42 @@
 
 public record GetPreviousAnswersQuery;
 
-public class GetPreviousAnswersHandler
+public static class GetPreviousAnswersHandler
 {
-    public async Task<Result<List<PreviousAnswersResponse>>> HandleAsync(
-        GetPreviousAnswersQuery query,
-        IApplicationDbContext context,
-        ICurrentUserService currentUserService,
-        CancellationToken ct)
+    public static async Task<Result<List<PreviousAnswerGroupDto>>> Handle(
+    GetPreviousAnswersQuery query,
+    IApplicationDbContext context,
+    ICurrentUserService currentUserService,
+    CancellationToken ct)
     {
         var userId = currentUserService.UserId;
+        if (userId is null)
+            return Result<List<PreviousAnswerGroupDto>>.Failure(
+                SystemErrorCodes.Unauthorized, HttpStatusCode.Unauthorized);
 
         var logs = await context.UserActivityLogs
             .AsNoTracking()
-            .Where(x => x.UserId == userId) 
+            .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.ActivityDate)
-            .Select(x => new PreviousAnswersResponse(
-                x.ActivityQuestion.Text,   // ✅ ActivityOption.Question → ActivityQuestion
+            .Select(x => new PreviousAnswerItemDto(
+                x.ActivityQuestion.Text,
                 x.ActivityOption.Text,
-                x.TotalCarbonScore,        // ✅ EarnedScore → TotalCarbonScore
+                x.TotalCarbonScore,
                 x.ActivityDate))
             .ToListAsync(ct);
 
         if (!logs.Any())
-            return Result<List<PreviousAnswersResponse>>.Failure(
+            return Result<List<PreviousAnswerGroupDto>>.Failure(
                 SystemErrorCodes.PreviousAnswersNotFound, HttpStatusCode.NotFound);
 
-        return Result<List<PreviousAnswersResponse>>.Success(logs);
+        var grouped = logs
+            .GroupBy(x => x.Date.Date)
+            .OrderByDescending(g => g.Key)
+            .Select(g => new PreviousAnswerGroupDto(
+                Date: g.Key,
+                Answers: g.ToList()))
+            .ToList();
+
+        return Result<List<PreviousAnswerGroupDto>>.Success(grouped);
     }
 }
