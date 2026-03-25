@@ -1,5 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
-using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Create;
+﻿using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Create;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.CreateGlobal;
 
@@ -8,7 +7,6 @@ public static class CreateGlobalGoalCommandHandler
     public static async Task<Result<CreateGoalResponse>> Handle(
         CreateGlobalGoalCommand command,
         IApplicationDbContext context,
-        ICacheService cache,
         CancellationToken ct)
     {
         var exists = await context.Goals
@@ -23,9 +21,6 @@ public static class CreateGlobalGoalCommandHandler
         var goal = new Goal(command.Month, command.Year, command.TargetTreeCount);
         await context.Goals.AddAsync(goal, ct);
         await context.SaveChangesAsync(ct);
-
-        // Cache invalidation
-        await cache.InvalidateAsync(command, ct);
 
         return Result<CreateGoalResponse>.Success(
             new CreateGoalResponse(goal.Id, goal.Month, goal.Year, goal.TargetTreeCount));

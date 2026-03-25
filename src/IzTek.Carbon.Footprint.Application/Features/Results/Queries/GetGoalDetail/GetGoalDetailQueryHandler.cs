@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Constants;
-using IzTek.Carbon.Footprint.Application.Common.Extensions;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
 
@@ -10,15 +8,8 @@ public static class GetGoalDetailQueryHandler
         GetGoalDetailQuery query,
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        ICacheService cache,
         CancellationToken ct)
     {
-        var cacheKey = CacheKeys.Goals.Detail(query.Month, query.Year);
-
-        // Cache check
-        if (await cache.GetCachedResultAsync<GetGoalDetailResponse>(cacheKey, ct) is { } hit)
-            return hit;
-
         // 1. O aya ait poll sonuçları var mı kontrol et
         var anyResult = await context.UserPollResults
             .AsNoTracking()
@@ -73,17 +64,12 @@ public static class GetGoalDetailQueryHandler
         var monthLabel = new DateTime(query.Year, query.Month, 1)
             .ToString("MMMM yyyy", new CultureInfo("tr-TR"));
 
-        var result = Result<GetGoalDetailResponse>.Success(new GetGoalDetailResponse(
+        return Result<GetGoalDetailResponse>.Success(new GetGoalDetailResponse(
             Month: query.Month,
             Year: query.Year,
             MonthLabel: monthLabel,
             TargetTreeCount: treeDef?.TreeCount ?? 0,
             Leaders: leaders,
             CurrentUserRank: userRankDto));
-
-        // Cache set
-        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromHours(1), ct);
-
-        return result;
     }
 }

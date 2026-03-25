@@ -1,16 +1,6 @@
-﻿using AppCacheKeys = IzTek.Carbon.Footprint.Application.Common.Constants.CacheKeys;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Delete;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Goals.Commands.Delete;
 
 public record DeleteGoalCommand(
     Guid Id,
     int Month,
-    int Year) : ICacheInvalidator
-{
-    public IEnumerable<string> CacheKeys =>
-    [
-        AppCacheKeys.Goals.Detail(Month, Year),
-        AppCacheKeys.Goals.Yearly(Year),
-        AppCacheKeys.HomePage.Data(Month, Year)
-    ];
-}
+    int Year);

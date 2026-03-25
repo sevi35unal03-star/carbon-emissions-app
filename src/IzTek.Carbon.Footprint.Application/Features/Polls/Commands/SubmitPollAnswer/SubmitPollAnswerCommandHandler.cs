@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.SubmitPollAnswer;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.SubmitPollAnswer;
 
 public static class SubmitPollAnswerCommandHandler
 {
@@ -8,7 +6,6 @@ public static class SubmitPollAnswerCommandHandler
         SubmitPollAnswerCommand command,
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        ICacheService cache,
         CancellationToken ct)
     {
         var optionIds = command.Answers
@@ -65,9 +62,6 @@ public static class SubmitPollAnswerCommandHandler
 
         user.UpdateMonthlyCarbonResult(totalCarbonScore);
         await context.SaveChangesAsync(ct);
-
-        // Cache invalidation
-        await cache.InvalidateAsync(command, ct);
 
         return Result<SubmitPollAnswerResponse>.Success(new SubmitPollAnswerResponse(
             totalCarbonScore,

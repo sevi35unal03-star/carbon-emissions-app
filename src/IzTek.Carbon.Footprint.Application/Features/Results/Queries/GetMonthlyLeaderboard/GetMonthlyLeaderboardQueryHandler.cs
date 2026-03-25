@@ -1,5 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Constants;
-using IzTek.Carbon.Footprint.Application.Common.Extensions;
+﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
 
@@ -9,15 +8,8 @@ public static class GetMonthlyLeaderboardQueryHandler
         GetMonthlyLeaderboardQuery query,
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        ICacheService cache,
         CancellationToken ct)
     {
-        var cacheKey = CacheKeys.Leaderboard.Monthly(query.Month, query.Year);
-
-        // Cache check
-        if (await cache.GetCachedResultAsync<GetMonthlyLeaderboardResponse>(cacheKey, ct) is { } hit)
-            return hit;
-
         var monthlyGoal = await context.Goals
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Month == query.Month && x.Year == query.Year, ct);
@@ -77,7 +69,7 @@ public static class GetMonthlyLeaderboardQueryHandler
                 $"{userEntry.TotalTrees} Ağaç ile {userEntry.Rank}. sıradasınız.")
             : null;
 
-        var result = Result<GetMonthlyLeaderboardResponse>.Success(new GetMonthlyLeaderboardResponse(
+        return Result<GetMonthlyLeaderboardResponse>.Success(new GetMonthlyLeaderboardResponse(
             YearlyTargetTreeCount: yearlyTarget,
             MonthlyTargetTreeCount: monthlyTarget,
             RemainingTreeCount: Math.Max(0, monthlyTarget - totalDonatedThisMonth),
@@ -85,10 +77,5 @@ public static class GetMonthlyLeaderboardQueryHandler
             Podium: podium,
             Leaders: leaders,
             CurrentUserRank: userRankDto));
-
-        // Cache set
-        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromHours(1), ct);
-
-        return result;
     }
 }

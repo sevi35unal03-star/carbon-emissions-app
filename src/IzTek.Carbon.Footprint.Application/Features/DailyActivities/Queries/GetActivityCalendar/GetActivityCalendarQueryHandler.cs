@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
-
-namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetActivityCalendar;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetActivityCalendar;
 
 public static class GetActivityCalendarQueryHandler
 {
@@ -8,16 +6,9 @@ public static class GetActivityCalendarQueryHandler
         GetActivityCalendarQuery query,
         IApplicationDbContext context,
         ICurrentUserService currentUserService,
-        ICacheService cache,
         CancellationToken ct)
     {
         var userId = currentUserService.UserId;
-
-        var cacheKey = $"activity-calendar:{userId}:{query.Year}:{query.Month}:{query.Period}";
-
-        // Cache check
-        if (await cache.GetCachedResultAsync<CalendarResponse>(cacheKey, ct) is { } hit)
-            return hit;
 
         DateTime startDate;
         DateTime endDate;
@@ -57,15 +48,10 @@ public static class GetActivityCalendarQueryHandler
             .OrderBy(x => x.Date)
             .ToListAsync(ct);
 
-        var result = Result<CalendarResponse>.Success(new CalendarResponse
+        return Result<CalendarResponse>.Success(new CalendarResponse
         {
             TotalScore = items.Sum(x => x.Score),
             Items = items
         });
-
-        // 15 dakika cache — kullanıcı aktivite ekleyince invalidate edilmeli
-        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromMinutes(15), ct);
-
-        return result;
     }
 }
