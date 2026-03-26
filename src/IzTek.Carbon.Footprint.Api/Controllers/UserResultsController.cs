@@ -2,10 +2,10 @@
 using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.CreateGlobal;
 using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.DeleteGlobal;
 using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.UpdateGlobal;
-using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetGoalDetail;
+
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
-using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetPreviousGoals;
+
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserDailyResults;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
@@ -48,16 +48,6 @@ public class UserResultsPublicController(IMessageBus bus, IStringLocalizer<Resou
 public class GoalsController(IMessageBus bus, IStringLocalizer<Resource> localizer)
     : BaseController(localizer)
 {
-    [HttpGet]
-    public async Task<IActionResult> GetGoalAsync([FromQuery] GetGoalDetailQuery query)
-        => CreateActionResultInstance(
-            await bus.InvokeAsync<Result<GetGoalDetailResponse>>(query));
-
-    [HttpGet("history")]
-    public async Task<IActionResult> GetGoalHistoryAsync([FromQuery] GetPreviousGoalsQuery query)
-        => CreateActionResultInstance(
-            await bus.InvokeAsync<Result<List<GetPreviousGoalsResponse>>>(query));
-
     [HttpPost("global")]
     public async Task<IActionResult> CreateGlobalGoalAsync([FromBody] CreateGlobalGoalCommand command)
         => CreateActionResultInstance(
