@@ -28,15 +28,8 @@ public static class DonateTreesCommandHandler
             return Result<DonateTreesResponse>.Failure(
                 SystemErrorCodes.TreeDefinitionNotFound, HttpStatusCode.NotFound);
 
-        if (command.PointsToSpend <= 0)
-            return Result<DonateTreesResponse>.Failure(
-                SystemErrorCodes.InvalidParameter, HttpStatusCode.BadRequest);
-
-        if (command.PointsToSpend > user.TotalPoints)
-            return Result<DonateTreesResponse>.Failure(
-                SystemErrorCodes.InsufficientPoints, HttpStatusCode.BadRequest);
-
-        var pointsSpent = command.PointsToSpend;
+        // Tüm puanı bağışla
+        var pointsSpent = user.TotalPoints;
         var treeCount = (int)treeDef.CalculateTreeCount(pointsSpent);
 
         try

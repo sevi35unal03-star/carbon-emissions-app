@@ -1,8 +1,8 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Queries.GetMonthlyPoll;
 
-public class GetMonthlyPollQueryHandler
+public static class GetMonthlyPollQueryHandler
 {
-    public async Task<Result<GetMonthlyPollResponse>> HandleAsync(
+    public static async Task<Result<GetMonthlyPollResponse>> Handle(
         IApplicationDbContext context,
         CancellationToken ct)
     {

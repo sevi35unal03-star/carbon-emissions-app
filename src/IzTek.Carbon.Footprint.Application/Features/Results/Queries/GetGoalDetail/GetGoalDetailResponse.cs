@@ -8,6 +8,7 @@ public record GetGoalDetailResponse(
     List<LeaderboardItemDto> Leaders,
     UserRankDto? CurrentUserRank);
 
+//Bunlar GetMonthlyLeaderboardResponse'daki DTO'larla aynı, Figma'da hedef detay sayfasi yok o yuzden kaldirilacak.
 public record LeaderboardItemDto(
     int Rank,
     string FullName,
@@ -17,4 +18,5 @@ public record LeaderboardItemDto(
 public record UserRankDto(
     int Rank,           // 272. sıra
     int TreeCount,
+
     string Message); // "120 Ağaç ile 272. sıradasınız."

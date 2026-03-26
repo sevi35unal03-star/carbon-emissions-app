@@ -1,5 +1,6 @@
 ﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Create;
+using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Delete;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.DonateTrees;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
@@ -68,10 +69,27 @@ public class UsersController(IMessageBus bus,
     /// Seçenek 2 (kısmi):    POST /users/me/donations { "pointsToSpend": 5000 }
     /// </summary>
     [HttpPost("me/donations")]
-    public async Task<IActionResult> DonateTreesAsync(
-        [FromBody] DonateTreesCommand command)  // ← body eklendi
+    public async Task<IActionResult> DonateTreesAsync()
+     => CreateActionResultInstance(
+         await bus.InvokeAsync<Result<DonateTreesResponse>>(new DonateTreesCommand()));
+
+    // ME
+
+    // ... mevcut endpointler ...
+
+    /// <summary>
+    /// Token sahibi kullanıcının kendi profilini (hesabını) siler.
+    /// Bu işlem geri alınamaz.
+    /// </summary>
+    /// <remarks>
+    /// Hesap silme işlemi için onay zorunludur.
+    /// </remarks>
+
+    /// <summary>Hesabı siler (soft delete). Onay popup'ından sonra çağrılır.</summary>
+    [HttpDelete("me")]
+    public async Task<IActionResult> DeleteAccountAsync()
         => CreateActionResultInstance(
-            await bus.InvokeAsync<Result<DonateTreesResponse>>(command));
+            await bus.InvokeAsync<Result>(new DeleteUserCommand()));
 
     //[HttpPost("me/donations")]
     // public async Task<IActionResult> DonateTreesAsync()
@@ -84,5 +102,5 @@ public class UsersController(IMessageBus bus,
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllAsync([FromQuery] GetUsersDetailedQuery query)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<List<GetUsersDetailedResponse>>>(query));
+            => CreateActionResultInstance(await bus.InvokeAsync<Result<List<GetUsersDetailedResponse>>>(query));
 }
