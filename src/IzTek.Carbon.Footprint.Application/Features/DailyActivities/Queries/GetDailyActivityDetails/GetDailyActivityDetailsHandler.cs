@@ -22,10 +22,10 @@ public static class GetDailyActivityDetailsHandler
                         x.ActivityDate >= start &&
                         x.ActivityDate < end)
             .Select(x => new DailyActivityDetailDto(
-                x.ActivityQuestion.Text,
-                x.ActivityOption.Text,
-                x.TotalCarbonScore,
-                x.CreatedAt))
+    x.ActivityQuestion.Text,
+    x.ActivityOption.Text,
+    x.TotalCarbonScore,
+    x.ActivityDate)) // ← düzeltildi
             .ToListAsync(ct);
 
         if (!logs.Any())

@@ -2,7 +2,9 @@
 using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetActivityCalendar;
 using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyActivityDetails;
 using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyQuestions;
+using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetMonthlyActivities;
 using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetPendingQuestions;
+using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetPreviousAnswers;
 using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
@@ -19,9 +21,9 @@ public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resourc
     /// </summary>
     [HttpGet("questions")]
     public async Task<IActionResult> GetDailyQuestionsAsync()
-    => CreateActionResultInstance(
-        await bus.InvokeAsync<Result<List<DailyQuestionResponse>>>(
-            new GetDailyQuestionsQuery()));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<List<DailyQuestionResponse>>>(
+                new GetDailyQuestionsQuery()));
 
     /// <summary>
     /// Kullanicinin bir soruya verdigi cevabi kaydeder.
@@ -29,22 +31,39 @@ public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resourc
     /// </summary>
     [HttpPost("answers")]
     public async Task<IActionResult> SubmitAnswerAsync([FromBody] SubmitActivityAnswerCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<SubmitActivityAnswerResponse>>(command));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<SubmitActivityAnswerResponse>>(command));
 
     /// <summary>
     /// Takvim gorunumu icin kullanicinin aktivite gecmisini getirir.
     /// month girilirse aylik, girilmezse yillik tum gunler doner.
     /// </summary>
-    /// <remarks>Query: year (zorunlu), month (opsiyonel)</remarks>
     [HttpGet("calendar")]
     public async Task<IActionResult> GetCalendarAsync([FromQuery] GetActivityCalendarQuery query)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<CalendarResponse>>(query));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<CalendarResponse>>(query));
+
+    /// <summary>
+    /// Tümünü Gör — seçilen ay ve period (1-15 / 16-31) için günlük skor listesi.
+    /// </summary>
+    [HttpGet("monthly")]
+    public async Task<IActionResult> GetMonthlyActivitiesAsync([FromQuery] GetMonthlyActivitiesQuery query)
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<MonthlyActivityResponse>>(query));
+
+    /// <summary>
+    /// Gunluk Aktivitelerim — en son cevaplanmis gunun cevaplari.
+    /// </summary>
+    [HttpGet("previous-answers")]
+    public async Task<IActionResult> GetPreviousAnswersAsync()
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<List<PreviousAnswerGroupDto>>>(
+                new GetPreviousAnswersQuery()));
 
     /// <summary>
     /// REST unified endpoint:
-    ///   GET /daily-activities?status=pending   -> bekleyen sorular { hasPending, pendingCount }
-    ///   GET /daily-activities?date=yyyy-MM-dd  -> gun detayi { date, totalScore, answers }
-    /// Query parametreleri biribirini dislar — ikisi birden gonderilirse status onceliklidir.
+    ///   GET /daily-activities?status=pending   -> bekleyen sorular
+    ///   GET /daily-activities?date=yyyy-MM-dd  -> gun detayi
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAsync(
@@ -53,13 +72,14 @@ public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resourc
     {
         if (status == "pending")
             return CreateActionResultInstance(
-                await bus.InvokeAsync<Result<PendingQuestionsResponse>>(new GetPendingQuestionsQuery()));
+                await bus.InvokeAsync<Result<PendingQuestionsResponse>>(
+                    new GetPendingQuestionsQuery()));
 
         if (date.HasValue)
             return CreateActionResultInstance(
-                await bus.InvokeAsync<Result<DailyActivityDetailsResponse>>(new GetDailyActivityDetailsQuery(date.Value)));
+                await bus.InvokeAsync<Result<DailyActivityDetailsResponse>>(
+                    new GetDailyActivityDetailsQuery(date.Value)));
 
-        // ← string yerine Result.Failure
         return CreateActionResultInstance(
             Result.Failure(SystemErrorCodes.InvalidParameter, HttpStatusCode.BadRequest));
     }
