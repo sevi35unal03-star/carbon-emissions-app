@@ -119,6 +119,8 @@ await app.InitializeDatabaseAsync();
 await app.SeedRolesAsync();
 await app.SeedAdminUserAsync();
 await app.SeedScoringSettingsAsync();
+await app.SeedActivityQuestionsAsync();
+await app.SeedMonthlyPollAsync();
 await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();

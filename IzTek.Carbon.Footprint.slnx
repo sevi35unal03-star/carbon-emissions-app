@@ -20,10 +20,6 @@
     <Project Path="src/IzTek.Carbon.Footprint.Infrastructure/IzTek.Carbon.Footprint.Infrastructure.csproj" />
     <Project Path="src/IzTek.Carbon.Footprint.Persistence/IzTek.Carbon.Footprint.Persistence.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
-  <Folder Name="/tests/IzTek.Carbon.Footprint.Tests.Architecture/" />
-  <Folder Name="/tests/IzTek.Carbon.Footprint.Tests.Integration/" />
-  <Folder Name="/tests/IzTek.Carbon.Footprint.Tests.Unit/" />
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
