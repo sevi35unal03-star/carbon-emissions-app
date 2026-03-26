@@ -13,6 +13,12 @@ public class PollQuestionConfigurations : IEntityTypeConfiguration<PollQuestion>
         builder.Property(x => x.DisplayOrder)
                .IsRequired();
 
+        // ← ekle
+        builder.HasOne(x => x.PollSet)
+               .WithMany(x => x.Questions)
+               .HasForeignKey(x => x.PollSetId)
+               .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasMany(x => x.Options)
                .WithOne()
                .HasForeignKey(x => x.PollQuestionId)

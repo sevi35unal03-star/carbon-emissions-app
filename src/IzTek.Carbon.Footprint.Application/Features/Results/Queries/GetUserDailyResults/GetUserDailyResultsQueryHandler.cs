@@ -1,16 +1,17 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserDailyResults;
 
-public class GetUserDailyResultsHandler(IApplicationDbContext context)
+public static class GetUserDailyResultsHandler
 {
-    public async Task<Result<List<UserDailyResultResponse>>> HandleAsync(
+    public static async Task<Result<List<UserDailyResultResponse>>> Handle(
         GetUserDailyResultsQuery query,
+        IApplicationDbContext context,
         CancellationToken ct)
     {
         var today = DateTime.UtcNow.Date;
         var tomorrow = today.AddDays(1);
 
-        // 1. Bugünkü aktivite sayısı ve toplam karbon skoru
-        var todayActivityQuery = context.UserActivityLogs
+        // 1. Bugünkü aktivite loglarını çek
+        var todayActivities = await context.UserActivityLogs
             .AsNoTracking()
             .Where(x => x.ActivityDate >= today && x.ActivityDate < tomorrow)
             .GroupBy(x => x.UserId)
@@ -19,38 +20,32 @@ public class GetUserDailyResultsHandler(IApplicationDbContext context)
                 UserId = g.Key,
                 Count = g.Count(),
                 CarbonScore = g.Sum(x => x.TotalCarbonScore)
-            });
+            })
+            .ToListAsync(ct);
 
-        // 2. Kullanıcının bağışladığı ağaç sayısı (TreeDefinition üzerinden hesaplama)
-        var treeDefinition = await context.TreeDefinitions
+        // 2. Kullanıcıları çek
+        var users = await context.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.IsActive, ct);
+            .Where(x => !x.IsDeleted)
+            .ToListAsync(ct);
 
-        var pointPerTree = treeDefinition is not null && treeDefinition.PointUnit > 0
-            ? treeDefinition.PointUnit / treeDefinition.TreeCount
-            : 1;
+        // 3. In-memory join — nullable object hatası önlenir
+        var results = users.Select(u =>
+        {
+            var activity = todayActivities.FirstOrDefault(a => a.UserId == u.Id);
 
-        // 3. Ana sorgu
-        var results = await (
-            from u in context.Users.AsNoTracking()
-
-            join activity in todayActivityQuery
-                on u.Id equals activity.UserId into actJoin
-            from activity in actJoin.DefaultIfEmpty()
-
-            select new UserDailyResultResponse
+            return new UserDailyResultResponse
             {
                 Id = u.Id,
                 LastLoginDate = u.LastLoginDate,
-                CarbonFootprintScore = activity != null ? activity.CarbonScore : 0,
-                DailyActivitiesCount = activity != null ? activity.Count : 0,
-                TotalCurrentScore = u.TotalPoints,        // birikmiş puan
-                DonatedTreeCount = u.DonatedTreeCount,   // ✅ entity'den al
-                EquivalentPoints = u.TotalPoints,        // veya kaldır — TotalCurrentScore ile aynı
-            }
-        ).ToListAsync(ct);
+                CarbonFootprintScore = activity?.CarbonScore ?? 0,
+                DailyActivitiesCount = activity?.Count ?? 0,
+                TotalCurrentScore = u.TotalPoints,
+                DonatedTreeCount = u.DonatedTreeCount,
+                EquivalentPoints = u.TotalPoints
+            };
+        }).ToList();
 
         return Result<List<UserDailyResultResponse>>.Success(results);
-        //Tip guvenligi: Result.Success() tipi algilayamiyor. Bu nedenle Result<List<UserDailyResultResponse>>.Success() seklinde kullanmak gerekiyor.
     }
 }

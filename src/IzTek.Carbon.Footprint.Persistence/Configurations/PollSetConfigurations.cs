@@ -18,11 +18,6 @@ public class PollSetConfigurations : IEntityTypeConfiguration<PollSet>
 
         builder.Property(x => x.IsActive)
                .HasDefaultValue(true);
-
-        // İlişki: Bir set silindiğinde bağlı tüm sorular silinmelidir.
-        builder.HasMany(x => x.Questions)
-               .WithOne()
-               .HasForeignKey(x => x.PollSetId)
-               .OnDelete(DeleteBehavior.Cascade);
+        // ← HasMany kaldırıldı
     }
 }

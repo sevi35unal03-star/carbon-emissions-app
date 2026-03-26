@@ -17,5 +17,6 @@ public class UserLogsController(IMessageBus bus, IStringLocalizer<Resource> loca
     /// </remarks>
     [HttpGet]
     public async Task<IActionResult> GetLogsAsync([FromQuery] GetAuditLogsQuery query)
-        => CreateActionResultInstance(await bus.InvokeAsync<PagedResult<GetAuditLogResponse>>(query));
+    => CreateActionResultInstance(
+        await bus.InvokeAsync<PagedResult<List<GetAuditLogResponse>>>(query));
 }

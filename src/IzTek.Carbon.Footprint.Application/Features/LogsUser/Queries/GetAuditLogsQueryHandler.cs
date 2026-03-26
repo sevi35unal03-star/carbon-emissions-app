@@ -2,18 +2,15 @@
 
 public static class GetAuditLogsQueryHandler
 {
-    public static async Task<PagedResult<List<GetAuditLogResponse>>> HandleAsync(
+    public static async Task<PagedResult<List<GetAuditLogResponse>>> Handle(
         GetAuditLogsQuery query,
         IApplicationDbContext context,
         CancellationToken ct)
     {
-        // 1. Temel sorguyu oluştur
         var baseQuery = context.AuditLogs.AsNoTracking();
 
-        // 2. Toplam kayıt sayısını al
         var totalCount = await baseQuery.CountAsync(ct);
 
-        // 3. Sayfala ve map et
         var data = await baseQuery
             .OrderByDescending(x => x.CreatedAt)
             .Skip((query.PageNumber - 1) * query.PageSize)
@@ -28,12 +25,10 @@ public static class GetAuditLogsQueryHandler
             })
             .ToListAsync(ct);
 
-        // 4. PagedResult döndür
         return PagedResult<List<GetAuditLogResponse>>.Success(
             data: data,
             totalCount: totalCount,
             pageNumber: query.PageNumber,
-            pageSize: query.PageSize
-        );
+            pageSize: query.PageSize);
     }
 }

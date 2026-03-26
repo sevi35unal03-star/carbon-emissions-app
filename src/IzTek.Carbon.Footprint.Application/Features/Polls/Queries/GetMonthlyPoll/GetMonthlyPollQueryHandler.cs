@@ -3,6 +3,7 @@
 public static class GetMonthlyPollQueryHandler
 {
     public static async Task<Result<GetMonthlyPollResponse>> Handle(
+        GetMonthlyPollQuery query,
         IApplicationDbContext context,
         CancellationToken ct)
     {
@@ -27,9 +28,9 @@ public static class GetMonthlyPollQueryHandler
                             {
                                 Id = o.Id,
                                 Text = o.Text,
-                                Message = o.Message,         // ← eklendi
-                                CarbonValue = o.CarbonValue, // ← eklendi
-                                NextPollQuestionId = o.NextPollQuestionId // ← eklendi
+                                Message = o.Message,
+                                CarbonValue = o.CarbonValue,
+                                NextPollQuestionId = o.NextPollQuestionId
                             })
                             .ToList()
                     })

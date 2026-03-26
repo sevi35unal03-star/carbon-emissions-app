@@ -1,29 +1,29 @@
-﻿
-namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.CopyQuestions;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Polls.Commands.CopyQuestions;
 
-public class CopyQuestionsToPollCommandHandler(IApplicationDbContext context)
+public static class CopyQuestionsToPollCommandHandler
 {
-    private readonly IApplicationDbContext _context = context;
-
-    public async Task<Result> Handle(CopyQuestionsToPollCommand command, CancellationToken ct)
+    public static async Task<Result> Handle(
+        CopyQuestionsToPollCommand command,
+        IApplicationDbContext context,
+        CancellationToken ct)
     {
         // 1. Boş liste kontrolü
         if (command.SourceQuestionIds is null || !command.SourceQuestionIds.Any())
             return Result.Failure(SystemErrorCodes.SourceQuestionIdsEmpty, HttpStatusCode.BadRequest);
 
         // 2. Kaynak soruları ve seçeneklerini getir
-        var sourceQuestions = await _context.ActivityQuestions
+        var sourceQuestions = await context.ActivityQuestions
             .AsNoTracking()
             .Include(x => x.Options)
-            .Where(x => command.SourceQuestionIds.Contains(x.Id)) // ✅ PollQuestionId → Id
+            .Where(x => command.SourceQuestionIds.Contains(x.Id))
             .ToListAsync(ct);
 
         // 3. Kısmi eşleşme kontrolü
         var missingIds = command.SourceQuestionIds
-            .Except(sourceQuestions.Select(x => x.Id)) // ✅ PollQuestionId → Id
+            .Except(sourceQuestions.Select(x => x.Id))
             .ToList();
 
-        if (missingIds.Any())
+        if (missingIds.Count != 0)
             return Result.Failure(
                 SystemErrorCodes.SourceQuestionsNotFound,
                 $"Şu ID'lere ait sorular bulunamadı: {string.Join(", ", missingIds)}",
@@ -34,8 +34,8 @@ public class CopyQuestionsToPollCommandHandler(IApplicationDbContext context)
             .Select(sourceQ => PollQuestion.CloneFrom(sourceQ, command.PollSetId))
             .ToList();
 
-        await _context.PollQuestions.AddRangeAsync(pollQuestions, ct);
-        await _context.SaveChangesAsync(ct);
+        await context.PollQuestions.AddRangeAsync(pollQuestions, ct);
+        await context.SaveChangesAsync(ct);
 
         return Result.Success();
     }
