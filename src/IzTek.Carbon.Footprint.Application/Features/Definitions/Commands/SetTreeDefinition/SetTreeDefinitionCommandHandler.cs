@@ -1,19 +1,13 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Definitions.Commands.SetTreeDefinition;
 
-public class SetTreeDefinitionCommandHandler
+public static class SetTreeDefinitionCommandHandler
 {
-    private readonly IApplicationDbContext _context;
-
-    public SetTreeDefinitionCommandHandler(IApplicationDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<Result<SetTreeDefinitionResponse>> HandleAsync(
+    public static async Task<Result<SetTreeDefinitionResponse>> HandleAsync(
         SetTreeDefinitionCommand command,
+        IApplicationDbContext context,
         CancellationToken ct)
     {
-        var definition = await _context.TreeDefinitions
+        var definition = await context.TreeDefinitions
             .FirstOrDefaultAsync(x => x.IsActive, ct);
 
         if (definition is null)
@@ -22,7 +16,7 @@ public class SetTreeDefinitionCommandHandler
                 command.PointUnit,
                 command.TreeCount,
                 command.GlobalTargetTreeCount);
-            _context.TreeDefinitions.Add(definition);
+            context.TreeDefinitions.Add(definition);
         }
         else
         {
@@ -32,7 +26,7 @@ public class SetTreeDefinitionCommandHandler
                 command.GlobalTargetTreeCount);
         }
 
-        await _context.SaveChangesAsync(ct);
+        await context.SaveChangesAsync(ct);
 
         return Result<SetTreeDefinitionResponse>.Success(
             new SetTreeDefinitionResponse(

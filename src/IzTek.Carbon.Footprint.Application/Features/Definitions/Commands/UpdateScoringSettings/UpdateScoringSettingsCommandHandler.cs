@@ -1,23 +1,17 @@
 ﻿namespace IzTek.Carbon.Footprint.Application.Features.Definitions.Commands.UpdateScoringSettings;
 
-public class UpdateScoringSettingsHandler
+public static class UpdateScoringSettingsHandler
 {
-    private readonly IApplicationDbContext _context;
-
-    public UpdateScoringSettingsHandler(IApplicationDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<Result> HandleAsync(
+    public static async Task<Result> HandleAsync(
         UpdateScoringSettingsCommand command,
+        IApplicationDbContext context,
         CancellationToken ct)
     {
         var settingIds = command.Settings
             .Select(s => s.Id)
             .ToList();
 
-        var existingSettings = await _context.ScoringSettings
+        var existingSettings = await context.ScoringSettings
             .Where(s => settingIds.Contains(s.Id))
             .ToListAsync(ct);
 
@@ -43,7 +37,7 @@ public class UpdateScoringSettingsHandler
             setting.UpdateValue(newValue);
         }
 
-        await _context.SaveChangesAsync(ct);
+        await context.SaveChangesAsync(ct);
 
         return Result.Success();
     }
