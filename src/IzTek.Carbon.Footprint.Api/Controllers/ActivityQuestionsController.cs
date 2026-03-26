@@ -6,7 +6,6 @@ using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries;
 using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetById;
 using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetList;
 
-
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize(Roles = "Admin")]
@@ -18,8 +17,10 @@ public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resou
     /// <summary>Aktivite sorularini listeler. pollId girilirse o ankete ait sorular gelir.</summary>
     /// <remarks>Query: pollId (opsiyonel)</remarks>
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync([FromQuery] Guid? pollId = null)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<List<ActivityQuestionResponse>>>(new GetActivityQuestionsQuery(pollId)));
+    public async Task<IActionResult> GetAllAsync()
+    => CreateActionResultInstance(
+        await bus.InvokeAsync<Result<List<ActivityQuestionResponse>>>(
+            new GetActivityQuestionsQuery()));
 
     /// <summary>Belirli bir aktivite sorusunun detayini getirir.</summary>
     [HttpGet("{id:guid}")]
@@ -51,5 +52,4 @@ public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resou
     [HttpPost("{id:guid}/notifications")]
     public async Task<IActionResult> SendPushNotificationAsync(Guid id, [FromBody] SendQuestionPushNotificationCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
-    
 }
