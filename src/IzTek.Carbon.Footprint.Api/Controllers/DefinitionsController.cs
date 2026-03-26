@@ -1,5 +1,7 @@
 ﻿using IzTek.Carbon.Footprint.Application.Features.Definitions.Commands.SetTreeDefinition;
 using IzTek.Carbon.Footprint.Application.Features.Definitions.Commands.UpdateScoringSettings;
+using IzTek.Carbon.Footprint.Application.Features.Definitions.Queries;
+
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
@@ -9,18 +11,23 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 [Route("api/v{version:apiVersion}/definitions")]
 public class DefinitionsController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
-    /// <summary>
-    /// Bir ağaç dikimi için gereken puan eşiğini ve ağaç birim maliyetlerini tanımlar veya günceller.
-    /// Upsert semantiği taşıdığından PUT kullanılır.
-    /// </summary>
+    [HttpGet("tree")]
+    public async Task<IActionResult> GetTreeDefinitionAsync()
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<GetTreeDefinitionResponse>>(new GetTreeDefinitionQuery()));
+
     [HttpPut("tree")]
     public async Task<IActionResult> SetTreeDefinitionAsync([FromBody] SetTreeDefinitionCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<SetTreeDefinitionResponse>>(command));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<SetTreeDefinitionResponse>>(command));
 
-    /// <summary>
-    /// Karbon ayak izi hesaplama parametrelerini ve aktivite bazlı puanlama ayarlarını günceller.
-    /// </summary>
+    [HttpGet("scoring-settings")]
+    public async Task<IActionResult> GetScoringSettingsAsync()
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<List<GetScoringSettingsResponse>>>(new GetScoringSettingsQuery()));
+
     [HttpPut("scoring-settings")]
     public async Task<IActionResult> UpdateScoringSettingsAsync([FromBody] UpdateScoringSettingsCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<UpdateScoringSettingsResponse>>(command));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result>(command));
 }

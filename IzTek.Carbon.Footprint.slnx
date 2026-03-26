@@ -1,4 +1,15 @@
 <Solution>
+  <Folder Name="/docs/">
+    <File Path="../../files/auth.md" />
+    <File Path="../../files/daily-activities.md" />
+    <File Path="../../files/goals.md" />
+    <File Path="../../files/home.md" />
+    <File Path="../../files/leaderboard.md" />
+    <File Path="../../files/poll.md" />
+    <File Path="../../files/profile.md" />
+    <File Path="../../files/README.md" />
+    <File Path="../../files/useful-information.md" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>

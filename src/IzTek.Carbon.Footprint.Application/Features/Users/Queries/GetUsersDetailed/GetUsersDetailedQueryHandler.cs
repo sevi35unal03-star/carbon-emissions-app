@@ -2,16 +2,15 @@
 
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
 
-public class GetUsersDetailedQueryHandler(UserManager<User> userManager)
+public static class GetUsersDetailedQueryHandler
 {
-    public async Task<PagedResult<List<GetUsersDetailedResponse>>> Handle(
-        GetUsersDetailedQuery request, 
+    public static async Task<PagedResult<List<GetUsersDetailedResponse>>> Handle(
+        GetUsersDetailedQuery request,
+        UserManager<User> userManager,
         CancellationToken ct)
     {
-        // 1. IQueryable sorgusunu başlat
         var query = userManager.Users.AsNoTracking();
 
-        // 2. Arama Filtresi (İsim, Soyisim veya TCKN)
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var searchTerm = request.SearchTerm.Trim().ToLower();
@@ -21,16 +20,11 @@ public class GetUsersDetailedQueryHandler(UserManager<User> userManager)
                 x.IdentityNumber.Contains(searchTerm));
         }
 
-        // 3. Silinmiş Kullanıcı Filtresi
         if (request.ShowDeleted.HasValue)
-        {
             query = query.Where(x => x.IsDeleted == request.ShowDeleted.Value);
-        }
 
-        // 4. Toplam Kayıt Sayısı (Hesaplamalar için şart)
         var totalCount = await query.CountAsync(ct);
 
-        // 5. Sayfalama ve Projeksiyon
         var users = await query
             .OrderByDescending(x => x.TotalPoints)
             .Skip((request.PageNumber - 1) * request.PageSize)
@@ -51,12 +45,10 @@ public class GetUsersDetailedQueryHandler(UserManager<User> userManager)
             })
             .ToListAsync(ct);
 
-        // 6. Senin modelin olan PagedResult ile sarmala
         return PagedResult<List<GetUsersDetailedResponse>>.Success(
             data: users,
             totalCount: totalCount,
             pageNumber: request.PageNumber,
-            pageSize: request.PageSize
-        );
+            pageSize: request.PageSize);
     }
 }

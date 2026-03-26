@@ -118,6 +118,7 @@ else
 await app.InitializeDatabaseAsync();
 await app.SeedRolesAsync();
 await app.SeedAdminUserAsync();
+await app.SeedScoringSettingsAsync();
 await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();

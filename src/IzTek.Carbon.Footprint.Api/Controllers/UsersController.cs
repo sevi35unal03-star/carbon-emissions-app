@@ -102,5 +102,6 @@ public class UsersController(IMessageBus bus,
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllAsync([FromQuery] GetUsersDetailedQuery query)
-            => CreateActionResultInstance(await bus.InvokeAsync<Result<List<GetUsersDetailedResponse>>>(query));
+    => CreateActionResultInstance(
+        await bus.InvokeAsync<PagedResult<List<GetUsersDetailedResponse>>>(query));
 }
