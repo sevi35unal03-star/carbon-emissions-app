@@ -2,16 +2,19 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.
 
 public static class GetActivityQuestionsQueryHandler
 {
-    public static async Task<List<ActivityQuestionResponse>> HandleAsync(
+    public static async Task<Result<List<ActivityQuestionResponse>>> Handle(
         GetActivityQuestionsQuery request,
         IApplicationDbContext context,
         CancellationToken ct)
     {
-        return await context.ActivityQuestions
+        var query = context.ActivityQuestions
             .AsNoTracking()
-            .Where(x => x.IsActive)
-            .OrderBy(x => x.DisplayOrder)
+            .OrderBy(x => x.DisplayOrder);
+
+        var result = await query
             .ProjectToType<ActivityQuestionResponse>()
             .ToListAsync(ct);
+
+        return Result<List<ActivityQuestionResponse>>.Success(result);
     }
 }
