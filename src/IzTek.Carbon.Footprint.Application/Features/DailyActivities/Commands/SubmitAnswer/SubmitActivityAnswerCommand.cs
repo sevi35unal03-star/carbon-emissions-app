@@ -2,5 +2,4 @@ namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.S
 
 public record SubmitActivityAnswerCommand(
     Guid QuestionId,
-    Guid SelectedOptionId,
-    Guid UserId);
+    Guid SelectedOptionId);

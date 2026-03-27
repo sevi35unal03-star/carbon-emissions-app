@@ -7,8 +7,11 @@ public static class SubmitActivityAnswerHandler
     public static async Task<Result<SubmitActivityAnswerResponse>> Handle(
         SubmitActivityAnswerCommand command,
         IApplicationDbContext context,
+        ICurrentUserService currentUser,
         CancellationToken ct)
     {
+        var userId = currentUser.UserId!.Value;
+
         var option = await context.ActivityOptions
             .FirstOrDefaultAsync(o =>
                 o.Id == command.SelectedOptionId &&
@@ -19,7 +22,7 @@ public static class SubmitActivityAnswerHandler
                 SystemErrorCodes.InvalidActivityOption, HttpStatusCode.BadRequest);
 
         var answer = new UserActivityAnswer(
-            userId: command.UserId,
+            userId: userId,
             questionId: command.QuestionId,
             selectedOptionId: command.SelectedOptionId,
             carbonValue: option.CarbonValue,
@@ -27,7 +30,7 @@ public static class SubmitActivityAnswerHandler
         context.UserActivityAnswers.Add(answer);
 
         var log = new UserActivityLog(
-            userId: command.UserId,
+            userId: userId,
             questionId: command.QuestionId,
             optionId: command.SelectedOptionId,
             score: option.CarbonValue,
@@ -40,7 +43,7 @@ public static class SubmitActivityAnswerHandler
 
         var today = DateTime.UtcNow.Date;
         var totalCarbon = await context.UserActivityLogs
-            .Where(x => x.UserId == command.UserId &&
+            .Where(x => x.UserId == userId &&
                         x.ActivityDate >= today &&
                         x.ActivityDate < today.AddDays(1))
             .SumAsync(x => x.TotalCarbonScore, ct);
