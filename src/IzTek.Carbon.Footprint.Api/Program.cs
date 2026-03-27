@@ -121,6 +121,7 @@ await app.SeedAdminUserAsync();
 await app.SeedScoringSettingsAsync();
 await app.SeedActivityQuestionsAsync();
 await app.SeedMonthlyPollAsync();
+await app.SeedUsefulInformationsAsync();
 await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();
