@@ -23,5 +23,5 @@ public class ActivityQuestionCreatedDomainEventHandler(
             body: @event.Text,
             data: new { questionId = @event.Id, scheduledTime = @event.ScheduledTime });
     }
-    ///bu sayfa ActivityQuestionHandler
+ 
 }
