@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 namespace IzTek.Carbon.Footprint.Persistence;
 
@@ -19,6 +20,12 @@ public static class ServiceCollectionExtensions  // ← class eklendi
                 serviceProvider.GetRequiredService<AuditableEntityInterceptor>(),
                 serviceProvider.GetRequiredService<AuditInterceptor>()
             );
+        });
+
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = builder.Configuration.GetConnectionString("Redis");
+            options.InstanceName = "CarbonFootprint:";
         });
 
         builder.Services.ConfigureServices();
@@ -335,6 +342,44 @@ public static class ServiceCollectionExtensions  // ← class eklendi
         soru10.AddOption("Çelik", -2.0, null, null, 5);
         soru10.AddOption("Yemek Atığı", -2.0, null, null, 6);
 
+        await context.SaveChangesAsync();
+    }
+
+    public static async Task SeedUsefulInformationsAsync(this IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices
+            .GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+        var context = scope.ServiceProvider
+            .GetRequiredService<ApplicationDbContext>();
+
+        if (await context.UsefulInformations.AnyAsync())
+            return;
+
+        var informations = new List<UsefulInformation>
+    {
+        new("Karbon Ayak İzi Nedir?",
+            "Karbon ayak izi, bir kişinin veya bir organizasyonun ürettiği veya tüketim süreçlerinde serbest bıraktığı toplam karbon dioksit ve diğer sera gazlarının miktarını ifade eder. Bu terim, genellikle bir kişinin, bir şirketin, bir ülkenin veya belirli bir ürünün veya hizmetin çevreye olan etkisini ölçmek için kullanılır.\n\nKarbon ayak izi, sera gazı emisyonlarından kaynaklanan etkileri değerlendirmek ve azaltmak için önemli bir metriктir.",
+            1),
+
+        new("Karbon Ayak İzi Ne Anlama Geliyor?",
+            "\"Karbon ayak izi\", bir kişinin, bir organizasyonun, bir ürünün veya bir hizmetin üretiminden veya tüketiminden kaynaklanan karbon dioksit ve diğer sera gazları emisyonlarının miktarını ifade eder. Bu terim, çevresel etkileri ölçer ve sera gazı emisyonlarını azaltmak için kullanılır.\n\nKarbon ayak izi, genellikle ton cinsinden ölçülür ve sera gazlarının (karbon dioksit, metan, nitrojen oksit gibi) atmosfere salınmasından kaynaklanan etkileri hesaplar.",
+            2),
+
+        new("Karbon Ayak İzi Neden Önemlidir?",
+            "Karbon ayak izi, çevresel sürdürülebilirlik ve küresel iklim değişikliği açısından önemlidir:\n\n1. İklim Değişikliği Etkisi: Karbon ayak izi, sera gazlarının atmosfere salınmasının bir ölçüsüdür. Bu gazlar, sera etkisi yaratarak dünya atmosferindeki sıcaklığı artırır ve iklim değişikliğine neden olur.\n\n2. Çevresel Etki: Karbon ayak izi, doğal kaynakların tüketimine, doğal habitatların bozulmasına ve biyoçeşitliliğin azalmasına yol açabilecek faaliyetlerin bir göstergesidir.\n\n3. Toplumsal ve Ekonomik Etki: Fosil yakıtların aşırı kullanımı, hava kirliliği, sağlık sorunları ve enerji kaynaklarının azalmasına yol açabilir.",
+            3),
+
+        new("Karbon Ayak İzi Nasıl Hesaplanır?",
+            "Karbon ayak izi hesaplaması, çeşitli faktörleri içerir:\n\n1. Enerji Tüketimi: Evde ve işyerinde kullanılan elektrik, doğalgaz ve diğer enerji kaynaklarının tüketimi hesaplanır.\n\n2. Ulaşım: Araba, uçak, toplu taşıma gibi ulaşım araçlarının kullanımından kaynaklanan emisyonlar değerlendirilir.\n\n3. Beslenme Alışkanlıkları: Et tüketimi, gıda israfı ve yerel/ithal ürün tercihleri hesaba katılır.\n\n4. Tüketim Alışkanlıkları: Satın alınan ürünlerin üretim süreçlerindeki emisyonlar değerlendirilir.",
+            4),
+
+        new("Karbon Ayak İzimizi Nasıl Azaltırız?",
+            "Karbon ayak izimizi azaltmak için alabileceğimiz önlemler:\n\n1. Yenilenebilir Enerji Kullanımı: Güneş, rüzgar gibi yenilenebilir enerji kaynaklarına geçiş yapılabilir.\n\n2. Toplu Taşıma ve Bisiklet: Özel araç kullanımını azaltarak toplu taşıma, bisiklet veya yürüyüş tercih edilebilir.\n\n3. Bitkisel Beslenme: Et tüketimini azaltmak, karbon ayak izini önemli ölçüde düşürür.\n\n4. Enerji Verimliliği: Enerji tasarruflu cihazlar kullanmak ve gereksiz enerji tüketimini önlemek önemlidir.\n\n5. Geri Dönüşüm: Atıkları geri dönüştürmek ve israfı azaltmak çevreye katkı sağlar.",
+            5),
+    };
+
+        await context.UsefulInformations.AddRangeAsync(informations);
         await context.SaveChangesAsync();
     }
 }
