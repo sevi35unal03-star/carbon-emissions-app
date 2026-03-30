@@ -37,6 +37,13 @@ public static class SubmitPollAnswerCommandHandler
             return Result<SubmitPollAnswerResponse>.Failure(
                 SystemErrorCodes.UserNotFound, HttpStatusCode.NotFound);
 
+        var alreadyAnswered = await context.UserPollResults
+    .AnyAsync(x => x.UserId == currentUser.UserId && x.PollSetId == command.PollSetId, ct);
+
+        if (alreadyAnswered)
+            return Result<SubmitPollAnswerResponse>.Failure(
+                SystemErrorCodes.PollAlreadyAnswered, HttpStatusCode.Conflict);
+
         var pollResult = new UserPollResult(
      name: user.Name ?? string.Empty,
      surname: user.Surname ?? string.Empty,
