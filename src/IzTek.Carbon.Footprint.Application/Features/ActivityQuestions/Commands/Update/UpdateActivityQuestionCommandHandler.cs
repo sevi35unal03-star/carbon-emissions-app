@@ -7,7 +7,6 @@ public static class UpdateActivityQuestionCommandHandler
     public static async Task<Result> HandleAsync(
         UpdateActivityQuestionCommand command,
         IApplicationDbContext context,
-
         CancellationToken ct)
     {
         // 1. Soruyu ve Mevcut Seçeneklerini Getir (Tracking Açık)
@@ -19,7 +18,6 @@ public static class UpdateActivityQuestionCommandHandler
             return Result.Failure(SystemErrorCodes.ActivityQuestionNotFound, HttpStatusCode.NotFound);
 
         // 2. Ana Alanları Güncelle (Domain Metodu Kullanımı)
-        // Private setter'ları aşmak için reflection yerine bu metodu kullanmalısın
         question.UpdateDetails(
             command.Text,
             command.DisplayOrder,
@@ -27,9 +25,9 @@ public static class UpdateActivityQuestionCommandHandler
             command.EndDate,
             command.NotificationTime);
 
-        // 3. Seçenekleri Senkronize Et (Complex Sync Logic)
+        // 3. Seçenekleri Senkronize Et
 
-        // a. Silinenleri Kaldır: Gelen listede olmayan ID'leri tespit et
+        // a. Silinenleri Kaldır
         var incomingOptionIds = command.Options
             .Where(x => x.Id.HasValue)
             .Select(x => x.Id!.Value)
@@ -40,42 +38,41 @@ public static class UpdateActivityQuestionCommandHandler
             .ToList();
 
         foreach (var opt in optionsToRemove)
-        {
-            // Bu seçeneklere verilmiş cevap (SubmitAnswer) varsa silmek hata verebilir,
-            // ama admin panelinde "sil" dendiyse context üzerinden kaldırıyoruz.
             context.ActivityOptions.Remove(opt);
-        }
 
         // b. Güncelle veya Ekle
         foreach (var optReq in command.Options)
         {
             if (optReq.Id.HasValue)
             {
-                // Mevcut olanı bul ve güncelle (Kırılım/NextQuestionId dahil)
                 var existingOpt = question.Options.FirstOrDefault(x => x.Id == optReq.Id.Value);
-                existingOpt?.UpdateDetails(optReq.Text, optReq.CarbonValue, optReq.NextQuestionId);
+
+                if (existingOpt is null)
+                    return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
+
+                existingOpt.UpdateDetails(optReq.Text, optReq.CarbonValue, optReq.NextQuestionId);
             }
             else
             {
-                // Yeni olanı domain metodu ile listeye ekle
                 question.AddOption(optReq.Text, optReq.CarbonValue, optReq.NextQuestionId);
             }
         }
 
-        // 4. Domain Event: Zamanlayıcı (Push Notification) güncellenmeli
-        // NotificationTime veya Text değiştiyse yeni bir push planlanması tetiklenir
+        // 4. Domain Event
         question.AddDomainEvent(new ActivityQuestionUpdatedDomainEvent(
             question.Id,
             question.Text,
             question.ScheduledTime));
 
-        var result = await context.SaveChangesAsync(ct);
-
-        if (result > 0)
+        // 5. Kaydet
+        try
         {
+            await context.SaveChangesAsync(ct);
             return Result.Success();
         }
-
-        return Result.Failure(SystemErrorCodes.UpdateFailed, HttpStatusCode.InternalServerError);
+        catch (DbUpdateConcurrencyException)
+        {
+            return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.Conflict);
+        }
     }
 }

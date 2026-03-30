@@ -10,14 +10,6 @@ public static class CreateActivityQuestionCommandHandler
         IMessageBus bus,
         CancellationToken ct)
     {
-        // Aynı gün için maksimum 2 soru kontrolü
-        var existingCount = await context.ActivityQuestions
-            .CountAsync(x => x.IsActive
-                          && x.StartDate.Date == command.StartDate.Date, ct);
-
-        if (existingCount >= 2)
-            return Result.Failure(
-                SystemErrorCodes.MaxDailyQuestionLimitReached, HttpStatusCode.BadRequest);
 
         var question = new ActivityQuestion(
             command.Text,

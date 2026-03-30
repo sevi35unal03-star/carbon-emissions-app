@@ -9,13 +9,11 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.EventHan
 /// 2. Tüm kullanıcılara güncel bildirim gönderir
 /// </summary>
 public class ActivityQuestionUpdatedDomainEventHandler(
-    ICacheService cacheService,
+   
     IPlatformService platformService)
 {
     public async Task Handle(ActivityQuestionUpdatedDomainEvent @event, CancellationToken ct)
     {
-        // 1. Soru listesi cache invalidation
-        await cacheService.RemoveByPrefixAsync("activity-questions", ct);
 
         // 2. Tüm kullanıcılara güncel bildirim gönder
         await platformService.SendPushToAllUsersAsync(

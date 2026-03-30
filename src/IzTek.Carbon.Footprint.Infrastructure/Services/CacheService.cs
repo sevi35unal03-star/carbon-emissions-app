@@ -32,10 +32,12 @@ public class CacheService(IDistributedCache cache, IConnectionMultiplexer redis)
 
     public async Task RemoveByPrefixAsync(string prefix, CancellationToken ct = default)
     {
-        // Redis'te prefix ile silmek için IConnectionMultiplexer kullan
         var server = redis.GetServer(redis.GetEndPoints().First());
-        var keys = server.Keys(pattern: $"{prefix}*");
-        foreach (var key in keys)
+        var keys = server.KeysAsync(pattern: $"{prefix}*");
+
+        await foreach (var key in keys.WithCancellation(ct))
+        {
             await cache.RemoveAsync(key!, ct);
+        }
     }
 }
