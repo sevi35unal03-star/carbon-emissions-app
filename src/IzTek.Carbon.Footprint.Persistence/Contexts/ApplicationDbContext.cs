@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Persistence.Contexts;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+namespace IzTek.Carbon.Footprint.Persistence.Contexts;
 
 public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplicationDbContext
 {
@@ -28,6 +30,20 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplic
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(builder);
+
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
+                        v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                        v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                    ));
+                }
+            }
+        }
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

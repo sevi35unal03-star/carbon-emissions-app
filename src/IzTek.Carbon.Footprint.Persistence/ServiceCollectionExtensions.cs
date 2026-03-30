@@ -252,6 +252,7 @@ public static class ServiceCollectionExtensions  // ← class eklendi
         soru1.AddOption("Evimi 5 kişi ile paylaşıyorum.", 2.0, null, null, 6);
         soru1.AddOption("Evimi 6 kişi ile paylaşıyorum.", 1.0, null, null, 7);
 
+
         // Soru 2 — Evinizin türü nedir?
         var soru2 = new PollQuestion(pollSet.Id, "Evinizin türü nedir?", 2);
         context.PollQuestions.Add(soru2);
