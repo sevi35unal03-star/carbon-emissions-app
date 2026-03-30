@@ -7,11 +7,14 @@ public class PollSet : BaseAuditableEntity
     public int DisplayOrder { get; private set; }
     public int Month { get; private set; }
     public int Year { get; private set; }
+    public ICollection<PollQuestion> Questions { get; protected set; } = new List<PollQuestion>();
 
-    private readonly List<PollQuestion> _questions = [];
-    public IReadOnlyCollection<PollQuestion> Questions => _questions.AsReadOnly();
+    // _questions field'ını ve AsReadOnly() satırını sil:
+    // private readonly List<PollQuestion> _questions = [];
+    // public IReadOnlyCollection<PollQuestion> Questions => _questions.AsReadOnly();
 
-    private PollSet() { }
+    private PollSet()
+    { }
 
     public PollSet(string name, string description, int displayOrder, int month, int year)
     {
@@ -31,10 +34,11 @@ public class PollSet : BaseAuditableEntity
     }
 
     public void Activate() => IsActive = true;
+
     public void Deactivate() => IsActive = false;
 
     public void AddQuestion(string text, int displayOrder)
     {
-        _questions.Add(new PollQuestion(Id, text, displayOrder));
+        Questions.Add(new PollQuestion(Id, text, displayOrder));
     }
 }

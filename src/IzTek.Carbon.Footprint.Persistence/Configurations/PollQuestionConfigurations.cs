@@ -18,10 +18,5 @@ public class PollQuestionConfigurations : IEntityTypeConfiguration<PollQuestion>
                .WithMany(x => x.Questions)
                .HasForeignKey(x => x.PollSetId)
                .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x => x.Options)
-               .WithOne()
-               .HasForeignKey(x => x.PollQuestionId)
-               .OnDelete(DeleteBehavior.Cascade);
     }
 }
