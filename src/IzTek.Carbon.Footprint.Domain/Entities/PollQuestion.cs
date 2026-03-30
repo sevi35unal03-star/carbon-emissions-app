@@ -9,8 +9,11 @@ public class PollQuestion : BaseAuditableEntity
     // Navigation property
     public PollSet PollSet { get; private set; } = null!;
 
-    private readonly List<PollOption> _options = [];
-    public IReadOnlyCollection<PollOption> Options => _options.AsReadOnly();
+    public ICollection<PollOption> Options { get; protected set; } = new List<PollOption>();
+
+    // _options field'ını ve AsReadOnly() satırını sil:
+    // private readonly List<PollOption> _options = [];
+    // public IReadOnlyCollection<PollOption> Options => _options.AsReadOnly();
 
     private PollQuestion()
     { }
@@ -31,14 +34,14 @@ public class PollQuestion : BaseAuditableEntity
         );
 
         foreach (var option in source.Options)
-            question._options.Add(PollOption.CloneFrom(option, question.Id));
+            question.Options.Add(PollOption.CloneFrom(option, question.Id));
 
         return question;
     }
 
     public void AddOption(string text, double carbonValue, string? message = null, Guid? nextQuestionId = null, int displayOrder = 0)
     {
-        _options.Add(new PollOption(
+        Options.Add(new PollOption(
             pollQuestionId: Id,
             text: text,
             carbonValue: carbonValue,

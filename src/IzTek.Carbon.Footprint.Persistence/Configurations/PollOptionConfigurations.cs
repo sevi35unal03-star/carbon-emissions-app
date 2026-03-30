@@ -13,10 +13,17 @@ public class PollOptionConfigurations : IEntityTypeConfiguration<PollOption>
         builder.Property(x => x.CarbonValue)
                .IsRequired();
 
+        // Ana ilişki
+        builder.HasOne(x => x.PollQuestion)
+               .WithMany(x => x.Options)
+               .HasForeignKey(x => x.PollQuestionId)
+               .OnDelete(DeleteBehavior.Cascade);
 
+        // NextQuestion ilişkisi
         builder.HasOne<PollQuestion>()
                .WithMany()
                .HasForeignKey(x => x.NextPollQuestionId)
-               .OnDelete(DeleteBehavior.Restrict); // Hedef soru silinirse bu seçenek boşa düşmesin diye kısıtlıyoruz.
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }
