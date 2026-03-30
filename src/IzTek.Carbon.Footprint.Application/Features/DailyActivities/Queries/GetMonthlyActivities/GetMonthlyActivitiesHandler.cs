@@ -3,7 +3,7 @@
 public static class GetMonthlyActivitiesHandler
 {
     public static async Task<Result<MonthlyActivityResponse>> Handle(
-        GetMonthlyActivitiesQuery request,  // ← birinci parametreye taşındı
+        GetMonthlyActivitiesQuery request,
         ICurrentUserService currentUserService,
         IApplicationDbContext context,
         CancellationToken ct)
@@ -29,10 +29,19 @@ public static class GetMonthlyActivitiesHandler
             .Select(x => new { x.ActivityDate, x.TotalCarbonScore })
             .ToListAsync(ct);
 
+        // Bu periyotta hiç kayıt yoksa anlamlı mesaj dön
+        var periodLogs = allMonthLogs
+            .Where(x => x.ActivityDate >= periodStart && x.ActivityDate <= periodEnd)
+            .ToList();
+
+        if (!periodLogs.Any())
+            return Result<MonthlyActivityResponse>.Failure(
+                SystemErrorCodes.NoActivityFoundForPeriod,
+                HttpStatusCode.NotFound);
+
         double totalMonthlyScore = allMonthLogs.Sum(x => x.TotalCarbonScore);
 
-        var dailyScores = allMonthLogs
-            .Where(x => x.ActivityDate >= periodStart && x.ActivityDate <= periodEnd)
+        var dailyScores = periodLogs
             .GroupBy(x => x.ActivityDate.Date)
             .Select(g => new DailyScoreDto(
                 Date: g.Key,

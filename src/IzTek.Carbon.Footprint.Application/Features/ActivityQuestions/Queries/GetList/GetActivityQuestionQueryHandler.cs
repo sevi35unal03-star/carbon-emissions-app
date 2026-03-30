@@ -9,6 +9,7 @@ public static class GetActivityQuestionsQueryHandler
     {
         var query = context.ActivityQuestions
             .AsNoTracking()
+            .Where(x => !x.IsDeleted)
             .OrderBy(x => x.DisplayOrder);
 
         var result = await query

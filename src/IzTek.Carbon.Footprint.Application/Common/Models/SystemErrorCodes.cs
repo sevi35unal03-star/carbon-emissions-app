@@ -70,7 +70,8 @@ public static class SystemErrorCodes
     public static readonly ErrorCode ActivityNotFound = new SystemErrorCode(7002, nameof(ActivityNotFound));
     public static readonly ErrorCode PreviousAnswersNotFound = new SystemErrorCode(7003, nameof(PreviousAnswersNotFound));
     public static readonly ErrorCode ActivityQuestionNotFound = new SystemErrorCode(7004, nameof(ActivityQuestionNotFound));
-    public static readonly ErrorCode MaxDailyQuestionLimitReached = new SystemErrorCode(7005, nameof(MaxDailyQuestionLimitReached)); // ← eklendi
+    public static readonly ErrorCode MaxDailyQuestionLimitReached = new SystemErrorCode(7005, nameof(MaxDailyQuestionLimitReached));
+    public static readonly ErrorCode NoActivityFoundForPeriod = new SystemErrorCode(7006, nameof(NoActivityFoundForPeriod));
 
     private sealed class SystemErrorCode(int code, string name) : ServiceErrorCode(code, name, SERVICE_NAME)
     {

@@ -42,5 +42,7 @@ public class LoginCommandHandler(
         logger.LogInformation("Login successful → UserId: {UserId}", user.Id);
 
         return Result<TokenResponse>.Success(token);
+
+
     }
 }
