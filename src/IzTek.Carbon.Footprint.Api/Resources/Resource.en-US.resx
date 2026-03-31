@@ -243,4 +243,28 @@
   <data name="NoActivityFoundForPeriod" xml:space="preserve">
     <value>You haven't answered any questions during this period.</value>
   </data>
+  <data name="EmailAlreadyExist" xml:space="preserve">
+    <value>This email address is already in use. </value>
+  </data>
+  <data name="IdentityNumberAlreadyExists" xml:space="preserve">
+    <value>This identity number is already registered.	</value>
+  </data>
+  <data name="InsufficientPoints" xml:space="preserve">
+    <value>You do not have enough points for this action.</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Email or password is incorrect.</value>
+  </data>
+  <data name="InvalidOtpCode" xml:space="preserve">
+    <value>The OTP code is invalid or has expired.	</value>
+  </data>
+  <data name="MaxDailyQuestionLimitReached" xml:space="preserve">
+    <value>You have reached the maximum daily question limit. </value>
+  </data>
+  <data name="PhoneNumberAlreadyExists" xml:space="preserve">
+    <value>This phone number is already registered.</value>
+  </data>
+  <data name="PollAlreadyAnswered" xml:space="preserve">
+    <value>You have already answered this poll this month. </value>
+  </data>
 </root>

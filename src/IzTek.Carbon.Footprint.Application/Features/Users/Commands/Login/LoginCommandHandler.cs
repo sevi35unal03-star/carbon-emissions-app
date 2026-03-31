@@ -23,9 +23,8 @@ public class LoginCommandHandler(
         // 3. Kullanıcı yoksa veya silinmişse
         if (user is null || user.IsDeleted)
         {
-            //Failure(string v, HttpStatusCode notFound)
             logger.LogWarning("Login failed: User not found → {Input}", command.EmailorIdentityNumber);
-            return Result<TokenResponse>.Failure(SystemErrorCodes.ValidationError, HttpStatusCode.Unauthorized);
+            return Result<TokenResponse>.Failure(SystemErrorCodes.InvalidCredentials, HttpStatusCode.Unauthorized);
         }
 
         // 4. Şifre kontrolü
@@ -33,7 +32,7 @@ public class LoginCommandHandler(
         if (!isPasswordValid)
         {
             logger.LogWarning("Login failed: Invalid password → UserId: {UserId}", user.Id);
-            return Result<TokenResponse>.Failure(SystemErrorCodes.ValidationError, HttpStatusCode.Unauthorized);
+            return Result<TokenResponse>.Failure(SystemErrorCodes.InvalidCredentials, HttpStatusCode.Unauthorized);
         }
 
         // 5. Token oluştur
@@ -42,7 +41,5 @@ public class LoginCommandHandler(
         logger.LogInformation("Login successful → UserId: {UserId}", user.Id);
 
         return Result<TokenResponse>.Success(token);
-
-
     }
 }

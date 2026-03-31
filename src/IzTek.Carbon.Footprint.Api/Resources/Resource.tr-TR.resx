@@ -243,4 +243,30 @@
   <data name="NoActivityFoundForPeriod" xml:space="preserve">
     <value>Bu periyotta cevapladığınız soru bulunmamaktadır.</value>
   </data>
+  <data name="EmailAlreadyExist" xml:space="preserve">
+    <value>Bu e-posta adresi zaten kullanılıyor.
+</value>
+  </data>
+  <data name="IdentityNumberAlreadyExists" xml:space="preserve">
+    <value>Bu TC kimlik numarası zaten kayıtlı.</value>
+  </data>
+  <data name="InsufficientPoints" xml:space="preserve">
+    <value>Bu işlem için yeterli puanınız bulunmamaktadır.</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>E-posta veya şifre hatalı.</value>
+  </data>
+  <data name="InvalidOtpCode" xml:space="preserve">
+    <value>OTP kodu geçersiz veya süresi dolmuş.</value>
+  </data>
+  <data name="MaxDailyQuestionLimitReached" xml:space="preserve">
+    <value>Günlük maksimum soru limitine ulaştınız.</value>
+  </data>
+  <data name="PhoneNumberAlreadyExists" xml:space="preserve">
+    <value>Bu telefon numarası zaten kayıtlı.
+</value>
+  </data>
+  <data name="PollAlreadyAnswered" xml:space="preserve">
+    <value> Bu anketi bu ay zaten cevapladınız.</value>
+  </data>
 </root>
