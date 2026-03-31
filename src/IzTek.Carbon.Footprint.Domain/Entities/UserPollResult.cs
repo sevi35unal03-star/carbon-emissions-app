@@ -17,8 +17,7 @@ public class UserPollResult : BaseAuditableEntity
 
     public void Complete() => IsCompleted = true;
 
-    private readonly List<UserPollAnswer> _answers = new();
-    public IReadOnlyCollection<UserPollAnswer> Answers => _answers.AsReadOnly();
+    public ICollection<UserPollAnswer> Answers { get; protected set; } = new List<UserPollAnswer>();
 
     private UserPollResult()
     { }
@@ -56,7 +55,7 @@ public class UserPollResult : BaseAuditableEntity
         string selectedOptionText,
         double carbonValue)
     {
-        _answers.Add(new UserPollAnswer(
+        Answers.Add(new UserPollAnswer(
             userPollResultId: Id,
             pollQuestionId: pollQuestionId,
             pollOptionId: pollOptionId,
@@ -72,9 +71,9 @@ public class UserPollResult : BaseAuditableEntity
     {
         TotalScore = totalScore;
         TreeCount = treeCount;
-        _answers.Clear();
+        Answers.Clear();
         foreach (var a in answers)
-            _answers.Add(new UserPollAnswer(
+            Answers.Add(new UserPollAnswer(
                 userPollResultId: Id,
                 pollQuestionId: a.questionId,
                 pollOptionId: a.optionId,
