@@ -3,14 +3,12 @@
 public static class SubmitPollAnswerCommandHandler
 {
     public static async Task<Result<SubmitPollAnswerResponse>> Handle(
-        SubmitPollAnswerCommand command,
-        IApplicationDbContext context,
-        ICurrentUserService currentUser,
-        CancellationToken ct)
+    SubmitPollAnswerCommand command,
+    IApplicationDbContext context,
+    ICurrentUserService currentUser,
+    CancellationToken ct)
     {
-        var optionIds = command.Answers
-            .Select(a => a.OptionId)
-            .ToList();
+        var optionIds = command.Answers.Select(a => a.OptionId).ToList();
 
         var options = await context.PollOptions
             .Include(o => o.PollQuestion)
@@ -37,37 +35,55 @@ public static class SubmitPollAnswerCommandHandler
             return Result<SubmitPollAnswerResponse>.Failure(
                 SystemErrorCodes.UserNotFound, HttpStatusCode.NotFound);
 
-        var alreadyAnswered = await context.UserPollResults
-    .AnyAsync(x => x.UserId == currentUser.UserId && x.PollSetId == command.PollSetId, ct);
+        var answerList = command.Answers
+            .Select(a =>
+            {
+                var option = options.FirstOrDefault(o => o.Id == a.OptionId);
+                return (
+                    questionId: a.QuestionId,
+                    optionId: a.OptionId,
+                    questionText: option?.PollQuestion?.Text ?? string.Empty,
+                    optionText: option?.Text ?? string.Empty,
+                    carbonValue: option?.CarbonValue ?? 0
+                );
+            })
+            .ToList();
 
-        if (alreadyAnswered)
-            return Result<SubmitPollAnswerResponse>.Failure(
-                SystemErrorCodes.PollAlreadyAnswered, HttpStatusCode.Conflict);
+        // Taslak var mı kontrol et
+        var draft = await context.UserPollResults
+            .Include(x => x.Answers)
+            .FirstOrDefaultAsync(x => x.UserId == currentUser.UserId
+                                   && x.PollSetId == command.PollSetId
+                                   && !x.IsCompleted, ct);
 
-        var pollResult = new UserPollResult(
-     name: user.Name ?? string.Empty,
-     surname: user.Surname ?? string.Empty,
-     userId: currentUser.UserId!.Value,
-     pollSetId: command.PollSetId,
-     totalScore: totalCarbonScore,
-     treeCount: calculatedTrees);
-
-        context.UserPollResults.Add(pollResult);
-
-        foreach (var answer in command.Answers)
+        if (draft is not null)
         {
-            var option = options.FirstOrDefault(o => o.Id == answer.OptionId);
-            if (option is null) continue;
+            draft.UpdateDraft(totalCarbonScore, calculatedTrees, answerList);
+            if (!command.IsDraft)
+                draft.Complete();
+        }
+        else
+        {
+            var pollResult = new UserPollResult(
+                name: user.Name ?? string.Empty,
+                surname: user.Surname ?? string.Empty,
+                userId: currentUser.UserId!.Value,
+                pollSetId: command.PollSetId,
+                totalScore: totalCarbonScore,
+                treeCount: calculatedTrees);
 
-            pollResult.AddAnswer(
-                pollQuestionId: answer.QuestionId,
-                pollOptionId: answer.OptionId,
-                questionText: option.PollQuestion?.Text ?? string.Empty,
-                selectedOptionText: option.Text,
-                carbonValue: option.CarbonValue);
+            context.UserPollResults.Add(pollResult);
+
+            foreach (var a in answerList)
+                pollResult.AddAnswer(a.questionId, a.optionId, a.questionText, a.optionText, a.carbonValue);
+
+            if (!command.IsDraft)
+                pollResult.Complete();
         }
 
-        user.UpdateMonthlyCarbonResult(totalCarbonScore);
+        if (!command.IsDraft)
+            user.UpdateMonthlyCarbonResult(totalCarbonScore);
+
         await context.SaveChangesAsync(ct);
 
         return Result<SubmitPollAnswerResponse>.Success(new SubmitPollAnswerResponse(

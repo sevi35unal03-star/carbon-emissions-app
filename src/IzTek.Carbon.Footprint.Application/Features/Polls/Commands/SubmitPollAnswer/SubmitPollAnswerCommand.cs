@@ -4,7 +4,8 @@ public record PollAnswerItem(Guid QuestionId, Guid OptionId);
 
 public record SubmitPollAnswerCommand(
     Guid PollSetId,
-    List<PollAnswerItem> Answers);
+    List<PollAnswerItem> Answers,
+    bool IsDraft = false); // ← yeni
 
 public class SubmitPollAnswerValidator : AbstractValidator<SubmitPollAnswerCommand>
 {
@@ -24,14 +25,22 @@ public class SubmitPollAnswerValidator : AbstractValidator<SubmitPollAnswerComma
             .NotEmpty().WithMessage("Anket cevapları boş olamaz.");
     }
 
-    private async Task<bool> BeFirstTimeThisMonth(Guid pollSetId, CancellationToken ct)
+    private async Task<bool> BeFirstTimeThisMonth(
+        SubmitPollAnswerCommand command, // ← command'a erişmek için
+        Guid pollSetId,
+        ValidationContext<SubmitPollAnswerCommand> context,
+        CancellationToken ct)
     {
         var now = DateTime.UtcNow;
-        var alreadyAnswered = await _context.UserPollResults
+
+        // Sadece tamamlanmış anketi kontrol et — taslak engel değil
+        var alreadyCompleted = await _context.UserPollResults
             .AnyAsync(x => x.UserId == _currentUser.UserId &&
                            x.PollSetId == pollSetId &&
                            x.Month == now.Month &&
-                           x.Year == now.Year, ct);
-        return !alreadyAnswered;
+                           x.Year == now.Year &&
+                           x.IsCompleted, ct); // ← IsCompleted eklendi
+
+        return !alreadyCompleted;
     }
 }
