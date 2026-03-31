@@ -3,11 +3,12 @@
 public static class GetMonthlyPollQueryHandler
 {
     public static async Task<Result<GetMonthlyPollResponse>> Handle(
-        GetMonthlyPollQuery query,
-        IApplicationDbContext context,
-        CancellationToken ct)
+    GetMonthlyPollQuery query,
+    IApplicationDbContext context,
+    ICurrentUserService currentUser, // ← ekle
+    CancellationToken ct)
     {
-        var response = await context.PollSets
+        var pollSet = await context.PollSets
             .AsNoTracking()
             .Where(x => x.IsActive)
             .OrderByDescending(x => x.CreatedAt)
@@ -38,10 +39,31 @@ public static class GetMonthlyPollQueryHandler
             ))
             .FirstOrDefaultAsync(ct);
 
-        if (response == null)
+        if (pollSet == null)
             return Result<GetMonthlyPollResponse>.Failure(
                 SystemErrorCodes.ActivePollNotFound, HttpStatusCode.NotFound);
 
-        return Result<GetMonthlyPollResponse>.Success(response);
+        // Kullanıcının taslağı var mı kontrol et
+        var draft = await context.UserPollResults
+            .AsNoTracking()
+            .Include(x => x.Answers)
+            .FirstOrDefaultAsync(x => x.UserId == currentUser.UserId
+                                   && x.PollSetId == pollSet.PollSetId
+                                   && !x.IsCompleted, ct);
+
+        // Taslak varsa seçili cevapları işaretle
+        if (draft is not null)
+        {
+            foreach (var question in pollSet.Questions)
+            {
+                var draftAnswer = draft.Answers
+                    .FirstOrDefault(a => a.PollQuestionId == question.Id);
+
+                if (draftAnswer is not null)
+                    question.SelectedOptionId = draftAnswer.PollOptionId;
+            }
+        }
+
+        return Result<GetMonthlyPollResponse>.Success(pollSet);
     }
 }

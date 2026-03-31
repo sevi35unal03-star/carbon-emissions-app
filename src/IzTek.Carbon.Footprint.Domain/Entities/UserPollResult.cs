@@ -13,10 +13,15 @@ public class UserPollResult : BaseAuditableEntity
     public int Month { get; private set; }
     public int Year { get; private set; }
 
+    public bool IsCompleted { get; private set; } = false;
+
+    public void Complete() => IsCompleted = true;
+
     private readonly List<UserPollAnswer> _answers = new();
     public IReadOnlyCollection<UserPollAnswer> Answers => _answers.AsReadOnly();
 
-    private UserPollResult() { }
+    private UserPollResult()
+    { }
 
     public UserPollResult(
         string name,
@@ -58,5 +63,23 @@ public class UserPollResult : BaseAuditableEntity
             questionText: questionText,
             selectedOptionText: selectedOptionText,
             carbonValue: carbonValue));
+    }
+
+    public void UpdateDraft(
+    double totalScore,
+    int treeCount,
+    List<(Guid questionId, Guid optionId, string questionText, string optionText, double carbonValue)> answers)
+    {
+        TotalScore = totalScore;
+        TreeCount = treeCount;
+        _answers.Clear();
+        foreach (var a in answers)
+            _answers.Add(new UserPollAnswer(
+                userPollResultId: Id,
+                pollQuestionId: a.questionId,
+                pollOptionId: a.optionId,
+                questionText: a.questionText,
+                selectedOptionText: a.optionText,
+                carbonValue: a.carbonValue));
     }
 }
