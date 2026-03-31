@@ -23,20 +23,15 @@ public class PollsController(IMessageBus bus, IStringLocalizer<Resource> localiz
     /// <summary>Anket cevaplarini kaydeder ve karbon skoru hesaplar.</summary>
     [HttpPost("answers")]
     public async Task<IActionResult> SubmitAnswerAsync([FromBody] SubmitPollAnswerCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
+        => CreateActionResultInstance(await bus.InvokeAsync<Result<SubmitPollAnswerResponse>>(command));
 
-    /// <summary>
-    /// Anket sonuclarini getirir.
-    /// Normal kullanici: JWT'den userId alinir.
-    /// Admin: ?targetUserId ile istenen kullanicinin sonucu getirilir.
-    /// REST: /polls/{id}/results — id = pollSetId
-    /// </summary>
-    /// <remarks>Query: pollSetId (zorunlu), month, year, targetUserId (Admin opsiyonel)</remarks>
-    [HttpGet("{pollSetId:guid}/results")]
-    public async Task<IActionResult> GetPollResultsAsync(Guid pollSetId, [FromQuery] GetUserPollDetailQuery query)
+    /// <summary>Anket taslağını kaydeder. Kullanıcı anketi yarıda bırakıp devam edebilir.</summary>
+    [HttpPost("draft")]
+    public async Task<IActionResult> SaveDraftAsync([FromBody] SubmitPollAnswerCommand command)
     {
-        query.PollSetId = pollSetId;
-        return CreateActionResultInstance(await bus.InvokeAsync<Result<UserPollDetailResponse>>(query));
+        var draftCommand = command with { IsDraft = true };
+        return CreateActionResultInstance(
+            await bus.InvokeAsync<Result<SubmitPollAnswerResponse>>(draftCommand));
     }
 
     // ADMIN
