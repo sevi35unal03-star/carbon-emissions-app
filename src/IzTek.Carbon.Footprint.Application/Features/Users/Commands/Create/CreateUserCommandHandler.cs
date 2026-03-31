@@ -34,7 +34,13 @@ public class CreateUserCommandHandler(
                 : errorMessage.Contains("phone") ? SystemErrorCodes.PhoneNumberAlreadyExists
                 : SystemErrorCodes.BadRequest;
 
-            return Result<Guid>.Failure(errorCode, errorMessage, HttpStatusCode.Conflict);
+            return Result<Guid>.Failure(SystemErrorCodes.BadRequest, errorMessage, HttpStatusCode.BadRequest);
         }
+
+        await userManager.AddToRoleAsync(user, "User");
+
+        logger.LogInformation("User created successfully with Identity Number: {IdentityNumber}", user.IdentityNumber);
+
+        return Result<Guid>.Success(user.Id);
     }
 }
