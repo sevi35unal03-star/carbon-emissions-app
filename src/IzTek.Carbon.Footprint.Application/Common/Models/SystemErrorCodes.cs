@@ -73,6 +73,15 @@ public static class SystemErrorCodes
     public static readonly ErrorCode MaxDailyQuestionLimitReached = new SystemErrorCode(7005, nameof(MaxDailyQuestionLimitReached));
     public static readonly ErrorCode NoActivityFoundForPeriod = new SystemErrorCode(7006, nameof(NoActivityFoundForPeriod));
 
+    // Auth hata kodları
+    public static readonly ErrorCode InvalidCredentials = new SystemErrorCode(8001, nameof(InvalidCredentials));
+
+    public static readonly ErrorCode EmailAlreadyExists = new SystemErrorCode(8002, nameof(EmailAlreadyExists));
+    public static readonly ErrorCode IdentityNumberAlreadyExists = new SystemErrorCode(8003, nameof(IdentityNumberAlreadyExists));
+    public static readonly ErrorCode PhoneNumberAlreadyExists = new SystemErrorCode(8004, nameof(PhoneNumberAlreadyExists));
+    public static readonly ErrorCode InvalidOtpCode = new SystemErrorCode(8005, nameof(InvalidOtpCode));
+    public static readonly ErrorCode KvkkNotApproved = new SystemErrorCode(8006, nameof(KvkkNotApproved));
+
     private sealed class SystemErrorCode(int code, string name) : ServiceErrorCode(code, name, SERVICE_NAME)
     {
     }

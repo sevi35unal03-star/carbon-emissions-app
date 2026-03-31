@@ -5,11 +5,17 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands
 public static class CreateActivityQuestionCommandHandler
 {
     public static async Task<Result> HandleAsync(
-        CreateActivityQuestionCommand command,
-        IApplicationDbContext context,
-        IMessageBus bus,
-        CancellationToken ct)
+    CreateActivityQuestionCommand command,
+    IApplicationDbContext context,
+    IMessageBus bus,
+    CancellationToken ct)
     {
+        // Günlük limit kontrolü
+        var dailyCount = await context.ActivityQuestions
+            .CountAsync(x => x.StartDate.Date == command.StartDate.Date, ct);
+
+        if (dailyCount >= 50)
+            return Result.Failure(SystemErrorCodes.MaxDailyQuestionLimitReached, HttpStatusCode.BadRequest);
 
         var question = new ActivityQuestion(
             command.Text,
@@ -23,7 +29,6 @@ public static class CreateActivityQuestionCommandHandler
 
         await context.ActivityQuestions.AddAsync(question, ct);
 
-        // Zamanlanmış bildirim
         var notificationDate = command.StartDate.Date.Add(command.ScheduledTime);
         if (notificationDate > DateTime.UtcNow)
         {

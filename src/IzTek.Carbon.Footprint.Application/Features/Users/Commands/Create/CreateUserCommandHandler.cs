@@ -27,13 +27,14 @@ public class CreateUserCommandHandler(
         {
             var errorMessage = result.Errors.First().Description;
             logger.LogError("User creation failed: {Error}", errorMessage);
-            return Result<Guid>.Failure(SystemErrorCodes.BadRequest, errorMessage, HttpStatusCode.BadRequest);
+
+            // Identity hata mesajına göre doğru kodu seç
+            var errorCode = errorMessage.Contains("Email") ? SystemErrorCodes.EmailAlreadyExists
+                : errorMessage.Contains("UserName") ? SystemErrorCodes.IdentityNumberAlreadyExists
+                : errorMessage.Contains("phone") ? SystemErrorCodes.PhoneNumberAlreadyExists
+                : SystemErrorCodes.BadRequest;
+
+            return Result<Guid>.Failure(errorCode, errorMessage, HttpStatusCode.Conflict);
         }
-
-        await userManager.AddToRoleAsync(user, "User");
-
-        logger.LogInformation("User created successfully with Identity Number: {IdentityNumber}", user.IdentityNumber);
-
-        return Result<Guid>.Success(user.Id);
     }
 }
