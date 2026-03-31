@@ -52,7 +52,7 @@ public static class GetMonthlyPollQueryHandler
                                    && !x.IsCompleted, ct);
 
         // Taslak varsa seçili cevapları işaretle
-        if (draft is not null)
+        if (draft is not null && pollSet.Questions is not null) // null kontrolü ekledik
         {
             foreach (var question in pollSet.Questions)
             {
