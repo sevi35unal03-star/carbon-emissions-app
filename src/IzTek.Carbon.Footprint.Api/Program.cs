@@ -59,6 +59,12 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(
         builder.Configuration.GetConnectionString("Redis")!));
 
 // 7. JWT ayarları
+//Local değişkeni dışarı çıkar, bir kez oku
+var jwtSettings = builder.Configuration
+    .GetSection(JwtSettings.SectionName)
+    //jwt de hata olursa uygulama başlamasın, eksik konfigürasyon varsa hemen fark edelim, ekrana yazsın
+    .Get<JwtSettings>() ?? throw new InvalidOperationException("JwtSettings missing");
+
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection(JwtSettings.SectionName));
 
@@ -71,10 +77,7 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
-        var jwtSettings = builder.Configuration
-            .GetSection(JwtSettings.SectionName)
-            .Get<JwtSettings>()!;
-
+        //dışarıdan gelen değişkeni kullan, içeride GetSection kullanımını kaldır.
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -83,12 +86,12 @@ builder.Services
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings.Issuer,
             ValidAudience = jwtSettings.Audience,
+            //reftoken oluştururken kullanılan secret key
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
             ClockSkew = TimeSpan.Zero
         };
     });
-
 // 9. Cache servisi
 builder.Services.AddScoped<ICacheService, CacheService>();
 
@@ -114,19 +117,29 @@ else
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
-
 await app.InitializeDatabaseAsync();
-await app.SeedRolesAsync();
-await app.SeedAdminUserAsync();
-await app.SeedScoringSettingsAsync();
-await app.SeedActivityQuestionsAsync();
-await app.SeedMonthlyPollAsync();
-await app.SeedUsefulInformationsAsync();
+
+try
+{
+    await app.SeedRolesAsync();
+    await app.SeedAdminUserAsync();
+    await app.SeedScoringSettingsAsync();
+    await app.SeedActivityQuestionsAsync();
+    await app.SeedMonthlyPollAsync();
+    await app.SeedUsefulInformationsAsync();
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogCritical(ex, "Uygulama başlatılırken seed işlemi başarısız oldu.");
+    throw; 
+}
+
 await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();
-app.UseLocalization();
 app.UseAuthentication();
+app.UseLocalization();
 app.UseAuthorization();
 app.UseRateLimiter();
 app.MapControllers();
