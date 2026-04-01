@@ -1,14 +1,12 @@
-﻿using AppCacheKeys = IzTek.Carbon.Footprint.Application.Common.Constants.CacheKeys;
-
+﻿
 namespace IzTek.Carbon.Footprint.Application.Features.Assets.Commands;
 
 public record UploadAssetCommand(
     string AssetType,
     Stream FileStream,
     string FileName,
-    string ContentType) : ICacheInvalidator
+    string ContentType) 
 {
-    public IEnumerable<string> CacheKeys => [AppCacheKeys.Assets.All];
 }
 
 public class UploadAssetCommandValidator : AbstractValidator<UploadAssetCommand>

@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Constants;
-
-namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
 
 /// <summary>
 /// Ana Sayfa açılışında çağrılır.

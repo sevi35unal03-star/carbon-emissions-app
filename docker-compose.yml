@@ -4,12 +4,6 @@ services:
   #   build:
   #     context: .
   #     dockerfile: src/IzTek.Carbon.Footprint.Api/Dockerfile
-  redis:
-    image: redis:alpine
-    container_name: carbon_redis
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
 
   db:
     image: postgres:18-alpine
