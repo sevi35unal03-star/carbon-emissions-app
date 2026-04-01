@@ -8,6 +8,11 @@ public interface ITokenService
 {
     Task<string> ClientTokenAsync(IdentityClient client, bool force = false);
 
-    // Eksik olan ve hataya sebep olan metot:
     Task<TokenResponse> CreateTokenAsync(User user);
+
+    Task<TokenResponse?> RefreshAccessTokenAsync(string refreshToken);
+
+    Task RevokeRefreshTokenAsync(string refreshToken, string reason = "Logout");
+
+    Task RevokeAllUserTokensAsync(Guid userId, string reason = "Account deleted");
 }

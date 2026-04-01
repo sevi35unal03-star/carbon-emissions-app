@@ -3,4 +3,5 @@
 public record TokenResponse(
     string AccessToken,
     string TokenType,
-    int ExpiresIn);
+    int ExpiresIn,
+    string RefreshToken);

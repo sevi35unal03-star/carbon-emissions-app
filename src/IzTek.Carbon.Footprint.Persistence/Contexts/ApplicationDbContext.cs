@@ -25,6 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplic
     public DbSet<ScoringSetting> ScoringSettings => Set<ScoringSetting>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<AppAsset> AppAssets => Set<AppAsset>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
