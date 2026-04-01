@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using TokenResponse = IzTek.Carbon.Footprint.Application.Common.Models.TokenResponse;
 
@@ -8,7 +7,6 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 public class LoginCommandHandler(
     UserManager<User> userManager,
     ITokenService tokenService,
-    IHttpContextAccessor httpContextAccessor,
     ILogger<LoginCommandHandler> logger)
 {
     public async Task<Result<TokenResponse>> HandleAsync(
@@ -19,26 +17,20 @@ public class LoginCommandHandler(
                    ?? await userManager.FindByNameAsync(command.EmailorIdentityNumber);
 
         if (user is null || user.IsDeleted)
+        {
+            logger.LogWarning("Login failed: User not found → {Input}", command.EmailorIdentityNumber);
             return Result<TokenResponse>.Failure(SystemErrorCodes.InvalidCredentials, HttpStatusCode.Unauthorized);
+        }
 
         var isPasswordValid = await userManager.CheckPasswordAsync(user, command.Password);
         if (!isPasswordValid)
+        {
+            logger.LogWarning("Login failed: Invalid password → UserId: {UserId}", user.Id);
             return Result<TokenResponse>.Failure(SystemErrorCodes.InvalidCredentials, HttpStatusCode.Unauthorized);
+        }
 
-        var token = await tokenService.CreateTokenAsync(user);
+        logger.LogInformation("Login successful → UserId: {UserId}", user.Id);
 
-        // Session cookie — HttpOnly, Secure, 30 gün
-        httpContextAccessor.HttpContext?.Response.Cookies.Append(
-            "refresh_token",
-            token.RefreshToken,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddDays(30)
-            });
-
-        return Result<TokenResponse>.Success(token);
+        return Result<TokenResponse>.Success(await tokenService.CreateTokenAsync(user));
     }
 }

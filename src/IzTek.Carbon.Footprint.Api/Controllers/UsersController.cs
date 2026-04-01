@@ -32,8 +32,22 @@ public class UsersController(IMessageBus bus,
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginCommand command)
-    => CreateActionResultInstance(await bus.InvokeAsync<Result<TokenResponse>>(command)); // ← LoginCommand → TokenResponse
+    {
+        var result = await bus.InvokeAsync<Result<TokenResponse>>(command);
 
+        if (result.IsSuccessful && result.Data?.RefreshToken is not null)
+        {
+            Response.Cookies.Append("refresh_token", result.Data.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddDays(30)
+            });
+        }
+
+        return CreateActionResultInstance(result);
+    }
     /// <summary>Sifremi unuttum: e-posta/TC kimligine sifirlama linki gonderir.</summary>
     [AllowAnonymous]
     [HttpPost("password/forgot")]
