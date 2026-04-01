@@ -20,6 +20,7 @@ public interface IApplicationDbContext
     DbSet<TreeDonation> TreeDonations { get; }
     DatabaseFacade Database { get; }
     DbSet<AppAsset> AppAssets { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

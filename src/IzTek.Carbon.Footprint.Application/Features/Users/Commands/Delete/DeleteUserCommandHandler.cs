@@ -7,7 +7,8 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Delete;
 public class DeleteUserCommandHandler(
     UserManager<User> userManager,
     ICurrentUserService currentUserService,
-    IMessageBus bus) 
+    IMessageBus bus,
+    ITokenService tokenService)
 {
     public async Task<Result> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
@@ -29,6 +30,8 @@ public class DeleteUserCommandHandler(
             return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
 
         await bus.PublishAsync(new UserDeletedDomainEvent(user.Id, DateTime.UtcNow));
+        await tokenService.RevokeAllUserTokensAsync(user.Id, "Account deleted");
+        await userManager.UpdateSecurityStampAsync(user);
 
         return Result.Success();
     }

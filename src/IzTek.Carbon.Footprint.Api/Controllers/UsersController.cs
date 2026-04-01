@@ -7,6 +7,7 @@ using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetDonationHistory;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
+using IzTek.Carbon.Footprint.Infrastructure.Services;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
@@ -16,7 +17,8 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 [Route("api/v{version:apiVersion}/users")]
 public class UsersController(IMessageBus bus,
      ICurrentUserService currentUser,
-     IStringLocalizer<Resource> localizer) : BaseController(localizer)
+     IStringLocalizer<Resource> localizer,
+      ITokenService tokenService) : BaseController(localizer)
 {
     // AUTH
 
@@ -43,6 +45,47 @@ public class UsersController(IMessageBus bus,
     [HttpPost("password/reset")]
     public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
+
+    [AllowAnonymous]
+    [HttpPost("token/refresh")]
+    public async Task<IActionResult> RefreshTokenAsync()
+    {
+        var refreshToken = Request.Cookies["refresh_token"];
+
+        if (string.IsNullOrEmpty(refreshToken))
+            return CreateActionResultInstance(
+                Result<TokenResponse>.Failure(SystemErrorCodes.Unauthorized, HttpStatusCode.Unauthorized));
+
+        var newToken = await tokenService.RefreshAccessTokenAsync(refreshToken);
+
+        if (newToken is null)
+            return CreateActionResultInstance(
+                Result<TokenResponse>.Failure(SystemErrorCodes.SessionExpired, HttpStatusCode.Unauthorized));
+
+        Response.Cookies.Append("refresh_token", newToken.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.AddDays(30)
+        });
+
+        return CreateActionResultInstance(Result<TokenResponse>.Success(newToken));
+    }
+
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> LogoutAsync()
+    {
+        var refreshToken = Request.Cookies["refresh_token"];
+
+        if (!string.IsNullOrEmpty(refreshToken))
+            await tokenService.RevokeRefreshTokenAsync(refreshToken, "Logout");
+
+        Response.Cookies.Delete("refresh_token");
+
+        return CreateActionResultInstance(Result.Success());
+    }
 
     // ME
 
