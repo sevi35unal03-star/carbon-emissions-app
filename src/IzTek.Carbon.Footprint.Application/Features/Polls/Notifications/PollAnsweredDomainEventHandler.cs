@@ -1,4 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
+﻿using Microsoft.Extensions.Caching.Memory;
 using IzTek.Carbon.Footprint.Domain.Events.Poll;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Polls.EventHandlers;
@@ -9,14 +9,13 @@ namespace IzTek.Carbon.Footprint.Application.Features.Polls.EventHandlers;
 /// 2. O ayki hedefin tamamlanıp tamamlanmadığını kontrol eder
 /// </summary>
 public class PollAnsweredDomainEventHandler(
-    ICacheService cacheService,
+    IMemoryCache cache,
     IApplicationDbContext context)
 {
     public async Task Handle(PollAnsweredDomainEvent @event, CancellationToken ct)
     {
         // 1. Liderboard cache invalidation
-        await cacheService.RemoveAsync(
-            $"monthly-leaderboard:{@event.Month}:{@event.Year}", ct);
+        cache.Remove($"monthly-leaderboard:{@event.Month}:{@event.Year}");
 
         // 2. O aya ait hedefi getir
         var goal = await context.Goals
@@ -28,9 +27,9 @@ public class PollAnsweredDomainEventHandler(
 
         // 3. O ay toplam bağışlanan ağaç sayısını hesapla
         var totalTrees = await context.TreeDonations
-    .Where(r => r.DonationDate.Month == @event.Month
-             && r.DonationDate.Year == @event.Year)
-    .SumAsync(r => r.TreeCount, ct);
+            .Where(r => r.DonationDate.Month == @event.Month
+                     && r.DonationDate.Year == @event.Year)
+            .SumAsync(r => r.TreeCount, ct);
 
         // 4. Hedefe ulaşıldıysa tamamla
         if (totalTrees >= goal.TargetTreeCount)
