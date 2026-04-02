@@ -81,19 +81,29 @@ public class TokenService(
 
     public async Task<TokenResponse?> RefreshAccessTokenAsync(string refreshToken)
     {
+        // Atomic update — tek sorguda hem kontrol et hem revoke et
+        var affected = await context.RefreshTokens
+            .Where(x => x.Token == refreshToken
+                     && !x.IsRevoked
+                     && x.ExpiresAt > DateTime.UtcNow)
+            .ExecuteUpdateAsync(x => x
+                .SetProperty(t => t.IsRevoked, true)
+                .SetProperty(t => t.RevokedReason, "Refreshed"));
+
+        // 0 satır etkilendiyse token geçersiz veya zaten kullanılmış
+        if (affected == 0)
+            return null;
+
+        // Token geçerliydi, user'ı getir
         var token = await context.RefreshTokens
             .FirstOrDefaultAsync(x => x.Token == refreshToken);
 
-        if (token is null || !token.IsValid)
-            return null;
+        if (token is null) return null;
 
         var user = await userManager.FindByIdAsync(token.UserId.ToString());
 
         if (user is null || user.IsDeleted)
             return null;
-
-        token.Revoke("Refreshed");
-        await context.SaveChangesAsync();
 
         return await CreateTokenAsync(user);
     }
