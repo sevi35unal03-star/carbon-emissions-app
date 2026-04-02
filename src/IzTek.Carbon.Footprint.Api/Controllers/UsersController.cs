@@ -104,13 +104,7 @@ public class UsersController(IMessageBus bus,
     [AllowAnonymous]
     [HttpPost("logout")]
     public IActionResult Logout()
-    {
-        return Ok(new
-        {
-            message = "Logout successful. See you soon!",
-            translatedMessage = "Çıkış başarılı. Yakında görüşmek üzere!"
-        });
-    }
+       => CreateActionResultInstance(Result.Success());
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
