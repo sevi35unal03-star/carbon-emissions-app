@@ -17,6 +17,15 @@ public class ResetPasswordCommandHandler(UserManager<User> userManager)
 
         // 2. OTP kodunu çek
         var savedCode = await userManager.GetAuthenticationTokenAsync(user, "Default", "PasswordResetOTP");
+        var savedExpiry = await userManager.GetAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry");
+
+        // Süre kontrolü
+        if (savedExpiry is null || DateTime.Parse(savedExpiry) < DateTime.UtcNow)
+        {
+            await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTP");
+            await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry");
+            return Result.Failure(SystemErrorCodes.InvalidOtpCode, HttpStatusCode.BadRequest);
+        }
 
         // 3. Kod doğruluğunu kontrol et
         if (savedCode == null || savedCode != request.ResetCode)
@@ -31,6 +40,7 @@ public class ResetPasswordCommandHandler(UserManager<User> userManager)
 
         // 5. OTP kodunu temizle
         await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTP");
+        await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry"); // ← ekle
 
         // 6. Tüm oturumları sonlandır
         await userManager.UpdateSecurityStampAsync(user);

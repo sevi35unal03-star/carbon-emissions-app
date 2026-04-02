@@ -27,10 +27,14 @@ public class ForgotPasswordCommandHandler(
 
         // 2. OTP kodu oluştur
         var resetCode = RandomNumberGenerator.GetInt32(10000, 99999).ToString();
+        var expiry = DateTime.UtcNow.AddMinutes(15).ToString("o"); // ISO 8601
 
         // 3. Her zaman DB'ye kaydet — reset handler buradan doğrulayacak
         await userManager.SetAuthenticationTokenAsync(
             user, "Default", "PasswordResetOTP", resetCode);
+
+        await userManager.SetAuthenticationTokenAsync(
+            user, "Default", "PasswordResetOTPExpiry", expiry); // ← süre
 
         // 4. Mock modda OTP response'da döner
         var useMock = configuration.GetValue<bool>("UseMockPlatformService");
