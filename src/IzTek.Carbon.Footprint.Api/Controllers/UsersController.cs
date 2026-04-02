@@ -15,20 +15,20 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/users")]
-public class UsersController(IMessageBus bus,
-     ICurrentUserService currentUser,
-     IStringLocalizer<Resource> localizer,
-      ITokenService tokenService) : BaseController(localizer)
+public class UsersController(
+    IMessageBus bus,
+    IStringLocalizer<Resource> localizer,
+    ITokenService tokenService) : BaseController(localizer)
 {
     // AUTH
-   
-    /// <summary>BizIzmir uyeligi ile yeni kullanici kaydi olusturur.</summary>
+
+    /// <summary>Yeni kullanıcı kaydı oluşturur.</summary>
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] CreateUserCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<Guid>>(command));
+        => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
 
-    /// <summary>Kullanici girisi yapar ve JWT token doner.</summary>
+    /// <summary>Kullanıcı girişi yapar ve JWT token döner.</summary>
     [AllowAnonymous]
     [EnableRateLimiting("auth")]
     [HttpPost("login")]
@@ -50,20 +50,21 @@ public class UsersController(IMessageBus bus,
         return CreateActionResultInstance(result);
     }
 
-    /// <summary>Sifremi unuttum: e-posta/TC kimligine sifirlama linki gonderir.</summary>
+    /// <summary>Telefon numarasına 5 haneli OTP kodu gönderir.</summary>
     [AllowAnonymous]
     [EnableRateLimiting("auth")]
     [HttpPost("password/forgot")]
     public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordCommand command)
-    => CreateActionResultInstance(await bus.InvokeAsync<Result<string>>(command));
+        => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
 
-    /// <summary>Sifre sifirlama tokeni ile yeni sifreyi kaydeder.</summary>
+    /// <summary>OTP kodu ile şifre sıfırlar.</summary>
     [AllowAnonymous]
     [EnableRateLimiting("auth")]
     [HttpPost("password/reset")]
     public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
 
+    /// <summary>Refresh token ile yeni access token üretir.</summary>
     [AllowAnonymous]
     [EnableRateLimiting("auth")]
     [HttpPost("token/refresh")]
@@ -92,7 +93,7 @@ public class UsersController(IMessageBus bus,
         return CreateActionResultInstance(Result<TokenResponse>.Success(newToken));
     }
 
-    [Authorize]
+    /// <summary>Oturumu sonlandırır, refresh token'ı iptal eder.</summary>
     [HttpPost("logout")]
     public async Task<IActionResult> LogoutAsync()
     {
@@ -108,69 +109,37 @@ public class UsersController(IMessageBus bus,
 
     // ME
 
-    /// <summary>Token sahibi kullanicinin profil bilgilerini getirir.</summary>
+    /// <summary>Token sahibi kullanıcının profil bilgilerini getirir.</summary>
     [HttpGet("me/profile")]
     [EnableRateLimiting("user")]
     public async Task<IActionResult> GetProfileAsync()
-        => CreateActionResultInstance(await bus.InvokeAsync<Result<GetUserProfileResponse>>(new GetUserProfileQuery()));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<GetUserProfileResponse>>(new GetUserProfileQuery()));
 
     /// <summary>Token sahibi kullanıcının geçmiş ağaç bağışlarını listeler.</summary>
     [HttpGet("me/donations")]
     public async Task<IActionResult> GetDonationHistoryAsync()
         => CreateActionResultInstance(
-            await bus.InvokeAsync<Result<GetDonationHistoryResponse>>(
-                new GetDonationHistoryQuery()));  // ← UserId kaldırıldı
+            await bus.InvokeAsync<Result<GetDonationHistoryResponse>>(new GetDonationHistoryQuery()));
 
-    /// <summary>Birikimli puanlari agac bagisina donusturur. Body gerekmez.</summary>
-    ///
-
-    /// <summary>
-    /// Birikimli puanları ağaç bağışına dönüştürür.
-    ///
-    /// Seçenek 1 (tüm puan): POST /users/me/donations — body yok
-    /// Seçenek 2 (kısmi):    POST /users/me/donations { "pointsToSpend": 5000 }
-    /// </summary>
+    /// <summary>Birikimli puanların tamamını ağaç bağışına dönüştürür.</summary>
     [HttpPost("me/donations")]
     public async Task<IActionResult> DonateTreesAsync()
-     => CreateActionResultInstance(
-         await bus.InvokeAsync<Result<DonateTreesResponse>>(new DonateTreesCommand()));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<DonateTreesResponse>>(new DonateTreesCommand()));
 
-    // ME
-
-    // ... mevcut endpointler ...
-
-    /// <summary>
-    /// Token sahibi kullanıcının kendi profilini (hesabını) siler.
-    /// Bu işlem geri alınamaz.
-    /// </summary>
-    /// <remarks>
-    /// Hesap silme işlemi için onay zorunludur.
-    /// </remarks>
-
-    /// <summary>Hesabı siler (soft delete). Onay popup'ından sonra çağrılır.</summary>
+    /// <summary>Hesabı siler (soft delete).</summary>
     [HttpDelete("me")]
     public async Task<IActionResult> DeleteAccountAsync()
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result>(new DeleteUserCommand()));
 
-    //[HttpPost("me/donations")]
-    // public async Task<IActionResult> DonateTreesAsync()
-    // => CreateActionResultInstance(await bus.InvokeAsync<Result<DonateTreesResponse>>(new DonateTreesCommand()));
-
     // ADMIN
-    // REST: GET /users (eski: GET /users/all)
 
-    /// <summary>Admin — tum kullanicilarin detayli listesini getirir.</summary>
-    /// 
-
-    [AllowAnonymous]
-    [HttpPost("logout")]
-    public IActionResult Logout()
-       => CreateActionResultInstance(Result.Success());
-
+    /// <summary>Admin — tüm kullanıcıların detaylı listesini getirir.</summary>
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllAsync([FromQuery] GetUsersDetailedQuery query)
-    => CreateActionResultInstance(
-        await bus.InvokeAsync<PagedResult<List<GetUsersDetailedResponse>>>(query));
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<PagedResult<List<GetUsersDetailedResponse>>>(query));
 }
