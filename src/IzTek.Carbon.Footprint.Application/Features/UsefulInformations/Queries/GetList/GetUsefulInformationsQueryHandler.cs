@@ -19,6 +19,7 @@ public static class GetUsefulInformationsQueryHandler
             .AsNoTracking()
             .Where(x => x.IsActive)
             .OrderBy(x => x.DisplayOrder)
+            .Take(50)
             .Select(x => new GetUsefulInformationsResponse
             {
                 Id = x.Id,
