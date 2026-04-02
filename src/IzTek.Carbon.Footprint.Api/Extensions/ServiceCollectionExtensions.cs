@@ -32,6 +32,14 @@ public static class ServiceCollectionExtensions
                         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                     }));
 
+            // Auth policy — IP bazlı, 15 dakikada 5 deneme
+            options.AddFixedWindowLimiter("auth", opt =>
+            {
+                opt.Window = TimeSpan.FromMinutes(15);
+                opt.PermitLimit = 5;
+                opt.QueueLimit = 0;
+            });
+
             options.OnRejected = async (context, token) =>
             {
                 context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;

@@ -30,6 +30,7 @@ public class UsersController(IMessageBus bus,
 
     /// <summary>Kullanici girisi yapar ve JWT token doner.</summary>
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginCommand command)
     {
@@ -48,19 +49,23 @@ public class UsersController(IMessageBus bus,
 
         return CreateActionResultInstance(result);
     }
+
     /// <summary>Sifremi unuttum: e-posta/TC kimligine sifirlama linki gonderir.</summary>
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("password/forgot")]
     public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordCommand command)
     => CreateActionResultInstance(await bus.InvokeAsync<Result<string>>(command));
 
     /// <summary>Sifre sifirlama tokeni ile yeni sifreyi kaydeder.</summary>
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("password/reset")]
     public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
 
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("token/refresh")]
     public async Task<IActionResult> RefreshTokenAsync()
     {
