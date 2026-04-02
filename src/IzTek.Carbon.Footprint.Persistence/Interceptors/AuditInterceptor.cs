@@ -16,6 +16,22 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
+    private static readonly HashSet<string> SensitiveFields = new(StringComparer.OrdinalIgnoreCase)
+{
+    "PasswordHash",
+    "SecurityStamp",
+    "ConcurrencyStamp",
+    "IdentityNumber",
+    "PhoneNumber",
+    "Token",           // RefreshToken
+    "RevokedReason",
+    "NormalizedEmail",
+    "NormalizedUserName",
+    "TwoFactorEnabled",
+    "LockoutEnd",
+    "AccessFailedCount"
+};
+
     private void OnBeforeSaveChanges(DbContext? context)
     {
         if (context is null) return;
@@ -24,7 +40,6 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
 
         foreach (var entry in context.ChangeTracker.Entries())
         {
-            // AuditLog tablosunun kendisini ve değişmeyenleri loglamıyoruz
             if (entry.Entity is AuditLog || entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
                 continue;
 
@@ -32,7 +47,7 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
             {
                 TableName = entry.Entity.GetType().Name,
                 UserId = _currentUser.UserId?.ToString() ?? "system",
-                UserName = _currentUser.UserName ?? "system",  // ← eklendi
+                UserName = _currentUser.UserName ?? "system",
             };
             auditEntries.Add(auditEntry);
 
@@ -40,6 +55,25 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
             {
                 string propertyName = property.Metadata.Name;
                 if (property.Metadata.IsPrimaryKey()) continue;
+
+                // Hassas alanları loglaма
+                if (SensitiveFields.Contains(propertyName))
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            auditEntry.Operation = "Ekleme";
+                            auditEntry.NewValues[propertyName] = "[REDACTED]";
+                            break;
+
+                        case EntityState.Modified when property.IsModified:
+                            auditEntry.Operation = "Güncelleme";
+                            auditEntry.OldValues[propertyName] = "[REDACTED]";
+                            auditEntry.NewValues[propertyName] = "[REDACTED]";
+                            break;
+                    }
+                    continue;
+                }
 
                 switch (entry.State)
                 {
@@ -66,8 +100,6 @@ public class AuditInterceptor(ICurrentUserService currentUser) : SaveChangesInte
         }
 
         foreach (var auditEntry in auditEntries)
-        {
             context.Set<AuditLog>().Add(auditEntry.ToAuditLog());
-        }
     }
 }
