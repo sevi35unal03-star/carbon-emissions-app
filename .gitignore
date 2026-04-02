@@ -339,3 +339,7 @@ FodyWeavers.xsd
 *.key
 /App_Data/
 appsettings.*.local.json
+
+# Sensitive configuration
+appsettings.Development.json
+appsettings.Production.json
