@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 namespace IzTek.Carbon.Footprint.Persistence;
 
@@ -20,12 +19,6 @@ public static class ServiceCollectionExtensions  // ← class eklendi
                 serviceProvider.GetRequiredService<AuditableEntityInterceptor>(),
                 serviceProvider.GetRequiredService<AuditInterceptor>()
             );
-        });
-
-        builder.Services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = builder.Configuration.GetConnectionString("Redis");
-            options.InstanceName = "CarbonFootprint:";
         });
 
         builder.Services.ConfigureServices();

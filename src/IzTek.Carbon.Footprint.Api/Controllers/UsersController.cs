@@ -21,7 +21,7 @@ public class UsersController(IMessageBus bus,
       ITokenService tokenService) : BaseController(localizer)
 {
     // AUTH
-
+   
     /// <summary>BizIzmir uyeligi ile yeni kullanici kaydi olusturur.</summary>
     [AllowAnonymous]
     [HttpPost("register")]
@@ -161,6 +161,13 @@ public class UsersController(IMessageBus bus,
     // REST: GET /users (eski: GET /users/all)
 
     /// <summary>Admin — tum kullanicilarin detayli listesini getirir.</summary>
+    /// 
+
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+       => CreateActionResultInstance(Result.Success());
+
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllAsync([FromQuery] GetUsersDetailedQuery query)
