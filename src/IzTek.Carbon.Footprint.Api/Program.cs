@@ -1,5 +1,6 @@
 ﻿using IzTek.Carbon.Footprint.Application.Common.Behaviors;
 using IzTek.Carbon.Footprint.Application.Common.Interfaces;
+using IzTek.Carbon.Footprint.Application.Features.RefreshTokens.Commands.Cleanup;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 using IzTek.Carbon.Footprint.Infrastructure.Options;
 using IzTek.Carbon.Footprint.Infrastructure.Services;
@@ -144,5 +145,10 @@ app.UseAuthorization();
 app.UseRateLimiter();
 app.MapControllers();
 app.UseHealthCheckEndpoint();
+
+var bus = app.Services.GetRequiredService<IMessageBus>();
+await bus.ScheduleAsync(
+    new CleanupExpiredRefreshTokensCommand(),
+    TimeSpan.FromHours(24));
 
 await app.RunAsync();
