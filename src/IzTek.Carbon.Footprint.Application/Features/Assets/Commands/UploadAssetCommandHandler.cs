@@ -1,4 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Extensions;
+﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace IzTek.Carbon.Footprint.Application.Features.Assets.Commands;
 
@@ -8,7 +8,7 @@ public static class UploadAssetCommandHandler
         UploadAssetCommand command,
         IApplicationDbContext context,
         IFileStorageService fileStorage,
-        ICacheService cache,
+        IMemoryCache cache,
         CancellationToken ct)
     {
         if (!AssetType.IsValid(command.AssetType))
@@ -40,8 +40,7 @@ public static class UploadAssetCommandHandler
 
         await context.SaveChangesAsync(ct);
 
-        // Cache invalidation
-        await cache.InvalidateAsync(command, ct);
+        cache.Remove("assets");
 
         return Result.Success();
     }

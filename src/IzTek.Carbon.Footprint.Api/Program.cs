@@ -8,7 +8,6 @@ using JasperFx.CodeGeneration;
 using Lamar.Microsoft.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using StackExchange.Redis;
 using System.Text;
 
 using DomainRole = IzTek.Carbon.Footprint.Domain.Entities.Role;
@@ -53,11 +52,6 @@ builder.Services
     .AddPasswordValidator<PasswordValidator>()
     .AddUserValidator<UserValidator>();
 
-// 6. Redis bağlantısı (IConnectionMultiplexer — CacheService için)
-builder.Services.AddSingleton<IConnectionMultiplexer>(
-    await ConnectionMultiplexer.ConnectAsync(
-        builder.Configuration.GetConnectionString("Redis")!));
-
 // 7. JWT ayarları
 //Local değişkeni dışarı çıkar, bir kez oku
 var jwtSettings = builder.Configuration
@@ -93,7 +87,7 @@ builder.Services
         };
     });
 // 9. Cache servisi
-builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddMemoryCache();
 
 // 10. Controllers ve OpenAPI
 builder.Services.AddControllers();
@@ -138,10 +132,10 @@ catch (Exception ex)
 await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseLocalization();
-app.UseAuthorization();
 app.UseRateLimiter();
+app.UseLocalization();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.UseHealthCheckEndpoint();
 

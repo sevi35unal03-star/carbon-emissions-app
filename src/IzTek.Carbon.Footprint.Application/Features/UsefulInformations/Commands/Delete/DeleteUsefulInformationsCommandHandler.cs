@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Caching.Memory;
+
 namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Delete;
 
 public class DeleteUsefulInfoValidator : AbstractValidator<DeleteUsefulInformationsCommand>
@@ -8,26 +10,32 @@ public class DeleteUsefulInfoValidator : AbstractValidator<DeleteUsefulInformati
     }
 }
 
-public class DeleteUsefulInformationsCommandHandler
+public static class DeleteUsefulInformationsCommandHandler
 {
-
-    public async Task<Result> Handle(
-        DeleteUsefulInformationsCommand command, 
+    public static async Task<Result> Handle(
+        DeleteUsefulInformationsCommand command,
         IApplicationDbContext context,
+        IMemoryCache cache,
         CancellationToken ct)
     {
         var info = await context.UsefulInformations
             .FirstOrDefaultAsync(x => x.Id == command.Id, ct);
 
-        if (info == null) return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
+        if (info is null)
+            return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
 
         info.IsDeleted = true;
         info.DeletedAt = DateTime.UtcNow;
 
         context.UsefulInformations.Remove(info);
-        return await context.SaveChangesAsync(ct) > 0
-    ? Result.NoContent()
-    : Result.Failure(SystemErrorCodes.DeleteFailed, HttpStatusCode.InternalServerError);
+
+        var success = await context.SaveChangesAsync(ct) > 0;
+
+        if (success)
+            cache.Remove("usefulinformations");
+
+        return success
+            ? Result.NoContent()
+            : Result.Failure(SystemErrorCodes.DeleteFailed, HttpStatusCode.InternalServerError);
     }
 }
-

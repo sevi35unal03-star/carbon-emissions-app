@@ -1,21 +1,19 @@
-using IzTek.Carbon.Footprint.Application.Common.Constants;
-using IzTek.Carbon.Footprint.Application.Common.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Queries.GetList;
 
 public static class GetUsefulInformationsQueryHandler
 {
+    private const string CacheKey = "usefulinformations";
+
     public static async Task<Result<List<GetUsefulInformationsResponse>>> Handle(
         GetUsefulInformationsQuery query,
         IApplicationDbContext context,
-        ICacheService cache,
+        IMemoryCache cache,
         CancellationToken ct)
     {
-        var cacheKey = CacheKeys.UsefulInformation.List;
-
-        // Cache check
-        if (await cache.GetCachedResultAsync<List<GetUsefulInformationsResponse>>(cacheKey, ct) is { } hit)
-            return hit;
+        if (cache.TryGetValue(CacheKey, out List<GetUsefulInformationsResponse>? cached))
+            return Result<List<GetUsefulInformationsResponse>>.Success(cached!);
 
         var informations = await context.UsefulInformations
             .AsNoTracking()
@@ -30,11 +28,8 @@ public static class GetUsefulInformationsQueryHandler
             })
             .ToListAsync(ct);
 
-        var result = Result<List<GetUsefulInformationsResponse>>.Success(informations);
+        cache.Set(CacheKey, informations, TimeSpan.FromDays(60));
 
-        // 1 saat cache — statik içerik
-        await cache.SetCachedResultAsync(cacheKey, result, TimeSpan.FromHours(1), ct);
-
-        return result;
+        return Result<List<GetUsefulInformationsResponse>>.Success(informations);
     }
 }
