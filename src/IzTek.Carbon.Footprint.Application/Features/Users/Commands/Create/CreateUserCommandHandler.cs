@@ -9,7 +9,7 @@ public class CreateUserCommandHandler(
     UserManager<User> userManager,
     ILogger<CreateUserCommandHandler> logger)
 {
-    public async Task<Result<Guid>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         // 1. Önce unique kontroller yap — DB constraint hatasından önce yakala
         var identityExists = await userManager.Users
@@ -53,6 +53,6 @@ public class CreateUserCommandHandler(
         await userManager.AddToRoleAsync(user, "User");
         logger.LogInformation("User created successfully → UserId: {UserId}", user.Id);
 
-        return Result<Guid>.Success(user.Id);
+        return Result.Success();
     }
 }
