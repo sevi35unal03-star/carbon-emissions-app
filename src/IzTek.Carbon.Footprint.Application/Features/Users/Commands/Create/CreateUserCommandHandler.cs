@@ -11,6 +11,27 @@ public class CreateUserCommandHandler(
 {
     public async Task<Result<Guid>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        // 1. Önce unique kontroller yap — DB constraint hatasından önce yakala
+        var identityExists = await userManager.Users
+            .AnyAsync(x => x.IdentityNumber == request.IdentityNumber, cancellationToken);
+
+        if (identityExists)
+            return Result<Guid>.Failure(
+                SystemErrorCodes.IdentityNumberAlreadyExists, HttpStatusCode.Conflict);
+
+        var emailExists = await userManager.FindByEmailAsync(request.Email);
+        if (emailExists is not null)
+            return Result<Guid>.Failure(
+                SystemErrorCodes.EmailAlreadyExists, HttpStatusCode.Conflict);
+
+        var phoneExists = await userManager.Users
+            .AnyAsync(x => x.PhoneNumber == request.PhoneNumber, cancellationToken);
+
+        if (phoneExists)
+            return Result<Guid>.Failure(
+                SystemErrorCodes.PhoneNumberAlreadyExists, HttpStatusCode.Conflict);
+
+        // 2. Kullanıcı oluştur
         var user = new User(
             email: request.Email,
             name: request.FirstName,
@@ -18,8 +39,7 @@ public class CreateUserCommandHandler(
             birthDate: DateTime.SpecifyKind(request.BirthDate, DateTimeKind.Utc),
             identityNumber: request.IdentityNumber,
             phoneNumber: request.PhoneNumber,
-            isKvkkApproved: request.IsKvkkApproved
-        );
+            isKvkkApproved: request.IsKvkkApproved);
 
         var result = await userManager.CreateAsync(user, request.Password);
 
@@ -27,19 +47,11 @@ public class CreateUserCommandHandler(
         {
             var errorMessage = result.Errors.First().Description;
             logger.LogError("User creation failed: {Error}", errorMessage);
-
-            // Identity hata mesajına göre doğru kodu seç
-            var errorCode = errorMessage.Contains("Email") ? SystemErrorCodes.EmailAlreadyExists
-                : errorMessage.Contains("UserName") ? SystemErrorCodes.IdentityNumberAlreadyExists
-                : errorMessage.Contains("phone") ? SystemErrorCodes.PhoneNumberAlreadyExists
-                : SystemErrorCodes.BadRequest;
-
             return Result<Guid>.Failure(SystemErrorCodes.BadRequest, errorMessage, HttpStatusCode.BadRequest);
         }
 
         await userManager.AddToRoleAsync(user, "User");
-
-        logger.LogInformation("User created successfully with Identity Number: {IdentityNumber}", user.IdentityNumber);
+        logger.LogInformation("User created successfully → UserId: {UserId}", user.Id);
 
         return Result<Guid>.Success(user.Id);
     }

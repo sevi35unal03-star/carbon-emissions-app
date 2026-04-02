@@ -38,10 +38,11 @@ public class ForgotPasswordCommandHandler(
 
         // 4. Mock modda OTP response'da döner
         var useMock = configuration.GetValue<bool>("UseMockPlatformService");
+        // Mock modda
         if (useMock)
         {
             logger.LogInformation("[MOCK] OTP: {OTP} → UserId: {UserId}", resetCode, user.Id);
-            return Result<string>.Success(resetCode);  // ← OTP response'da
+            return Result.Success(); // ← Result<string> yerine Result
         }
 
         // 5. Production'da e-posta gönder
