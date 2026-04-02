@@ -2,15 +2,12 @@
 using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.CreateGlobal;
 using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.DeleteGlobal;
 using IzTek.Carbon.Footprint.Application.Features.Goals.Commands.UpdateGlobal;
-
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
-
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserDailyResults;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
-[Authorize(Roles = "Admin")]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/user-results")]
@@ -21,15 +18,7 @@ public class UserResultsController(IMessageBus bus, IStringLocalizer<Resource> l
     public async Task<IActionResult> GetDailyResultsAsync([FromQuery] GetUserDailyResultsQuery query)
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<List<UserDailyResultResponse>>>(query));
-}
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/user-results")]
-public class UserResultsPublicController(IMessageBus bus, IStringLocalizer<Resource> localizer)
-    : BaseController(localizer)
-{
     [HttpGet("home")]
     public async Task<IActionResult> GetHomePageAsync()
         => CreateActionResultInstance(
@@ -39,20 +28,14 @@ public class UserResultsPublicController(IMessageBus bus, IStringLocalizer<Resou
     public async Task<IActionResult> GetLeaderboardAsync([FromQuery] GetMonthlyLeaderboardQuery query)
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<GetMonthlyLeaderboardResponse>>(query));
-}
 
-[Authorize(Roles = "Admin")]
-[ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/goals")]
-public class GoalsController(IMessageBus bus, IStringLocalizer<Resource> localizer)
-    : BaseController(localizer)
-{
+    [Authorize(Roles = "Admin")]
     [HttpPost("global")]
     public async Task<IActionResult> CreateGlobalGoalAsync([FromBody] CreateGlobalGoalCommand command)
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<GlobalGoalResponse>>(command));
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("global/{id:guid}")]
     public async Task<IActionResult> UpdateGlobalGoalAsync(
         Guid id,
@@ -62,7 +45,7 @@ public class GoalsController(IMessageBus bus, IStringLocalizer<Resource> localiz
         return CreateActionResultInstance(
             await bus.InvokeAsync<Result<GlobalGoalResponse>>(command));
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpDelete("global/{id:guid}")]
     public async Task<IActionResult> DeleteGlobalGoalAsync(Guid id, [FromQuery] int month, [FromQuery] int year)
         => CreateActionResultInstance(
