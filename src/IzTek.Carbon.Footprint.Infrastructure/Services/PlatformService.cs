@@ -62,11 +62,32 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
 
         return await responseMessage.DeserializeAsync<Result>();
     }
+
+    public async Task<Result?> RegisterUserAsync(string email, string name, string surname, string phoneNumber)
+    {
+        var responseMessage = await _httpClient.PostAsJsonAsync("/iztek/register", new
+        {
+            email,
+            name,
+            surname,
+            phoneNumber
+        });
+
+        if (responseMessage.IsSuccessStatusCode)
+            return Result.Success();
+
+        return await responseMessage.DeserializeAsync<Result>();
+    }
+
+    public async Task<Result?> ValidateUserAsync(string bizIzmirToken)
+    {
+        // TODO: BizIzmir endpoint'i netleşince güncellenecek
+        throw new NotImplementedException("BizIzmir entegrasyonu bekleniyor.");
+    }
 }
 
-
 /*
-    PlatformService, uygulamanın diğer bölümlerinin e-posta gönderme ve push bildirimleri gibi platforma özgü işlemleri gerçekleştirmesine olanak tanır. 
+    PlatformService, uygulamanın diğer bölümlerinin e-posta gönderme ve push bildirimleri gibi platforma özgü işlemleri gerçekleştirmesine olanak tanır.
     Bu servis, HTTP istemcisi aracılığıyla platformun API'sine istekler göndererek bu işlemleri gerçekleştirir.
 */
 
