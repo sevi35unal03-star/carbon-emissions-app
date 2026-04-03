@@ -82,6 +82,12 @@ public class UserPollResult : BaseAuditableEntity
                 carbonValue: a.carbonValue));
     }
 
+    public void UpdateScores(double totalScore, int treeCount)
+    {
+        TotalScore = totalScore;
+        TreeCount = treeCount;
+    }
+
     public void Anonymize()
     {
         Name = "Deleted";

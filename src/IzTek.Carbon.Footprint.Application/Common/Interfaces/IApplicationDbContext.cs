@@ -16,6 +16,7 @@ public interface IApplicationDbContext
     DbSet<PollQuestion> PollQuestions { get; }
     DbSet<TreeDefinition> TreeDefinitions { get; }
     DbSet<UserPollResult> UserPollResults { get; }
+    DbSet<UserPollAnswer> UserPollAnswers { get; }
     DbSet<ScoringSetting> ScoringSettings { get; }
     DbSet<TreeDonation> TreeDonations { get; }
     DatabaseFacade Database { get; }
