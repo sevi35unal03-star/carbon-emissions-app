@@ -4,6 +4,10 @@ public class UserValidator : IUserValidator<User>
 {
     public Task<IdentityResult> ValidateAsync(UserManager<User> manager, User user)
     {
+        // Silinmiş kullanıcıları validate etme
+        if (user.IsDeleted)
+            return Task.FromResult(IdentityResult.Success);
+
         var errors = new List<IdentityError>();
 
         if (string.IsNullOrWhiteSpace(user.IdentityNumber) || user.IdentityNumber.Length != 11 || !long.TryParse(user.IdentityNumber, out _))
