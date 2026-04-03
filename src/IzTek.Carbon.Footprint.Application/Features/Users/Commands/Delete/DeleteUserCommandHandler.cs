@@ -23,6 +23,7 @@ public class DeleteUserCommandHandler(
         user.Delete();
 
         await userManager.UpdateSecurityStampAsync(user);
+        await userManager.RemovePasswordAsync(user);
 
         var result = await userManager.UpdateAsync(user);
 
