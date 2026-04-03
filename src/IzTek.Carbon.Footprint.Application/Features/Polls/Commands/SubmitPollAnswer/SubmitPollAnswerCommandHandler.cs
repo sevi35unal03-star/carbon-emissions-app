@@ -35,6 +35,15 @@ public static class SubmitPollAnswerCommandHandler
             return Result<SubmitPollAnswerResponse>.Failure(
                 SystemErrorCodes.UserNotFound, HttpStatusCode.NotFound);
 
+        var alreadyCompleted = await context.UserPollResults
+    .AnyAsync(x => x.UserId == currentUser.UserId
+                && x.PollSetId == command.PollSetId
+                && x.IsCompleted, ct);
+
+        if (alreadyCompleted)
+            return Result<SubmitPollAnswerResponse>.Failure(
+                SystemErrorCodes.PollAlreadyAnswered, HttpStatusCode.Conflict);
+
         var answerList = command.Answers
             .Select(a =>
             {
@@ -58,12 +67,33 @@ public static class SubmitPollAnswerCommandHandler
 
         if (draft is not null)
         {
-            draft.UpdateDraft(totalCarbonScore, calculatedTrees, answerList);
-            if (!command.IsDraft)
-                draft.Complete();
+            // 1. Mevcut answer'ları direkt DB'den sil
+            await context.UserPollAnswers
+                .Where(x => x.UserPollResultId == draft.Id)
+                .ExecuteDeleteAsync(ct);
+
+            // 2. Draft skorlarını güncelle
+            await context.UserPollResults
+                .Where(x => x.Id == draft.Id)
+                .ExecuteUpdateAsync(x => x
+                    .SetProperty(r => r.TotalScore, totalCarbonScore)
+                    .SetProperty(r => r.TreeCount, calculatedTrees)
+                    .SetProperty(r => r.IsCompleted, !command.IsDraft), ct);
+
+            // 3. Yeni answer'ları ekle
+            var newAnswers = answerList.Select(a => new UserPollAnswer(
+                userPollResultId: draft.Id,
+                pollQuestionId: a.questionId,
+                pollOptionId: a.optionId,
+                questionText: a.questionText,
+                selectedOptionText: a.optionText,
+                carbonValue: a.carbonValue)).ToList();
+
+            await context.UserPollAnswers.AddRangeAsync(newAnswers, ct);
         }
         else
         {
+            // Draft yoksa yeni kayıt oluştur
             var pollResult = new UserPollResult(
                 name: user.Name ?? string.Empty,
                 surname: user.Surname ?? string.Empty,
