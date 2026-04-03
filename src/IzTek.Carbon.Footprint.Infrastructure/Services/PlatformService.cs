@@ -14,6 +14,20 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
         return await responseMessage.DeserializeAsync<Result>();
     }
 
+    public async Task<Result?> SendSmsAsync(string phoneNumber, string message)
+    {
+        var responseMessage = await _httpClient.PostAsJsonAsync("/iztek/sms", new
+        {
+            to = phoneNumber,
+            message
+        });
+
+        if (responseMessage.IsSuccessStatusCode)
+            return Result.Success();
+
+        return await responseMessage.DeserializeAsync<Result>();
+    }
+
     public async Task<Result?> SendPushNotificationAsync(string target, string title, string body)
     {
         var responseMessage = await _httpClient.PostAsJsonAsync("/iztek/push", new
