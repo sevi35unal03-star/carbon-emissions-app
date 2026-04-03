@@ -31,4 +31,16 @@ public class MockPlatformService(ILogger<MockPlatformService> logger) : IPlatfor
         logger.LogInformation("[MOCK] Push (user) gönderildi → UserId: {UserId}, Title: {Title}", userId, title);
         return Task.FromResult<Result?>(Result.Success());
     }
+
+    public Task<Result?> RegisterUserAsync(string email, string name, string surname, string phoneNumber)
+    {
+        logger.LogInformation("[MOCK] RegisterUser: {Email}", email);
+        return Task.FromResult<Result?>(Result.Success());
+    }
+
+    public Task<Result?> ValidateUserAsync(string bizIzmirToken)
+    {
+        logger.LogInformation("[MOCK] ValidateUser: {Token}", bizIzmirToken);
+        return Task.FromResult<Result?>(Result.Success());
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using IzTek.Carbon.Footprint.Infrastructure.Options;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
@@ -11,13 +12,19 @@ public class TokenService(
     IHttpClientFactory httpClientFactory,
     UserManager<User> userManager,
     IOptions<JwtSettings> jwtOptions,
-    IApplicationDbContext context) : ITokenService
+    IApplicationDbContext context,
+    IMemoryCache memoryCache) : ITokenService  // ← ekle
 {
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient("token");
     private readonly JwtSettings _jwt = jwtOptions.Value;
 
     public async Task<string> ClientTokenAsync(IdentityClient client, bool force = false)
     {
+        var cacheKey = $"m2m_token_{client.ClientId}";
+
+        if (!force && memoryCache.TryGetValue(cacheKey, out string? cached))
+            return cached!;
+
         var disco = await _httpClient.GetDiscoveryDocumentAsync(client.Authority);
         if (disco.IsError) throw new Exception(disco.Error);
 
@@ -29,6 +36,13 @@ public class TokenService(
         });
 
         if (tokenResponse.IsError) throw new Exception(tokenResponse.Error);
+
+        // Token süresinden 60 saniye önce expire et
+        memoryCache.Set(
+            cacheKey,
+            tokenResponse.AccessToken!,
+            TimeSpan.FromSeconds(tokenResponse.ExpiresIn - 60));
+
         return tokenResponse.AccessToken!;
     }
 
