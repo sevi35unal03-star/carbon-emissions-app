@@ -1,5 +1,6 @@
-﻿using IzTek.Carbon.Footprint.Domain.Events.User;
-using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
+﻿using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
+using IzTek.Carbon.Footprint.Domain.Events.User;
+using System.Net;
 
 namespace IzTek.Carbon.Footprint.Domain.Entities;
 
@@ -113,6 +114,22 @@ public class User : IdentityUser<Guid>, IDomainEventContainer
     {
         IsDeleted = true;
         DeletedDate = DateTime.UtcNow;
+
+        // KVKK — kişisel verileri anonimleştir
+        var anonymousId = Guid.NewGuid().ToString("N")[..8];
+
+        Email = $"deleted_{anonymousId}@deleted.invalid";
+        NormalizedEmail = Email.ToUpperInvariant();
+        UserName = $"deleted_{anonymousId}";
+        NormalizedUserName = UserName.ToUpperInvariant();
+        PhoneNumber = null;
+        Name = null;
+        Surname = null;
+        BirthDate = null;
+        IdentityNumber = null;
+        IsKvkkApproved = false;
+        KvkkApprovalDate = null;
+
         AddDomainEvent(new UserDeletedDomainEvent(Id, DeletedDate.Value));
     }
 }

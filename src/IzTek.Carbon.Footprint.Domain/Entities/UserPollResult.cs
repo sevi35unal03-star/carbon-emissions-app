@@ -81,4 +81,10 @@ public class UserPollResult : BaseAuditableEntity
                 selectedOptionText: a.optionText,
                 carbonValue: a.carbonValue));
     }
+
+    public void Anonymize()
+    {
+        Name = "Deleted";
+        Surname = "User";
+    }
 }
