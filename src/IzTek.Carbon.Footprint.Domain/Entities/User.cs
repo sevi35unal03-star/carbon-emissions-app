@@ -123,8 +123,8 @@ public class User : IdentityUser<Guid>, IDomainEventContainer
         UserName = $"deleted_{anonymousId}";
         NormalizedUserName = UserName.ToUpperInvariant();
         PhoneNumber = null;
-        Name = null;
-        Surname = null;
+        Name = string.Empty;
+        Surname = string.Empty;
         BirthDate = null;
         IdentityNumber = null;
         IsKvkkApproved = false;

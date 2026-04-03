@@ -22,17 +22,20 @@ public class DeleteUserCommandHandler(
 
         user.Delete();
 
-        await userManager.UpdateSecurityStampAsync(user);
-        await userManager.RemovePasswordAsync(user);
-
+        // Önce UpdateAsync — anonimleştirilmiş veriyi kaydet
         var result = await userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
-            return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
+        {
+            // Hata mesajını logla — sebebi görelim
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return Result.Failure(SystemErrorCodes.BadRequest, errors, HttpStatusCode.BadRequest);
+        }
 
-        await bus.PublishAsync(new UserDeletedDomainEvent(user.Id, DateTime.UtcNow));
-        await tokenService.RevokeAllUserTokensAsync(user.Id, "Account deleted");
+        await userManager.RemovePasswordAsync(user);
         await userManager.UpdateSecurityStampAsync(user);
+        await tokenService.RevokeAllUserTokensAsync(user.Id, "Account deleted");
+        await bus.PublishAsync(new UserDeletedDomainEvent(user.Id, DateTime.UtcNow));
 
         return Result.Success();
     }
