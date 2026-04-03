@@ -4,6 +4,8 @@ public interface IPlatformService
 {
     Task<Result?> SendEmailAsync(string to, string subject, string content);
 
+    Task<Result?> SendSmsAsync(string phoneNumber, string message);
+
     Task<Result?> SendPushNotificationAsync(string target, string title, string body);
 
     Task<Result?> SendPushToAllUsersAsync(string title, string body, object? data = null); // ✅

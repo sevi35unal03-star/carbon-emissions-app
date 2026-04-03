@@ -45,15 +45,14 @@ public class ForgotPasswordCommandHandler(
             return Result.Success(); // ← Result<string> yerine Result
         }
 
-        // 5. Production'da e-posta gönder
-        var result = await platformService.SendEmailAsync(
-            to: user.Email!,
-            subject: "Şifre Sıfırlama Kodu",
-            content: $"Şifre sıfırlama kodunuz: {resetCode}. Bu kod 15 dakika geçerlidir.");
+        // 5. Production'da SMS gönder
+        var result = await platformService.SendSmsAsync(
+            phoneNumber: user.PhoneNumber!,
+            message: $"Şifre sıfırlama kodunuz: {resetCode}. Bu kod 15 dakika geçerlidir.");
 
         if (result is null || !result.IsSuccessful)
         {
-            logger.LogError("ForgotPassword email failed → UserId: {UserId}", user.Id);
+            logger.LogError("ForgotPassword SMS failed → UserId: {UserId}", user.Id);
             return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
         }
 
