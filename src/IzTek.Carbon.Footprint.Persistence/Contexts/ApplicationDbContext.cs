@@ -4,9 +4,13 @@ namespace IzTek.Carbon.Footprint.Persistence.Contexts;
 
 public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplicationDbContext
 {
+    private readonly IMessageBus _bus;
+
     public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options) : base(options)
+        DbContextOptions<ApplicationDbContext> options,
+        IMessageBus bus) : base(options)
     {
+        _bus = bus;
     }
 
     public DbSet<ActivityQuestion> ActivityQuestions => Set<ActivityQuestion>();
@@ -49,6 +53,21 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Guid>, IApplic
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await base.SaveChangesAsync(cancellationToken);
+        var entities = ChangeTracker.Entries<BaseEntity>()
+            .Where(x => x.Entity.DomainEvents.Any())
+            .Select(x => x.Entity)
+            .ToList();
+
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        foreach (var entity in entities)
+        {
+            foreach (var @event in entity.DomainEvents)
+                await _bus.PublishAsync(@event);
+
+            entity.ClearDomainEvents();
+        }
+
+        return result;
     }
 }

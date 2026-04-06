@@ -1,4 +1,5 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Interfaces;
+﻿using IzTek.Carbon.Footprint.Application.Common.Behaviors;
+using IzTek.Carbon.Footprint.Application.Common.Interfaces;
 using IzTek.Carbon.Footprint.Application.Features.RefreshTokens.Commands.Cleanup;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
 using IzTek.Carbon.Footprint.Infrastructure.Options;
@@ -20,6 +21,7 @@ builder.Host.UseWolverine(opts =>
 {
     opts.Discovery.IncludeAssembly(typeof(LoginCommand).Assembly);
     opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Dynamic;
+    opts.Policies.ForMessagesOfType<object>().AddMiddleware<ValidationBehavior>();
 });
 
 // 2. OpenTelemetry
@@ -139,7 +141,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseHealthCheckEndpoint();
 
-// YENİ — doğru
+
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
 lifetime.ApplicationStarted.Register(async () =>

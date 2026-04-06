@@ -11,9 +11,13 @@ public class CreateUserCommandHandler(
 {
     public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        // 1. Önce unique kontroller yap — DB constraint hatasından önce yakala
+        // 1. Önce unique kontroller yap —
         var identityExists = await userManager.Users
             .AnyAsync(x => x.IdentityNumber == request.IdentityNumber, cancellationToken);
+
+        //kvkk==true!
+        if (!request.IsKvkkApproved)
+            return Result.Failure(SystemErrorCodes.KvkkNotApproved, HttpStatusCode.BadRequest);
 
         if (identityExists)
             return Result<Guid>.Failure(
