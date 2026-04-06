@@ -23,9 +23,6 @@ public static class CreateRoleCommandHandler
         // 3. Veritabanı setine ekle
         await context.Roles.AddAsync(role, cancellationToken);
 
-       
-
-
         return await context.SaveChangesAsync(cancellationToken) > 0
             ? Result.Created()
             : Result.SystemException();

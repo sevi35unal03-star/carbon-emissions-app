@@ -47,7 +47,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<PlatformClientCredentialTokenHandler>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IFileStorageService, MinioFileStorageService>();
-        services.AddScoped<IPushNotificationService, PushNotificationService>();
 
         // Development'ta mock, production'da gerçek
         var useMock = configuration.GetValue<bool>("UseMockPlatformService");
