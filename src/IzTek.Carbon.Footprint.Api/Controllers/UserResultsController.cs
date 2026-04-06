@@ -16,13 +16,13 @@ public class UserResultsController(IMessageBus bus, IStringLocalizer<Resource> l
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<List<UserDailyResultResponse>>>(query));
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet("home")]
     public async Task<IActionResult> GetHomePageAsync()
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<GetHomePageResponse>>(new GetHomePageQuery()));
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet("leaderboard")]
     public async Task<IActionResult> GetLeaderboardAsync([FromQuery] GetMonthlyLeaderboardQuery query)
         => CreateActionResultInstance(

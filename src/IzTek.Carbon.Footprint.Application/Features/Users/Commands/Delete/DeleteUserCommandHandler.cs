@@ -10,7 +10,7 @@ public class DeleteUserCommandHandler(
     IMessageBus bus,
     ITokenService tokenService)
 {
-    public async Task<Result> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
     {
         if (!currentUserService.IsAuthenticated || string.IsNullOrEmpty(currentUserService.UserId.ToString()))
             return Result.Failure(SystemErrorCodes.Unauthorized, HttpStatusCode.Unauthorized);
