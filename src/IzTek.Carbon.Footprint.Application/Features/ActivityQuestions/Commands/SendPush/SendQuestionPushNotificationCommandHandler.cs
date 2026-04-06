@@ -18,7 +18,7 @@ public class SendQuestionPushNotificationHandler
         _logger = logger;
     }
 
-    public async Task HandleAsync(
+    public async Task Handle(
         SendQuestionPushNotificationCommand message,
         CancellationToken ct)
     {
