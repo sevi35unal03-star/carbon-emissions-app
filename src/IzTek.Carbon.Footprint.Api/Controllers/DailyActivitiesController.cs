@@ -19,6 +19,7 @@ public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resourc
     /// Kullaniciya o gun icin atanmis aktif aktivite sorularini getirir.
     /// Flutter bu listeyi alip soru soru gosterir.
     /// </summary>
+    [AllowAnonymous]
     [HttpGet("questions")]
     public async Task<IActionResult> GetDailyQuestionsAsync()
         => CreateActionResultInstance(
