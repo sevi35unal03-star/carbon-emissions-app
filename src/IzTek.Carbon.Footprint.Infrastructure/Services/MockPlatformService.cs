@@ -49,4 +49,9 @@ public class MockPlatformService(ILogger<MockPlatformService> logger) : IPlatfor
         logger.LogInformation("[MOCK] ValidateUser: {Token}", bizIzmirToken);
         return Task.FromResult<Result?>(Result.Success());
     }
+
+    public Task SendPushAsync(Guid userId, string title, string body, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }

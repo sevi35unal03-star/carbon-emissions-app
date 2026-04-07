@@ -98,6 +98,11 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
         // TODO: BizIzmir endpoint'i netleşince güncellenecek
         throw new NotImplementedException("BizIzmir entegrasyonu bekleniyor.");
     }
+
+    public Task SendPushAsync(Guid userId, string title, string body, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 /*
