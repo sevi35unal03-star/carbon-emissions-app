@@ -24,7 +24,7 @@ public static class GetActivityCalendarQueryHandler
             {
                 startDate = new DateTime(query.Year, query.Month.Value, 16, 0, 0, 0, DateTimeKind.Utc);
                 endDate = new DateTime(query.Year, query.Month.Value,
-                    DateTime.DaysInMonth(query.Year, query.Month.Value), 23, 59, 59, DateTimeKind.Utc);
+                DateTime.DaysInMonth(query.Year, query.Month.Value), 30, 23, 59, 59, DateTimeKind.Utc);
             }
         }
         else

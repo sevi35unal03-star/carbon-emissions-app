@@ -16,4 +16,5 @@ public interface IPlatformService
     Task<Result?> RegisterUserAsync(string email, string name, string surname, string phoneNumber);
 
     Task<Result?> ValidateUserAsync(string bizIzmirToken);
+    Task SendPushAsync(Guid userId, string title, string body, CancellationToken ct);
 }
