@@ -13,6 +13,7 @@ public class ActivityAnsweredDomainEvent : BaseEvent
     public Guid SelectedOptionId { get; init; }
     public double CarbonValue { get; init; }
     public DateTime AnsweredAt { get; init; }
+    public bool IsFlowCompleted { get; set; }
 
     public ActivityAnsweredDomainEvent(
         Guid userId,
