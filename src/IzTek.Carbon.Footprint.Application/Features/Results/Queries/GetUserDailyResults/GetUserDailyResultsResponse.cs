@@ -9,5 +9,6 @@ public class UserDailyResultResponse
     public double TotalCurrentScore { get; set; }
     public int DonatedTreeCount { get; set; }
     public double EquivalentPoints { get; set; }
-    }
+
+}
 
