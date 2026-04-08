@@ -8,27 +8,24 @@ public static class GetMonthlyLeaderboardQueryHandler
         ICurrentUserService currentUser,
         CancellationToken ct)
     {
-        var donations = await context.TreeDonations
-            .AsNoTracking()
-            .Where(x => x.DonationDate.Month == query.Month
-                     && x.DonationDate.Year == query.Year)
-            .GroupBy(x => x.UserId)
-            .Select(g => new { UserId = g.Key, TotalTrees = g.Sum(x => x.TreeCount) })
-            .ToListAsync(ct);
+        // Not 2 düzeltmesi: MONTH/YEAR yerine range sorgu → index kullanır
+        var start = new DateTime(query.Year, query.Month, 1);
+        var end = start.AddMonths(1);
 
-        var userIds = donations.Select(x => x.UserId).ToList();
-        var users = await context.Users
-            .AsNoTracking()
-            .Where(u => userIds.Contains(u.Id))
-            .Select(u => new { u.Id, FullName = u.Name + " " + u.Surname })
-            .ToListAsync(ct);
-
-        var rankingsRaw = donations
-            .Join(users, d => d.UserId, u => u.Id,
-                (d, u) => new { d.UserId, d.TotalTrees, u.FullName })
-            .OrderByDescending(x => x.TotalTrees)
-            .ToList();
-
+        var rankingsRaw = await (
+            from donation in context.TreeDonations
+            where donation.DonationDate >= start && donation.DonationDate < end
+            join user in context.Users on donation.UserId equals user.Id
+            group new { donation, user } by new { donation.UserId, user.Name, user.Surname } into g
+            select new
+            {
+                UserId = g.Key.UserId,
+                FullName = g.Key.Name + " " + g.Key.Surname,
+                TotalTrees = g.Sum(x => x.donation.TreeCount)
+            }
+        )
+        .OrderByDescending(x => x.TotalTrees)
+        .ToListAsync(ct);
         var currentUserId = currentUser.UserId;
 
         var podium = rankingsRaw
@@ -38,6 +35,8 @@ public static class GetMonthlyLeaderboardQueryHandler
 
         var leaders = rankingsRaw
             .Skip(3)
+            .Take(7) // 3. kişiden sonraki 7 kişi
+            //index 4 ten başlasın
             .Select((x, i) => new LeaderboardItemDto(i + 4, x.FullName, x.TotalTrees, x.UserId == currentUserId))
             .ToList();
 

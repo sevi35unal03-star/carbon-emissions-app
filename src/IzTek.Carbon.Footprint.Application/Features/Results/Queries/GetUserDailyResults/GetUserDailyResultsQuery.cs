@@ -3,7 +3,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserDai
 
 
 public record GetUserDailyResultsQuery(
-     int PageNumber = 1,
+    int PageNumber = 1,
     int PageSize = 10,
     string? SearchTerm = null,
     bool? ShowDeleted = null);
