@@ -2,10 +2,3 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands
 
 public record DeleteActivityQuestionCommand(Guid Id);
 
-public class DeleteActivityQuestionCommandValidator : AbstractValidator<DeleteActivityQuestionCommand>
-{
-    public DeleteActivityQuestionCommandValidator()
-    {
-        RuleFor(x => x.Id).NotEmpty().WithMessage("Question ID is required.");
-    }
-}

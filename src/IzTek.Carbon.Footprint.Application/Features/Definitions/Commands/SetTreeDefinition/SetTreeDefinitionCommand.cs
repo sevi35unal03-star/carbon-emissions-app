@@ -3,4 +3,4 @@ namespace IzTek.Carbon.Footprint.Application.Features.Definitions.Commands.SetTr
 public record SetTreeDefinitionCommand(
     double PointUnit,
     int TreeCount,
-    int GlobalTargetTreeCount);  // ← YENİ
+    int GlobalTargetTreeCount); 

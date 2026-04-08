@@ -8,7 +8,7 @@ public static class CopyQuestionsToPollCommandHandler
         CancellationToken ct)
     {
         // 1. Boş liste kontrolü
-        if (command.SourceQuestionIds is null || !command.SourceQuestionIds.Any())
+        if (command.SourceQuestionIds is null or [])
             return Result.Failure(SystemErrorCodes.SourceQuestionIdsEmpty, HttpStatusCode.BadRequest);
 
         // 2. Kaynak soruları ve seçeneklerini getir
