@@ -4,7 +4,7 @@ public record UpdatePollOptionCommand(
     Guid OptionId,
     string Text,
     double Value,
-    string? Message, // ← eklendi
+    string? Message,
     Guid? NextPollQuestionId,
     int DisplayOrder
 );

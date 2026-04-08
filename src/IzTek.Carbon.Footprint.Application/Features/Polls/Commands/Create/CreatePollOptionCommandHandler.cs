@@ -19,8 +19,8 @@ public static class CreatePollOptionCommandHandler
       pollQuestionId: command.QuestionId,
       text: command.Text,
       carbonValue: command.Value,
-      message: command.Message,        // ← 4. parametre string?
-      nextPollQuestionId: null,        // ← 5. parametre Guid?
+      message: command.Message,    
+      nextPollQuestionId: null,        
       displayOrder: command.DisplayOrder
   );
 

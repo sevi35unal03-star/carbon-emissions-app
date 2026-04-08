@@ -7,13 +7,12 @@ public static class CreateRoleCommandHandler
         IApplicationDbContext context,
         CancellationToken cancellationToken)
     {
-        // 1. Aynı isimde bir rol var mı kontrolü (Product örneğindeki gibi)
+        // 1. Aynı isimde bir rol var mı kontrolü 
         var isExists = await context.Roles
             .AnyAsync(x => x.Name == command.Name, cancellationToken);
 
         if (isExists)
         {
-            // Not: SystemErrorCodes içine 'RoleAlreadyExists' eklemen gerekebilir.
             return Result.Failure(SystemErrorCodes.RoleAlreadyExists, System.Net.HttpStatusCode.BadRequest);
         }
 

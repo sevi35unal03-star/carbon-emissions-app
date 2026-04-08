@@ -7,14 +7,3 @@ public record SubmitPollAnswerCommand(
     List<PollAnswerItem> Answers,
     bool IsDraft = false); // ← yeni
 
-public class SubmitPollAnswerValidator : AbstractValidator<SubmitPollAnswerCommand>
-{
-    public SubmitPollAnswerValidator()
-    {
-        RuleFor(x => x.PollSetId)
-            .NotEmpty().WithMessage("Anket ID boş olamaz.");
-
-        RuleFor(x => x.Answers)
-            .NotEmpty().WithMessage("Anket cevapları boş olamaz.");
-    }
-}

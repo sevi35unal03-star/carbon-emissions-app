@@ -18,7 +18,7 @@ public class UpdatePollOptionCommandHandler
         option.UpdateDetails(
     text: command.Text,
     carbonValue: command.Value,
-    message: command.Message, // ← eklendi
+    message: command.Message, 
     nextPollQuestionId: command.NextPollQuestionId,
     displayOrder: command.DisplayOrder);
 

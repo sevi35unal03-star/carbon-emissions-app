@@ -13,7 +13,7 @@ public static class GetAllRolesQueryHandler
             {
                 Id = x.Id,
                 Name = x.Name,
-                Type = x.Type // Enum olarak gelecek, Response içinde string ise .ToString() eklenebilir
+                Type = x.Type 
             })
             .ToListAsync(cancellationToken);
 
