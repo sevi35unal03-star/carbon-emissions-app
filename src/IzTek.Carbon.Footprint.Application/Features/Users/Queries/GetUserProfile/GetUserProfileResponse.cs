@@ -6,17 +6,25 @@ public class GetUserProfileResponse
     public string? Name { get; set; }
     public string? Surname { get; set; }
     public DateTime? BirthDate { get; set; }
+    public double TotalPoints { get; set; }
+    public int DonatedTreeCount { get; set; }
+    public int AvailableTreeCount { get; set; }   // "Ağaç Bağışla 1200 Ağaç" butonu için
 
-    // Constructor - sadece temel bilgileri alacak
     public GetUserProfileResponse(
         string identityNumber,
         string? name,
         string? surname,
-        DateTime? birthDate)
+        DateTime? birthDate,
+        double totalPoints,
+        int donatedTreeCount,
+        int availableTreeCount)
     {
         IdentityNumber = identityNumber;
         Name = name;
         Surname = surname;
         BirthDate = birthDate;
+        TotalPoints = totalPoints;
+        DonatedTreeCount = donatedTreeCount;
+        AvailableTreeCount = availableTreeCount;
     }
 }
