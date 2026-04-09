@@ -10,8 +10,7 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize(Roles = "Admin")]
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/activity-questions")]
+[Route("api/v1/activity-questions")]
 public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
     /// <summary>Aktivite sorularini listeler. pollId girilirse o ankete ait sorular gelir.</summary>

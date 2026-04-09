@@ -7,8 +7,7 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/useful-information")]
+[Route("api/v1/useful-information")]
 public class UsefulInformationController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
     /// <summary>Tum kullanicilar faydali bilgileri listeleyebilir.</summary>

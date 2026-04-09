@@ -4,8 +4,7 @@ using IzTek.Carbon.Footprint.Application.Features.Assets.Queries.GetAssets;
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/assets")]
+[Route("api/v1/assets")]
 public class AssetsController(IMessageBus bus, IStringLocalizer<Resource> localizer)
     : BaseController(localizer)
 {

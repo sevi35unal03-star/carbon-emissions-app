@@ -5,8 +5,7 @@ using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserDailyRe
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/user-results")]
+[Route("api/v1/user-results")]
 public class UserResultsController(IMessageBus bus, IStringLocalizer<Resource> localizer)
     : BaseController(localizer)
 {
