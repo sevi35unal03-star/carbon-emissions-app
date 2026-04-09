@@ -5,9 +5,9 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfi
 public class GetUserProfileQueryHandler(
     UserManager<User> userManager,
     ICurrentUserService currentUserService,
-    IApplicationDbContext context)  // ← TreeDefinition için eklendi
+    IApplicationDbContext context) 
 {
-    public async Task<Result<GetUserProfileResponse>> HandleAsync(
+    public async Task<Result<GetUserProfileResponse>> Handle(
         GetUserProfileQuery request,
         CancellationToken ct)
     {
@@ -23,22 +23,22 @@ public class GetUserProfileQueryHandler(
                 SystemErrorCodes.NotFound,
                 HttpStatusCode.NotFound);
 
-        // Aktif ağaç tanımı — kaç ağaç bağışlanabilir hesabı için
-        var treeDef = await context.TreeDefinitions
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.IsActive, ct);
+        //// Aktif ağaç tanımı — kaç ağaç bağışlanabilir hesabı için
+        //var treeDef = await context.TreeDefinitions
+        //    .AsNoTracking()
+        //    .FirstOrDefaultAsync(x => x.IsActive, ct);
 
-        var availableTreeCount = treeDef is not null
-            ? (int)treeDef.CalculateTreeCount(user.TotalPoints)
-            : 0;
+        //var availableTreeCount = treeDef is not null
+        //    ? (int)treeDef.CalculateTreeCount(user.TotalPoints)
+        //    : 0;
 
         return Result<GetUserProfileResponse>.Success(new GetUserProfileResponse(
             identityNumber: user.IdentityNumber ?? string.Empty,
             name: user.Name,
             surname: user.Surname,
-            birthDate: user.BirthDate,
-            totalPoints: user.TotalPoints,
-            donatedTreeCount: user.DonatedTreeCount,
-            availableTreeCount: availableTreeCount));
+            birthDate: user.BirthDate));
+            //totalPoints: user.TotalPoints,
+            //donatedTreeCount: user.DonatedTreeCount,
+            //availableTreeCount: availableTreeCount));
     }
 }

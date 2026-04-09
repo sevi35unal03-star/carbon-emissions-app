@@ -116,6 +116,17 @@ public class UsersController(
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<GetUserProfileResponse>>(new GetUserProfileQuery()));
 
+    /// <summary>
+    /// Token sahibi kullanıcının toplam puanını, bağışladığı ağaç sayısını ve 
+    /// şu anda bağışlayabileceği ağaç sayısını getirir.
+    /// </summary>
+    [HttpGet("me/points-and-trees")]
+    [EnableRateLimiting("user")]
+    public async Task<IActionResult> GetPointsAndTreesAsync()
+        => CreateActionResultInstance(
+            await bus.InvokeAsync<Result<GetUserPointsAndTreesResponse>>(
+                new GetUserPointsAndTreesQuery()));
+
     /// <summary>Token sahibi kullanıcının geçmiş ağaç bağışlarını listeler.</summary>
     [HttpGet("me/donations")]
     public async Task<IActionResult> GetDonationHistoryAsync()
