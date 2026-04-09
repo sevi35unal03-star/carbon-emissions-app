@@ -1,11 +1,21 @@
 using Microsoft.AspNetCore.Identity;
-using IzTek.Carbon.Footprint.Application.Common.Models;
-using IzTek.Carbon.Footprint.Application.Common.Interfaces;
-using System.Net;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 
+/// <summary>
+/// Giriş yapmış kullanıcının profil bilgilerini getirir.
+/// 
+/// Bu handler aşağıdaki bilgileri üretir:
+/// - Kullanıcının kimlik ve kişisel bilgileri (IdentityNumber, Name, Surname, BirthDate)
+/// - Kullanıcının sistemde biriktirdiği toplam puan (TotalPoints)
+/// - Kullanıcının bugüne kadar bağışladığı toplam ağaç sayısı (DonatedTreeCount)
+/// - Mevcut puanına göre bağışlayabileceği maksimum ağaç sayısı (AvailableTreeCount)
+/// 
+/// AvailableTreeCount değeri, aktif ağaç tanımına (TreeDefinitions) göre
+/// kullanıcının toplam puanı üzerinden dinamik olarak hesaplanır.
+/// 
+/// Bu sorgu genellikle anasayfa veya profil ekranında kullanıcının
+/// özet bilgilerini göstermek amacıyla kullanılır.
+/// </summary>
 public class GetUserProfileQueryHandler(
     UserManager<User> userManager,
     ICurrentUserService currentUserService,

@@ -5,8 +5,7 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize(Roles = "Admin")]
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/user-logs")]
+[Route("api/v1/user-logs")]
 public class UserLogsController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
     /// <summary>

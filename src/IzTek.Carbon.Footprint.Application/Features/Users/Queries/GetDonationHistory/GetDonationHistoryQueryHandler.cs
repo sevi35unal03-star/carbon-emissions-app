@@ -2,6 +2,9 @@
 
 public static class GetDonationHistoryQueryHandler
 {
+    /// <summary>
+    /// pointspent: kullanıcının agacı oluştururken harcadığı puan neden kullanılıyor?
+    /// </summary>
     public static async Task<Result<GetDonationHistoryResponse>> Handle(
         GetDonationHistoryQuery query,
         IApplicationDbContext context,

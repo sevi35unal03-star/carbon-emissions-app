@@ -7,8 +7,7 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize(Roles = "Admin")]
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/definitions")]
+[Route("api/v1/definitions")]
 public class DefinitionsController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
     [HttpGet("tree")]
