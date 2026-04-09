@@ -33,13 +33,20 @@ public class ValidationBehavior
         var validationResults = await Task.WhenAll(
             applicableValidators.Select(v => v.ValidateAsync(context, ct)));
 
-        var errors = validationResults
-            .SelectMany(r => r.Errors)
-            .Where(e => e != null)
-            .GroupBy(e => e.PropertyName)
-            .ToDictionary(
-                g => g.Key,
-                g => g.Select(e => e.ErrorMessage).ToList());
+        var errors = new Dictionary<string, List<string>>();
+
+        foreach (var result in validationResults)
+        {
+            foreach (var error in result.Errors)
+            {
+                if (error == null) continue;
+
+                if (!errors.ContainsKey(error.PropertyName))
+                    errors[error.PropertyName] = new List<string>();
+
+                errors[error.PropertyName].Add(error.ErrorMessage);
+            }
+        }
 
         if (errors.Any())
         {
