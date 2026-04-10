@@ -20,6 +20,7 @@ public static class GetDonationHistoryQueryHandler
             .AsNoTracking()
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.DonationDate)
+            .Take(100) //maksimum 100 kayıt
             .Select(x => new DonationDto(x.TreeCount, x.PointsSpent, x.DonationDate))
             .ToListAsync(ct);
 

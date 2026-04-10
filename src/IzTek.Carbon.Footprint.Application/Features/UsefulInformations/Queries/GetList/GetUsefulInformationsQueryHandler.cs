@@ -17,7 +17,7 @@ public static class GetUsefulInformationsQueryHandler
 
         var informations = await context.UsefulInformations
             .AsNoTracking()
-            .Where(x => x.IsActive)
+            .Where(x => x.IsActive && !x.IsDeleted)
             .OrderBy(x => x.DisplayOrder)
             .Take(50)
             .Select(x => new GetUsefulInformationsResponse
