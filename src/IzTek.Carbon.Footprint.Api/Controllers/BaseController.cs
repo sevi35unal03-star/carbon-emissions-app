@@ -5,6 +5,14 @@ public abstract class BaseController(IStringLocalizer localizer) : ControllerBas
     [NonAction]
     public IActionResult CreateActionResultInstance<T>(T response) where T : Result
     {
+        // Önce gelen paketin boş olup olmadığını kontrol et
+        if (response == null)
+        {
+            return new ObjectResult(new { message = "Sunucudan boş yanıt döndü." })
+            {
+                StatusCode = 500
+            };
+        }
         if (!response.IsSuccessful)
         {
             SetLanguageMessage(response.Errors);

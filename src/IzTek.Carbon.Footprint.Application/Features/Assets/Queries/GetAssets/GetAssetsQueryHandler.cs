@@ -31,7 +31,7 @@ public static class GetAssetsQueryHandler
         {
             var urlResult = await fileStorage.GetPresignedUrlAsync(
                 fileName: asset.FileName,
-                expirationMinutes: 60 * 24,
+                expirationMinutes: 60 * 24, //1 gün
                 bucket: "assets");
 
             if (urlResult.IsSuccessful)

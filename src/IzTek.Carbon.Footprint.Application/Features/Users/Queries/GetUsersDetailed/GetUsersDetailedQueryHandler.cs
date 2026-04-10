@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-
 namespace IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
 
+/// <summary>
+/// kullanıcıları detaylı bir şekilde listeler.
+/// </summary>
 public static class GetUsersDetailedQueryHandler
 {
     public static async Task<PagedResult<List<GetUsersDetailedResponse>>> Handle(

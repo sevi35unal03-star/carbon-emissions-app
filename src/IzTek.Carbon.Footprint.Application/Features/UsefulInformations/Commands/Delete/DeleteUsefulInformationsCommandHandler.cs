@@ -2,14 +2,6 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Delete;
 
-public class DeleteUsefulInfoValidator : AbstractValidator<DeleteUsefulInformationsCommand>
-{
-    public DeleteUsefulInfoValidator()
-    {
-        RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required for deletion.");
-    }
-}
-
 public static class DeleteUsefulInformationsCommandHandler
 {
     public static async Task<Result> Handle(

@@ -1,4 +1,6 @@
-﻿namespace IzTek.Carbon.Footprint.Application.Features.LogsUser.Queries;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace IzTek.Carbon.Footprint.Application.Features.LogsUser.Queries;
 
 public static class GetAuditLogsQueryHandler
 {
@@ -9,8 +11,21 @@ public static class GetAuditLogsQueryHandler
     {
         var baseQuery = context.AuditLogs.AsNoTracking();
 
+        // 🔍 Search filtresi (minimal ama etkili)
+        if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+        {
+            var search = query.SearchTerm.ToLower();
+
+            baseQuery = baseQuery.Where(x =>
+                x.UserName.ToLower().Contains(search) ||
+                x.Operation.ToLower().Contains(search) ||
+                x.TableName.ToLower().Contains(search));
+        }
+
+        // 📊 Filtre sonrası toplam kayıt
         var totalCount = await baseQuery.CountAsync(ct);
 
+        // 📥 Verileri çek
         var data = await baseQuery
             .OrderByDescending(x => x.CreatedAt)
             .Skip((query.PageNumber - 1) * query.PageSize)
