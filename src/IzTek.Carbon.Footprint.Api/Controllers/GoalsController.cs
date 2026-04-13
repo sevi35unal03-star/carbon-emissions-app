@@ -7,7 +7,8 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize(Roles = "Admin")]
 [ApiController]
-[Route("api/v1/goals")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/goals")]
 public class GoalsController(IMessageBus bus, IStringLocalizer<Resource> localizer)
     : BaseController(localizer)
 {

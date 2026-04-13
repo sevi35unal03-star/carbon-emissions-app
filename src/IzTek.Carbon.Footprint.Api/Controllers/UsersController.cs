@@ -13,8 +13,8 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize]
 [ApiController]
-//[ApiVersion("1.0")]
-[Route("api/v1/users")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/users")]
 public class UsersController(
     IMessageBus bus,
     IStringLocalizer<Resource> localizer,
