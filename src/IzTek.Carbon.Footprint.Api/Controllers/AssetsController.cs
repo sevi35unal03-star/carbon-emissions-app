@@ -5,7 +5,7 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}assets")]
+[Route("api/v{version:apiVersion}/assets")]
 public class AssetsController(IMessageBus bus, IStringLocalizer<Resource> localizer)
     : BaseController(localizer)
 {
