@@ -11,7 +11,8 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/daily-activities")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/daily-activities")]
 public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
     /// <summary>

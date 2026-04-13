@@ -9,7 +9,8 @@ namespace IzTek.Carbon.Footprint.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/polls")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/polls")]
 public class PollsController(IMessageBus bus, IStringLocalizer<Resource> localizer) : BaseController(localizer)
 {
     // USER
