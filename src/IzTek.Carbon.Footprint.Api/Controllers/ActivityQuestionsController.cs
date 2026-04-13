@@ -16,6 +16,9 @@ public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resou
 {
     /// <summary>Aktivite sorularini listeler. pollId girilirse o ankete ait sorular gelir.</summary>
     /// <remarks>Query: pollId (opsiyonel)</remarks>
+    /// 
+
+    ///
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     => CreateActionResultInstance(
