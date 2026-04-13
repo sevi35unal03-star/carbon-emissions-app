@@ -1,3 +1,5 @@
+using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
+
 namespace IzTek.Carbon.Footprint.Api.Handlers;
 
 /// <summary>
@@ -39,6 +41,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
             BadRequestException => HttpStatusCode.BadRequest,
             UnauthorizedException => HttpStatusCode.Unauthorized,
             ForbiddenException => HttpStatusCode.Forbidden,
+            DomainException => HttpStatusCode.BadRequest,
             Application.Common.Exceptions.ValidationException => HttpStatusCode.UnprocessableEntity,
             _ => HttpStatusCode.InternalServerError
         };
@@ -51,6 +54,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
             ConflictException => SystemErrorCodes.ConflictError,
             UnauthorizedException => SystemErrorCodes.Unauthorized,
             ForbiddenException => SystemErrorCodes.AccessDenied,
+            DomainException => SystemErrorCodes.BadRequest,
             Application.Common.Exceptions.ValidationException => SystemErrorCodes.ValidationError,
             _ => SystemErrorCodes.SystemError
         };
