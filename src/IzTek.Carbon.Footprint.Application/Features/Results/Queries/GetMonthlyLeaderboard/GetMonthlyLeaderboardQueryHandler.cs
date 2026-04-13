@@ -15,7 +15,7 @@ public static class GetMonthlyLeaderboardQueryHandler
         var rankingsRaw = await (
             from donation in context.TreeDonations
             where donation.DonationDate >= start && donation.DonationDate < end
-            join user in context.Users on donation.UserId equals user.Id
+            join user in context.Users.Where(u => !u.IsDeleted) on donation.UserId equals user.Id
             group new { donation, user } by new { donation.UserId, user.Name, user.Surname } into g
             select new
             {
@@ -36,7 +36,7 @@ public static class GetMonthlyLeaderboardQueryHandler
         var leaders = rankingsRaw
             .Skip(3)
             .Take(7) // 3. kişiden sonraki 7 kişi
-            //index 4 ten başlasın
+                     //index 4 ten başlasın
             .Select((x, i) => new LeaderboardItemDto(i + 4, x.FullName, x.TotalTrees, x.UserId == currentUserId))
             .ToList();
 

@@ -16,7 +16,6 @@ public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resou
 {
     /// <summary>Aktivite sorularini listeler. pollId girilirse o ankete ait sorular gelir.</summary>
     /// <remarks>Query: pollId (opsiyonel)</remarks>
-    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     => CreateActionResultInstance(
@@ -24,7 +23,6 @@ public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resou
             new GetActivityQuestionsQuery()));
 
     /// <summary>Belirli bir aktivite sorusunun detayini getirir.</summary>
-    [AllowAnonymous]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
         => CreateActionResultInstance(await bus.InvokeAsync<Result<ActivityQuestionResponse>>(new GetActivityQuestionByIdQuery(id)));
