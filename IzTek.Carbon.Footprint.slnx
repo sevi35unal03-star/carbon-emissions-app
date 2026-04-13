@@ -20,6 +20,7 @@
     <Project Path="src/IzTek.Carbon.Footprint.Infrastructure/IzTek.Carbon.Footprint.Infrastructure.csproj" />
     <Project Path="src/IzTek.Carbon.Footprint.Persistence/IzTek.Carbon.Footprint.Persistence.csproj" />
   </Folder>
+  <Project Path="../iztekadmin/iztekadmin.csproj" Id="11357fc8-8389-4f91-b92a-373fc781c7b9" />
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
