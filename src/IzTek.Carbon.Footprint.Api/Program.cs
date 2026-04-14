@@ -31,6 +31,17 @@ builder.ConfigureOpenTelemetry(cfg =>
     cfg.ServiceName = builder.Configuration["OpenTelemetry:ServiceName"]!;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AdminPanel", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // React dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Cookie için gerekli
+    });
+});
+
 // 3. Katman servisleri
 builder.ConfigureApi()
     .ConfigureApplication()
@@ -136,11 +147,11 @@ await app.InitializeAssetsAsync();
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseLocalization();
+app.UseCors("AdminPanel");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseHealthCheckEndpoint();
-
 
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
