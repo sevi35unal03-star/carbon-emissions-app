@@ -15,7 +15,13 @@ public class UserLogsController(IMessageBus bus, IStringLocalizer<Resource> loca
     /// Query parametreleri: userId, startDate, endDate, page, pageSize
     /// </remarks>
     [HttpGet]
-    public async Task<IActionResult> GetLogsAsync([FromQuery] GetAuditLogsQuery query)
-    => CreateActionResultInstance(
-        await bus.InvokeAsync<PagedResult<List<GetAuditLogResponse>>>(query));
+    public async Task<IActionResult> GetLogsAsync(
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10,
+    [FromQuery] string? searchTerm = null)
+    {
+        var query = new GetAuditLogsQuery(pageNumber, pageSize, searchTerm);
+        return CreateActionResultInstance(
+            await bus.InvokeAsync<PagedResult<List<GetAuditLogResponse>>>(query));
+    }
 }

@@ -2,16 +2,9 @@
 
 public class GetAllPollResultsQuery
 {
-    public Guid PollSetId { get; init; }
-    public int Month { get; init; }
-    public int Year { get; init; }
-
-    public GetAllPollResultsQuery(Guid pollSetId, int month, int year)
-    {
-        PollSetId = pollSetId;
-        Month = month;
-        Year = year;
-    }
+    public Guid PollSetId { get; set; }
+    public int Month { get; set; }
+    public int Year { get; set; }
 }
 
 public record PollResultSummaryDto(
