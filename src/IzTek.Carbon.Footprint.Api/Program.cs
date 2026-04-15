@@ -145,9 +145,9 @@ catch (Exception ex)
 await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();
+app.UseCors("AdminPanel");
 app.UseRateLimiter();
 app.UseLocalization();
-app.UseCors("AdminPanel");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
