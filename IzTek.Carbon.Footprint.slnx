@@ -14,7 +14,6 @@
     <File Path=".editorconfig" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="../iztekadmin/iztekadmin.csproj" Id="11357fc8-8389-4f91-b92a-373fc781c7b9" />
     <Project Path="src/IzTek.Carbon.Footprint.Api/IzTek.Carbon.Footprint.Api.csproj" />
     <Project Path="src/IzTek.Carbon.Footprint.Application/IzTek.Carbon.Footprint.Application.csproj" />
     <Project Path="src/IzTek.Carbon.Footprint.Domain/IzTek.Carbon.Footprint.Domain.csproj" />
