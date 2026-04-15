@@ -1,4 +1,5 @@
-﻿using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
+﻿using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetAllPollResults;
+using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserDailyResults;
 
@@ -15,6 +16,13 @@ public class UserResultsController(IMessageBus bus, IStringLocalizer<Resource> l
     public async Task<IActionResult> GetDailyResultsAsync([FromQuery] GetUserDailyResultsQuery query)
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<List<UserDailyResultResponse>>>(query));
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("poll-results")]
+    public async Task<IActionResult> GetAllPollResultsAsync([FromQuery] Guid pollSetId, [FromQuery] int month, [FromQuery] int year)
+    => CreateActionResultInstance(
+        await bus.InvokeAsync<Result<List<PollResultSummaryDto>>>(
+            new GetAllPollResultsQuery(pollSetId, month, year)));
 
     [Authorize]
     [HttpGet("home")]
