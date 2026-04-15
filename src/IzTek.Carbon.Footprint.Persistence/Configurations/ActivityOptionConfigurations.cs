@@ -1,4 +1,4 @@
-namespace IzTek.Carbon.Footprint.Persistence.Configurations; // ✅ namespace eklendi
+namespace IzTek.Carbon.Footprint.Persistence.Configurations;
 
 public class ActivityOptionConfiguration : IEntityTypeConfiguration<ActivityOption>
 {
