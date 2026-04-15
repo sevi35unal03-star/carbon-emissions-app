@@ -5,6 +5,7 @@ using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Upd
 using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries;
 using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetById;
 using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetList;
+using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.GetToday;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
@@ -16,7 +17,7 @@ public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resou
 {
     /// <summary>Aktivite sorularini listeler. pollId girilirse o ankete ait sorular gelir.</summary>
     /// <remarks>Query: pollId (opsiyonel)</remarks>
-    /// 
+    ///
 
     ///
     [HttpGet]
@@ -55,4 +56,11 @@ public class ActivityQuestionsController(IMessageBus bus, IStringLocalizer<Resou
     [HttpPost("{id:guid}/notifications")]
     public async Task<IActionResult> SendPushNotificationAsync(Guid id, [FromBody] SendQuestionPushNotificationCommand command)
         => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
+
+    [AllowAnonymous] // veya [Authorize(Roles = "User")]
+    [HttpGet("today")]
+    public async Task<IActionResult> GetTodayAsync()
+    => CreateActionResultInstance(
+        await bus.InvokeAsync<Result<ActivityQuestionResponse>>(
+            new GetTodayActivityQuestionQuery()));
 }
