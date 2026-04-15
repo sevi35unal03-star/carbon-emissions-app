@@ -31,4 +31,10 @@ public class GoalsController(IMessageBus bus, IStringLocalizer<Resource> localiz
     public async Task<IActionResult> DeleteGlobalGoalAsync(Guid id, [FromQuery] int month, [FromQuery] int year)
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result>(new DeleteGlobalGoalCommand(id, month, year)));
+
+    [HttpGet("global")]
+public async Task<IActionResult> GetGlobalGoalsAsync()
+    => CreateActionResultInstance(
+        await bus.InvokeAsync<Result<List<GlobalGoalResponse>>>(
+            new GetGlobalGoalsQuery()));
 }

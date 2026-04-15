@@ -8,7 +8,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Passw
 public class ForgotPasswordCommandHandler(
     UserManager<User> userManager,
     IPlatformService platformService,
-    IConfiguration configuration,  // ← eklendi
+    IConfiguration configuration,
     ILogger<ForgotPasswordCommandHandler> logger)
 {
     public async Task<Result> HandleAsync(
@@ -27,22 +27,27 @@ public class ForgotPasswordCommandHandler(
 
         // 2. OTP kodu oluştur
         var resetCode = RandomNumberGenerator.GetInt32(10000, 99999).ToString();
-        var expiry = DateTime.UtcNow.AddMinutes(15).ToString("o"); // ISO 8601
+        var expiry = DateTime.UtcNow.AddMinutes(15).ToString("o");
 
-        // 3. Her zaman DB'ye kaydet — reset handler buradan doğrulayacak
-        await userManager.SetAuthenticationTokenAsync(
-            user, "Default", "PasswordResetOTP", resetCode);
+        // 3. Önce eskiyi sil (yoksa hata vermesin), sonra yenisini kaydet
+        try
+        {
+            await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTP");
+            await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry");
+        }
+        catch
+        {
+            // Kayıt yoksa sessizce geç
+        }
 
-        await userManager.SetAuthenticationTokenAsync(
-            user, "Default", "PasswordResetOTPExpiry", expiry); // ← süre
-
-        // 4. Mock modda OTP response'da döner
+        await userManager.SetAuthenticationTokenAsync(user, "Default", "PasswordResetOTP", resetCode);
+        await userManager.SetAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry", expiry);
+        // 4. Mock modda OTP log'a yazılır
         var useMock = configuration.GetValue<bool>("UseMockPlatformService");
-        // Mock modda
         if (useMock)
         {
             logger.LogInformation("[MOCK] OTP: {OTP} → UserId: {UserId}", resetCode, user.Id);
-            return Result.Success(); // ← Result<string> yerine Result
+            return Result.Success();
         }
 
         // 5. Production'da SMS gönder
