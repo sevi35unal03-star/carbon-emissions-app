@@ -35,7 +35,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AdminPanel", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // React dev server
+        policy.WithOrigins("https://localhost:5173") // React dev server
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials(); // Cookie için gerekli
@@ -145,9 +145,9 @@ catch (Exception ex)
 await app.InitializeAssetsAsync();
 
 app.UseHttpsRedirection();
+app.UseCors("AdminPanel");
 app.UseRateLimiter();
 app.UseLocalization();
-app.UseCors("AdminPanel");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
