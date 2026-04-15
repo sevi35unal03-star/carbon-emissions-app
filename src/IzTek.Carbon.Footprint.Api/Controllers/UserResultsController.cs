@@ -19,10 +19,20 @@ public class UserResultsController(IMessageBus bus, IStringLocalizer<Resource> l
 
     [Authorize(Roles = "Admin")]
     [HttpGet("poll-results")]
-    public async Task<IActionResult> GetAllPollResultsAsync([FromQuery] Guid pollSetId, [FromQuery] int month, [FromQuery] int year)
-    => CreateActionResultInstance(
-        await bus.InvokeAsync<Result<List<PollResultSummaryDto>>>(
-            new GetAllPollResultsQuery(pollSetId, month, year)));
+    public async Task<IActionResult> GetAllPollResultsAsync(
+     [FromQuery] Guid pollSetId,
+     [FromQuery] int month,
+     [FromQuery] int year)
+    {
+        var query = new GetAllPollResultsQuery
+        {
+            PollSetId = pollSetId,
+            Month = month,
+            Year = year
+        };
+        return CreateActionResultInstance(
+            await bus.InvokeAsync<Result<List<PollResultSummaryDto>>>(query));
+    }
 
     [Authorize]
     [HttpGet("home")]

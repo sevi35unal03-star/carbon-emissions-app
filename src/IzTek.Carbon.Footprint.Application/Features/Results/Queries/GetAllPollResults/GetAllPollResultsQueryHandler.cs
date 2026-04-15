@@ -3,26 +3,36 @@
 public static class GetAllPollResultsQueryHandler
 {
     public static async Task<Result<List<PollResultSummaryDto>>> Handle(
-    GetAllPollResultsQuery query,
-    IApplicationDbContext context,
-    CancellationToken ct)
+     GetAllPollResultsQuery query,
+     IApplicationDbContext context,
+     CancellationToken ct)
     {
-        Console.WriteLine($"=== PollSetId: {query.PollSetId}, Month: {query.Month}, Year: {query.Year}");
-
-        var results = await context.UserPollResults
+        // Önce tüm kayıtları getir, filtre olmadan
+        var all = await context.UserPollResults
             .AsNoTracking()
+            .ToListAsync(ct);
+
+        Console.WriteLine($"=== Toplam UserPollResults: {all.Count}");
+        Console.WriteLine($"=== Query: PollSetId={query.PollSetId}, Month={query.Month}, Year={query.Year}");
+
+        foreach (var r in all)
+        {
+            Console.WriteLine($"--- Id={r.Id}, PollSetId={r.PollSetId}, Month={r.Month}, Year={r.Year}, IsCompleted={r.IsCompleted}");
+        }
+
+        var results = all
             .Where(x => x.PollSetId == query.PollSetId
                      && x.Month == query.Month
                      && x.Year == query.Year)
-            .ToListAsync(ct);
-
-        Console.WriteLine($"=== Bulunan kayıt: {results.Count}");
-
-        return Result<List<PollResultSummaryDto>>.Success(
-            results.Select(x => new PollResultSummaryDto(
+            .Select(x => new PollResultSummaryDto(
                 x.UserId,
                 x.Name + " " + x.Surname,
                 x.TotalScore,
-                x.TreeCount)).ToList());
+                x.TreeCount))
+            .ToList();
+
+        Console.WriteLine($"=== Filtrelenmiş: {results.Count}");
+
+        return Result<List<PollResultSummaryDto>>.Success(results);
     }
 }
