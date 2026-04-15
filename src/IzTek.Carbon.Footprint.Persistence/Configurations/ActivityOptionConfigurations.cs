@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-﻿
-
-namespace IzTek.Carbon.Footprint.Persistence.Configurations; 
-=======
-﻿namespace IzTek.Carbon.Footprint.Persistence.Configurations; // ✅ namespace eklendi
->>>>>>> 44df4230f9ac6b55182e1f58c5c75b07d4c62e99
+namespace IzTek.Carbon.Footprint.Persistence.Configurations;
 
 public class ActivityOptionConfiguration : IEntityTypeConfiguration<ActivityOption>
 {
