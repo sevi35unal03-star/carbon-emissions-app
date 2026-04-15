@@ -35,10 +35,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AdminPanel", policy =>
     {
-        policy.WithOrigins("https://localhost:5173") // React dev server
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials(); // Cookie için gerekli
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
