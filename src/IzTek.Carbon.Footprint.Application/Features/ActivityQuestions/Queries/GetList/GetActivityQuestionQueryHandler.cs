@@ -7,13 +7,27 @@ public static class GetActivityQuestionsQueryHandler
         IApplicationDbContext context,
         CancellationToken ct)
     {
-        var query = context.ActivityQuestions
+        var result = await context.ActivityQuestions
             .AsNoTracking()
             .Where(x => !x.IsDeleted)
-            .OrderBy(x => x.DisplayOrder);
-
-        var result = await query
-            .ProjectToType<ActivityQuestionResponse>()
+            .OrderBy(x => x.DisplayOrder)
+            .Include(x => x.Options)
+            .Select(x => new ActivityQuestionResponse
+            {
+                Id = x.Id,
+                Text = x.Text,
+                DisplayOrder = x.DisplayOrder,
+                StartDate = x.StartDate,
+                EndDate = x.EndDate,
+                ScheduledTime = x.ScheduledTime,
+                Options = x.Options.Select(o => new ActivityOptionResponse
+                {
+                    Id = o.Id,
+                    Text = o.Text,
+                    CarbonValue = o.CarbonValue,
+                    NextQuestionId = o.NextQuestionId
+                }).ToList()
+            })
             .ToListAsync(ct);
 
         return Result<List<ActivityQuestionResponse>>.Success(result);
