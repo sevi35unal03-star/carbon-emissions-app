@@ -42,9 +42,7 @@ public static class GetTodayActivityQuestionQueryHandler
                 SystemErrorCodes.ActivityQuestionNotFound,
                 HttpStatusCode.NotFound);
 
-        var response = MapToResponse(rootQuestion);
-
-        return Result<ActivityQuestionResponse>.Success(response);
+        return Result<ActivityQuestionResponse>.Success(MapToResponse(rootQuestion));
     }
 
     private static ActivityQuestionResponse MapToResponse(ActivityQuestion question)
@@ -56,7 +54,7 @@ public static class GetTodayActivityQuestionQueryHandler
             DisplayOrder = question.DisplayOrder,
             StartDate = question.StartDate,
             EndDate = question.EndDate,
-            NotificationTime = question.ScheduledTime,
+            ScheduledTime = question.ScheduledTime, // ← NotificationTime → ScheduledTime
             Options = question.Options
                 .OrderBy(o => o.DisplayOrder)
                 .Select(o => new ActivityOptionResponse
