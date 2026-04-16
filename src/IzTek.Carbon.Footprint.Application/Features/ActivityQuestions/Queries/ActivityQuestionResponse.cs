@@ -7,6 +7,6 @@ public record ActivityQuestionResponse
     public int DisplayOrder { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public TimeSpan NotificationTime { get; set; }
+    public TimeSpan ScheduledTime { get; set; }
     public List<ActivityOptionResponse> Options { get; set; } = new();
 }
