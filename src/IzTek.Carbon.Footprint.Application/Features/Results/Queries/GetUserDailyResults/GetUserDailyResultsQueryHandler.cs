@@ -23,26 +23,48 @@ public static class GetUserDailyResultsHandler
             })
             .ToListAsync(ct);
 
-        // 2. Kullanıcıları çek
+        // 2. Kullanıcıların anket sonuçlarını çek
+        var pollResults = await context.UserPollResults
+            .AsNoTracking()
+            .Where(x => x.IsCompleted)
+            .GroupBy(x => x.UserId)
+            .Select(g => new
+            {
+                UserId = g.Key,
+                LatestScore = g.OrderByDescending(x => x.CreatedAt)
+                               .Select(x => x.TotalScore)
+                               .FirstOrDefault()
+            })
+            .ToListAsync(ct);
+
+        // 3. PointUnit'i çek
+        var treeDefinition = await context.TreeDefinitions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ct);
+
+        var pointUnit = treeDefinition?.PointUnit ?? 500;
+
+        // 4. Kullanıcıları çek
         var users = await context.Users
             .AsNoTracking()
             .Where(x => !x.IsDeleted)
             .ToListAsync(ct);
 
-        // 3. In-memory join — nullable object hatası önlenir
+        // 5. In-memory join
         var results = users.Select(u =>
         {
             var activity = todayActivities.FirstOrDefault(a => a.UserId == u.Id);
+            var pollResult = pollResults.FirstOrDefault(p => p.UserId == u.Id);
 
             return new UserDailyResultResponse
             {
                 Id = u.Id,
                 LastLoginDate = u.LastLoginDate,
-                CarbonFootprintScore = activity?.CarbonScore ?? 0,
+                CarbonFootprintScore = pollResult?.LatestScore ?? 0,
                 DailyActivitiesCount = activity?.Count ?? 0,
                 TotalCurrentScore = u.TotalPoints,
                 DonatedTreeCount = u.DonatedTreeCount,
-                EquivalentPoints = u.TotalPoints
+                EquivalentPoints = u.DonatedTreeCount * pointUnit
             };
         }).ToList();
 
