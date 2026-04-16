@@ -2,6 +2,7 @@
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetHomePage;
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetMonthlyLeaderboard;
 using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserDailyResults;
+using IzTek.Carbon.Footprint.Application.Features.Results.Queries.GetUserPollDetail;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 
@@ -17,21 +18,46 @@ public class UserResultsController(IMessageBus bus, IStringLocalizer<Resource> l
         => CreateActionResultInstance(
             await bus.InvokeAsync<Result<List<UserDailyResultResponse>>>(query));
 
-    [Authorize(Roles = "Admin")]
     [HttpGet("poll-results")]
     public async Task<IActionResult> GetAllPollResultsAsync(
-     [FromQuery] Guid pollSetId,
-     [FromQuery] int month,
-     [FromQuery] int year)
+        [FromQuery] Guid pollSetId,
+        [FromQuery] int month,
+        [FromQuery] int year)
     {
+        Console.WriteLine($"=== CONTROLLER: pollSetId={pollSetId}, month={month}, year={year}");
+
         var query = new GetAllPollResultsQuery
         {
             PollSetId = pollSetId,
             Month = month,
             Year = year
         };
-        return CreateActionResultInstance(
-            await bus.InvokeAsync<Result<List<PollResultSummaryDto>>>(query));
+
+        var result = await bus.InvokeAsync<Result<List<PollResultSummaryDto>>>(query);
+
+        Console.WriteLine($"=== RESULT: {result.IsSuccessful}, Count={result.Data?.Count}");
+
+        return CreateActionResultInstance(result);
+    }
+
+    [Authorize] // Hem Admin hem User erişebilir (Handler içinde yetki kontrolü zaten yapılıyor)
+    [HttpGet("poll-detail")]
+    public async Task<IActionResult> GetUserPollDetailAsync(
+    [FromQuery] Guid pollSetId,
+    [FromQuery] int month,
+    [FromQuery] int year,
+    [FromQuery] Guid? targetUserId)
+    {
+        var query = new GetUserPollDetailQuery
+        {
+            PollSetId = pollSetId,
+            Month = month,
+            Year = year,
+            TargetUserId = targetUserId
+        };
+
+        var result = await bus.InvokeAsync<Result<UserPollDetailResponse>>(query);
+        return CreateActionResultInstance(result);
     }
 
     [Authorize]
