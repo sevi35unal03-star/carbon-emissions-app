@@ -19,7 +19,6 @@ public class MockPlatformService(ILogger<MockPlatformService> logger) : IPlatfor
         logger.LogInformation("[MOCK] SMS gönderildi → To: {PhoneNumber}, Message: {Message}", phoneNumber, message);
         return Task.FromResult<Result?>(Result.Success());
     }
-
     public Task<Result?> SendPushNotificationAsync(string target, string title, string body)
     {
         logger.LogInformation("[MOCK] Push gönderildi → Target: {Target}, Title: {Title}", target, title);

@@ -16,16 +16,19 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
 
     public async Task<Result?> SendSmsAsync(string phoneNumber, string message)
     {
-        var responseMessage = await _httpClient.PostAsJsonAsync("/iztek/sms", new
-        {
-            to = phoneNumber,
-            message
-        });
+        //get
+        var url = $"https://api.netgsm.com.tr/sms/send?user=XXX&pass=XXX&to={phoneNumber}&msg={Uri.EscapeDataString(message)}";
 
-        if (responseMessage.IsSuccessStatusCode)
+        var responseMessage = await _httpClient.GetAsync(url);
+
+        // Netgsm text/xml döndürür, JSON değil — body'yi string oku
+        var body = await responseMessage.Content.ReadAsStringAsync();
+
+        // Netgsm başarı kodları: 00, 01, 02
+        if (responseMessage.IsSuccessStatusCode && (body.StartsWith("00") || body.StartsWith("01") || body.StartsWith("02")))
             return Result.Success();
 
-        return await responseMessage.DeserializeAsync<Result>();
+        return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
     }
 
     public async Task<Result?> SendPushNotificationAsync(string target, string title, string body)
@@ -43,7 +46,7 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
         return await responseMessage.DeserializeAsync<Result>();
     }
 
-    // ✅ Eklendi
+  
     public async Task<Result?> SendPushToAllUsersAsync(string title, string body, object? data = null)
     {
         var responseMessage = await _httpClient.PostAsJsonAsync("/iztek/push/all", new
@@ -60,7 +63,7 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
         return await responseMessage.DeserializeAsync<Result>();
     }
 
-    // ✅ Eklendi
+
     public async Task<Result?> SendPushToUserAsync(string userId, string title, string body, object? data = null)
     {
         var responseMessage = await _httpClient.PostAsJsonAsync("/iztek/push/user", new
