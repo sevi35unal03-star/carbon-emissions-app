@@ -34,6 +34,13 @@ public static class ServiceCollectionExtensions
             cfg.BaseAddress = new Uri("http://localhost");
         }).ConfigureResilience();
 
+        // ✅ Netgsm SMS client
+        builder.Services.AddHttpClient("netgsm", cfg =>
+        {
+            cfg.BaseAddress = new Uri("https://api.netgsm.com.tr");
+            cfg.Timeout = TimeSpan.FromSeconds(10);
+        });
+
         builder.Services.ConfigureServices(builder.Configuration);
 
         return builder;
