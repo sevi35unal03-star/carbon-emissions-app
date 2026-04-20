@@ -3,8 +3,9 @@ namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.Ge
     public record DailyOptionResponse(
         Guid Id,
         string Text,
-        double CarbonValue, // Entity ile aynı isim
-        Guid? NextQuestionId // Kırılımın anahtarı bu!
+        double CarbonValue,
+        Guid? NextQuestionId,
+        DailyQuestionResponse? NextQuestion  // ✅ eklendi
     );
 
     public record DailyQuestionResponse(
