@@ -61,13 +61,13 @@ public static class SubmitActivityAnswerHandler
 
         // Sonraki soruyu nested tree olarak getir
         var nextQuestion = await context.ActivityQuestions
-            .AsNoTracking()
-            .Include(q => q.Options)
+    // .AsNoTracking() ← kaldırın
+    .Include(q => q.Options)
+        .ThenInclude(o => o.NextQuestion)
+            .ThenInclude(nq => nq!.Options)
                 .ThenInclude(o => o.NextQuestion)
                     .ThenInclude(nq => nq!.Options)
-                        .ThenInclude(o => o.NextQuestion)
-                            .ThenInclude(nq => nq!.Options)
-            .FirstOrDefaultAsync(q => q.Id == option.NextQuestionId, ct);
+    .FirstOrDefaultAsync(q => q.Id == option.NextQuestionId, ct);
 
         if (nextQuestion is null)
         {
