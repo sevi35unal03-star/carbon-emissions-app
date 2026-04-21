@@ -48,6 +48,7 @@ public static class SubmitActivityAnswerHandler
                         x.ActivityDate < today.AddDays(1))
             .SumAsync(x => x.TotalCarbonScore, ct);
 
+        // Flow bitti
         if (option.NextQuestionId is null)
         {
             return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
@@ -58,9 +59,14 @@ public static class SubmitActivityAnswerHandler
             });
         }
 
+        // Sonraki soruyu nested tree olarak getir
         var nextQuestion = await context.ActivityQuestions
             .AsNoTracking()
             .Include(q => q.Options)
+                .ThenInclude(o => o.NextQuestion)
+                    .ThenInclude(nq => nq!.Options)
+                        .ThenInclude(o => o.NextQuestion)
+                            .ThenInclude(nq => nq!.Options)
             .FirstOrDefaultAsync(q => q.Id == option.NextQuestionId, ct);
 
         if (nextQuestion is null)
@@ -73,26 +79,37 @@ public static class SubmitActivityAnswerHandler
             });
         }
 
-        var now = DateTime.UtcNow;
-        var endDateTime = nextQuestion.EndDate.Date.AddDays(1);
-        var remainingSeconds = (long)Math.Max(0, (endDateTime - now).TotalSeconds);
-
         return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
         {
-            NextQuestion = new DailyQuestionResponse(
-                nextQuestion.Id,
-                nextQuestion.Text,
-                nextQuestion.DisplayOrder,
-                nextQuestion.Options.Select(o => new DailyOptionResponse(
+            NextQuestion = MapToResponse(nextQuestion),
+            TotalCarbonScore = totalCarbon,
+            IsFlowCompleted = false
+        });
+    }
+
+    private static DailyQuestionResponse MapToResponse(ActivityQuestion question)
+    {
+        var now = DateTime.UtcNow;
+        var endOfDay = question.EndDate.Date.AddDays(1);
+        var remainingSeconds = (long)Math.Max(0, (endOfDay - now).TotalSeconds);
+
+        return new DailyQuestionResponse(
+            question.Id,
+            question.Text,
+            question.DisplayOrder,
+            question.Options
+                .OrderBy(o => o.DisplayOrder)
+                .Select(o => new DailyOptionResponse(
                     o.Id,
                     o.Text,
                     o.CarbonValue,
                     o.NextQuestionId,
-                    null
-                )).ToList(),
-                remainingSeconds),
-            TotalCarbonScore = totalCarbon,
-            IsFlowCompleted = false
-        });
+                    o.NextQuestion is not null
+                        ? MapToResponse(o.NextQuestion)
+                        : null
+                ))
+                .ToList(),
+            remainingSeconds
+        );
     }
 }
