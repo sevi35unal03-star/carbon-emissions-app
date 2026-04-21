@@ -87,7 +87,8 @@ public static class SubmitActivityAnswerHandler
                     o.Id,
                     o.Text,
                     o.CarbonValue,
-                    o.NextQuestionId
+                    o.NextQuestionId,
+                    null
                 )).ToList(),
                 remainingSeconds),
             TotalCarbonScore = totalCarbon,
