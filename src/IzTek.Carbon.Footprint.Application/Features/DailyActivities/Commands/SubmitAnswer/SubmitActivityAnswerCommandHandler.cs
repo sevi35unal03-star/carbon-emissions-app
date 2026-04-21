@@ -1,6 +1,4 @@
-﻿using IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.GetDailyQuestions;
-
-namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
+﻿namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Commands.SubmitAnswer;
 
 public static class SubmitActivityAnswerHandler
 {
@@ -11,105 +9,70 @@ public static class SubmitActivityAnswerHandler
         CancellationToken ct)
     {
         var userId = currentUser.UserId!.Value;
+        var now = DateTime.UtcNow;
+        var today = now.Date;
 
-        var option = await context.ActivityOptions
-            .FirstOrDefaultAsync(o =>
-                o.Id == command.SelectedOptionId &&
-                o.ActivityQuestionId == command.QuestionId, ct);
+        // Gönderilen tüm option'ları tek seferde getir
+        var optionIds = command.Answers.Select(a => a.SelectedOptionId).ToList();
+        var options = await context.ActivityOptions
+            .Where(o => optionIds.Contains(o.Id))
+            .Include(o => o.ActivityQuestion)
+            .ToListAsync(ct);
 
-        if (option is null)
-            return Result<SubmitActivityAnswerResponse>.Failure(
-                SystemErrorCodes.InvalidActivityOption, HttpStatusCode.BadRequest);
+        // Her cevap için answer ve log oluştur
+        foreach (var dto in command.Answers)
+        {
+            var option = options.FirstOrDefault(o =>
+                o.Id == dto.SelectedOptionId &&
+                o.ActivityQuestionId == dto.QuestionId);
 
-        var answer = new UserActivityAnswer(
-            userId: userId,
-            questionId: command.QuestionId,
-            selectedOptionId: command.SelectedOptionId,
-            carbonValue: option.CarbonValue,
-            answeredAt: DateTime.UtcNow);
-        context.UserActivityAnswers.Add(answer);
+            if (option is null)
+                return Result<SubmitActivityAnswerResponse>.Failure(
+                    SystemErrorCodes.InvalidActivityOption, HttpStatusCode.BadRequest);
 
-        var log = new UserActivityLog(
-            userId: userId,
-            questionId: command.QuestionId,
-            optionId: command.SelectedOptionId,
-            score: option.CarbonValue,
-            selectedOptionId: command.SelectedOptionId,
-            selectedOptionText: option.Text,
-            carbonValue: option.CarbonValue);
-        context.UserActivityLogs.Add(log);
+            var answer = new UserActivityAnswer(
+                userId: userId,
+                questionId: dto.QuestionId,
+                selectedOptionId: dto.SelectedOptionId,
+                carbonValue: option.CarbonValue,
+                answeredAt: now);
+            context.UserActivityAnswers.Add(answer);
+
+            var log = new UserActivityLog(
+                userId: userId,
+                questionId: dto.QuestionId,
+                optionId: dto.SelectedOptionId,
+                score: option.CarbonValue,
+                selectedOptionId: dto.SelectedOptionId,
+                selectedOptionText: option.Text,
+                carbonValue: option.CarbonValue);
+            context.UserActivityLogs.Add(log);
+        }
 
         await context.SaveChangesAsync(ct);
 
-        var today = DateTime.UtcNow.Date;
+        // Bugünkü toplam skor
         var totalCarbon = await context.UserActivityLogs
             .Where(x => x.UserId == userId &&
                         x.ActivityDate >= today &&
                         x.ActivityDate < today.AddDays(1))
             .SumAsync(x => x.TotalCarbonScore, ct);
 
-        // Flow bitti
-        if (option.NextQuestionId is null)
-        {
-            return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
+        // Özet listesi
+        var answers = options
+            .OrderBy(o => o.ActivityQuestion.DisplayOrder)
+            .Select(o => new AnswerSummaryDto(
+                o.ActivityQuestion.Text,
+                o.Text,
+                o.CarbonValue))
+            .ToList();
+
+        return Result<SubmitActivityAnswerResponse>.Success(
+            new SubmitActivityAnswerResponse
             {
-                NextQuestion = null,
                 TotalCarbonScore = totalCarbon,
-                IsFlowCompleted = true
+                IsFlowCompleted = true,
+                Answers = answers
             });
-        }
-
-        // Sonraki soruyu nested tree olarak getir
-        var nextQuestion = await context.ActivityQuestions
-    // .AsNoTracking() ← kaldırın
-    .Include(q => q.Options)
-        .ThenInclude(o => o.NextQuestion)
-            .ThenInclude(nq => nq!.Options)
-                .ThenInclude(o => o.NextQuestion)
-                    .ThenInclude(nq => nq!.Options)
-    .FirstOrDefaultAsync(q => q.Id == option.NextQuestionId, ct);
-
-        if (nextQuestion is null)
-        {
-            return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
-            {
-                NextQuestion = null,
-                TotalCarbonScore = totalCarbon,
-                IsFlowCompleted = true
-            });
-        }
-
-        return Result<SubmitActivityAnswerResponse>.Success(new SubmitActivityAnswerResponse
-        {
-            NextQuestion = MapToResponse(nextQuestion),
-            TotalCarbonScore = totalCarbon,
-            IsFlowCompleted = false
-        });
-    }
-
-    private static DailyQuestionResponse MapToResponse(ActivityQuestion question)
-    {
-        var now = DateTime.UtcNow;
-        var endOfDay = question.EndDate.Date.AddDays(1);
-        var remainingSeconds = (long)Math.Max(0, (endOfDay - now).TotalSeconds);
-
-        return new DailyQuestionResponse(
-            question.Id,
-            question.Text,
-            question.DisplayOrder,
-            question.Options
-                .OrderBy(o => o.DisplayOrder)
-                .Select(o => new DailyOptionResponse(
-                    o.Id,
-                    o.Text,
-                    o.CarbonValue,
-                    o.NextQuestionId,
-                    o.NextQuestion is not null
-                        ? MapToResponse(o.NextQuestion)
-                        : null
-                ))
-                .ToList(),
-            remainingSeconds
-        );
     }
 }
