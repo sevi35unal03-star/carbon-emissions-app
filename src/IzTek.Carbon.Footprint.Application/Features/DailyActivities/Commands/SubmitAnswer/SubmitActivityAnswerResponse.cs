@@ -14,4 +14,3 @@ public record AnswerSummaryDto(
     string SelectedOptionText,
     double CarbonValue
 );
-}

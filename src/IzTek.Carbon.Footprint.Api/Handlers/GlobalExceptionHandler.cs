@@ -81,12 +81,10 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
         {
             foreach (var errorMessage in errorMessages)
             {
-                var error = new ErrorResult(
-                    errorCode: errorCode,
-                    message: $"{field}: {errorMessage}",
-                    isShow: true);
-
-                errors.Add(error);
+                errors.Add(new ErrorResult(
+                errorCode: errorCode,
+                message: errorMessage,
+                isShow: true));
             }
         }
 

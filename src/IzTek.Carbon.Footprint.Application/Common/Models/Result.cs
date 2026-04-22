@@ -12,7 +12,7 @@ public class Result
     public HttpStatusCode StatusCode { get; init; }
 
     [JsonPropertyName("errors")]
-    public List<ErrorResult> Errors { get; init; }
+    public List<ErrorResult> Errors { get; init; } = [];
 
     public static Result Created() => new() { StatusCode = HttpStatusCode.Created, IsSuccessful = true };
 
@@ -44,7 +44,7 @@ public class Result
 
     //internal static Result Failure(string v, HttpStatusCode notFound)
     //{
-        //throw new NotImplementedException();
+    //throw new NotImplementedException();
     //}
 }
 
