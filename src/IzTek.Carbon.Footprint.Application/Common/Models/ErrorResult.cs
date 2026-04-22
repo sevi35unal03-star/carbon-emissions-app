@@ -21,7 +21,7 @@ public class ErrorResult
         Code = errorCode.Code;
         Type = errorCode.Name;
         Service = errorCode.Service;
-        MessageArgs = null;
+        Message = errorCode.Name;
     }
 
     public ErrorResult(ErrorCode errorCode, string message, bool isShow = true)
@@ -30,7 +30,9 @@ public class ErrorResult
         Code = errorCode.Code;
         Type = errorCode.Name;
         Service = errorCode.Service;
-        Message = message;
+        Message = string.IsNullOrWhiteSpace(message)
+            ? errorCode.Name  // mesaj boşsa type'ı kullan
+            : message;        // mesaj doluysa onu kullan
     }
 
     public ErrorResult(ErrorCode errorCode, string[]? messageArgs = null, bool isShow = true)
@@ -40,5 +42,6 @@ public class ErrorResult
         Type = errorCode.Name;
         Service = errorCode.Service;
         MessageArgs = messageArgs;
+        Message = errorCode.Name;
     }
 }
