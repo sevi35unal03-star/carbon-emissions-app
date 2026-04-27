@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Net;
 
 namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Commands.Delete;
 
@@ -11,15 +13,14 @@ public static class DeleteUsefulInformationsCommandHandler
         CancellationToken ct)
     {
         var info = await context.UsefulInformations
-            .FirstOrDefaultAsync(x => x.Id == command.Id, ct);
+            .FirstOrDefaultAsync(x => x.Id == command.Id && !x.IsDeleted, ct);
 
         if (info is null)
             return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
 
+        // SOFT DELETE
         info.IsDeleted = true;
         info.DeletedAt = DateTime.UtcNow;
-
-        context.UsefulInformations.Remove(info);
 
         var success = await context.SaveChangesAsync(ct) > 0;
 
