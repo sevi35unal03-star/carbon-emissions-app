@@ -1,4 +1,5 @@
-﻿using IzTek.Carbon.Footprint.Domain.Events.Activity;
+﻿using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
+using IzTek.Carbon.Footprint.Domain.Events.Activity;
 
 namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Update;
 
@@ -14,8 +15,8 @@ public static class UpdateActivityQuestionCommandHandler
             .Include(x => x.Options)
             .FirstOrDefaultAsync(x => x.Id == command.Id, ct);
 
-        if (question == null)
-            return Result.Failure(SystemErrorCodes.ActivityQuestionNotFound, HttpStatusCode.NotFound);
+        if (question is null)
+            throw new DomainException(SystemErrorCodes.ActivityQuestionNotFound);
 
         // 2. Ana Alanları Güncelle (Domain Metodu Kullanımı)
         question.UpdateDetails(
@@ -45,16 +46,23 @@ public static class UpdateActivityQuestionCommandHandler
         {
             if (optReq.Id.HasValue)
             {
-                var existingOpt = question.Options.FirstOrDefault(x => x.Id == optReq.Id.Value);
+                var existingOpt = question.Options
+                    .FirstOrDefault(x => x.Id == optReq.Id.Value);
 
                 if (existingOpt is null)
-                    return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
+                    throw new DomainException(SystemErrorCodes.NotFound);
 
-                existingOpt.UpdateDetails(optReq.Text, optReq.CarbonValue, optReq.NextQuestionId);
+                existingOpt.UpdateDetails(
+                    optReq.Text,
+                    optReq.CarbonValue,
+                    optReq.NextQuestionId);
             }
             else
             {
-                question.AddOption(optReq.Text, optReq.CarbonValue, optReq.NextQuestionId);
+                question.AddOption(
+                    optReq.Text,
+                    optReq.CarbonValue,
+                    optReq.NextQuestionId);
             }
         }
 
@@ -72,7 +80,7 @@ public static class UpdateActivityQuestionCommandHandler
         }
         catch (DbUpdateConcurrencyException)
         {
-            return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.Conflict);
+            throw new DomainException(SystemErrorCodes.Conflict);
         }
     }
 }
