@@ -55,7 +55,7 @@ public class CreateUserCommandHandler(
         }
 
         await userManager.AddToRoleAsync(user, "User");
-        logger.LogInformation("User created successfully → UserId: {UserId}", user.Id);
+        logger.LogInformation("User created success → UserId: {UserId}", user.Id);
 
         return Result.Success();
     }
