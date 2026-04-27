@@ -2,7 +2,7 @@
 
 public static class UpdateScoringSettingsHandler
 {
-    public static async Task<Result> HandleAsync(
+    public static async Task<Result> Handle(
         UpdateScoringSettingsCommand command,
         IApplicationDbContext context,
         CancellationToken ct)

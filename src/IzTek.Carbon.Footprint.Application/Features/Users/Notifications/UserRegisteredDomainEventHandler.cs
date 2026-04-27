@@ -6,7 +6,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Notifications;
 public class UserRegisteredEventHandler(
     ILogger<UserRegisteredEventHandler> logger)
 {
-    public Task HandleAsync(
+    public Task Handle(
         UserRegisteredDomainEvent notification,
         CancellationToken ct)
     {

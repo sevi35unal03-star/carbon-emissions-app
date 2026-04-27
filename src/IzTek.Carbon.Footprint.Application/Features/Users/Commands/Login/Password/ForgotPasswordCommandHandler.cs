@@ -11,7 +11,7 @@ public class ForgotPasswordCommandHandler(
     IConfiguration configuration,
     ILogger<ForgotPasswordCommandHandler> logger)
 {
-    public async Task<Result> HandleAsync(
+    public async Task<Result> Handle(
         ForgotPasswordCommand command,
         CancellationToken ct)
     {

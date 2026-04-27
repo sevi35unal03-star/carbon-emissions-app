@@ -2,7 +2,7 @@
 
 public static class CreateRoleCommandHandler
 {
-    public static async Task<Result> HandleAsync(
+    public static async Task<Result> Handle(
         CreateRoleCommand command,
         IApplicationDbContext context,
         CancellationToken cancellationToken)

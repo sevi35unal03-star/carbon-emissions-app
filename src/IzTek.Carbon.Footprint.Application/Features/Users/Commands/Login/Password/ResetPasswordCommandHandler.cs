@@ -4,7 +4,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Passw
 
 public class ResetPasswordCommandHandler(UserManager<User> userManager)
 {
-    public async Task<Result> HandleAsync(
+    public async Task<Result> Handle(
      ResetPasswordCommand request,
      CancellationToken ct)
     {

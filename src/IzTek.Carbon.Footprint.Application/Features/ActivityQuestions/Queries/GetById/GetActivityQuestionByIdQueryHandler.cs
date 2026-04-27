@@ -2,7 +2,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Queries.
 
 public static class GetActivityQuestionByIdQueryHandler
 {
-    public static async Task<Result<ActivityQuestionResponse>> HandleAsync(
+    public static async Task<Result<ActivityQuestionResponse>> Handle(
         GetActivityQuestionByIdQuery request,
         IApplicationDbContext context,
         CancellationToken ct)

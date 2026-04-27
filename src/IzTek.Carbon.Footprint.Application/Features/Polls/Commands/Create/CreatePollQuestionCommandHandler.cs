@@ -2,7 +2,7 @@
 
 public class CreatePollQuestionCommandHandler
 {
-    public async Task<Result<Guid>> HandleAsync(
+    public async Task<Result<Guid>>Handle(
         CreatePollQuestionCommand command,
         IApplicationDbContext context,
         CancellationToken ct)
