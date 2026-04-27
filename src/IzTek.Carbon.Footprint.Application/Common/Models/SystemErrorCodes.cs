@@ -82,6 +82,8 @@ public static class SystemErrorCodes
     public static readonly ErrorCode InvalidOtpCode = new SystemErrorCode(8005, nameof(InvalidOtpCode));
     public static readonly ErrorCode KvkkNotApproved = new SystemErrorCode(8006, nameof(KvkkNotApproved));
 
+    public static string Conflict { get; internal set; }
+
     private sealed class SystemErrorCode(int code, string name) : ServiceErrorCode(code, name, SERVICE_NAME)
     {
     }

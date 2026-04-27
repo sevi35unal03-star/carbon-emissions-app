@@ -1,21 +1,23 @@
 ﻿using IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.SendPush;
+using IzTek.Carbon.Footprint.Domain.Common.Exceptions;
 
 namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands.Create;
 
 public static class CreateActivityQuestionCommandHandler
 {
     public static async Task<Result> Handle(
-    CreateActivityQuestionCommand command,
-    IApplicationDbContext context,
-    IMessageBus bus,
-    CancellationToken ct)
+        CreateActivityQuestionCommand command,
+        IApplicationDbContext context,
+        IMessageBus bus,
+        CancellationToken ct)
     {
-        // Günlük limit kontrolü
+        // Günlük limit kontrolü (Domain rule -> exception)
         var dailyCount = await context.ActivityQuestions
             .CountAsync(x => x.StartDate.Date == command.StartDate.Date, ct);
 
         if (dailyCount >= 50)
-            return Result.Failure(SystemErrorCodes.MaxDailyQuestionLimitReached, HttpStatusCode.BadRequest);
+            throw new DomainException(
+                SystemErrorCodes.MaxDailyQuestionLimitReached);
 
         var question = new ActivityQuestion(
             command.Text,
@@ -30,6 +32,8 @@ public static class CreateActivityQuestionCommandHandler
         await context.ActivityQuestions.AddAsync(question, ct);
 
         var notificationDate = command.StartDate.Date.Add(command.ScheduledTime);
+
+        // sadece gelecekteyse schedule edilir
         if (notificationDate > DateTime.UtcNow)
         {
             await bus.ScheduleAsync(
