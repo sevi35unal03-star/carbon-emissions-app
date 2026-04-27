@@ -2,7 +2,7 @@
 
 public class UpdatePollQuestionCommandHandler
 {
-    public async Task<Result> HandleAsync(
+    public async Task<Result> Handle(
         UpdatePollQuestionCommand command,
         IApplicationDbContext context,
         CancellationToken ct)

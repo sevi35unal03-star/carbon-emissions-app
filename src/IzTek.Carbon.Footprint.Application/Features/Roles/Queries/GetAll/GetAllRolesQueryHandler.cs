@@ -2,7 +2,7 @@
 
 public static class GetAllRolesQueryHandler
 {
-    public static async Task<Result<List<GetAllRolesResponse>>> HandleAsync(
+    public static async Task<Result<List<GetAllRolesResponse>>> Handle(
         GetAllRolesQuery query,
         IApplicationDbContext context,
         CancellationToken cancellationToken)

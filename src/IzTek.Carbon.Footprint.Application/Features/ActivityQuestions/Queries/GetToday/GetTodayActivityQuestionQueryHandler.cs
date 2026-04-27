@@ -2,7 +2,7 @@
 
 public static class GetTodayActivityQuestionQueryHandler
 {
-    public static async Task<Result<ActivityQuestionResponse>> HandleAsync(
+    public static async Task<Result<ActivityQuestionResponse>> Handle(
         GetTodayActivityQuestionQuery request,
         IApplicationDbContext context,
         CancellationToken ct)

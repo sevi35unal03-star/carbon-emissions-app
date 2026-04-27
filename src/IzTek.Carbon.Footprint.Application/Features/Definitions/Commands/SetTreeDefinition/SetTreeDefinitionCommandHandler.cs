@@ -2,7 +2,7 @@
 
 public static class SetTreeDefinitionCommandHandler
 {
-    public static async Task<Result<SetTreeDefinitionResponse>> HandleAsync(
+    public static async Task<Result<SetTreeDefinitionResponse>> Handle(
         SetTreeDefinitionCommand command,
         IApplicationDbContext context,
         CancellationToken ct)

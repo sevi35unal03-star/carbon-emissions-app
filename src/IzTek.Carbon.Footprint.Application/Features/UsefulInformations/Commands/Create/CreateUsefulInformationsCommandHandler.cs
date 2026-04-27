@@ -4,7 +4,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.UsefulInformations.Command
 
 public static class CreateUsefulInformationsCommandHandler
 {
-    public static async Task<Result> HandleAsync(
+    public static async Task<Result> Handle(
         CreateUsefulInformationsCommand command,
         IApplicationDbContext context,
         IMemoryCache cache,

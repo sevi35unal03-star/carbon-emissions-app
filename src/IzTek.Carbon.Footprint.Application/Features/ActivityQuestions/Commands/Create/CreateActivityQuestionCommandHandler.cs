@@ -4,7 +4,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands
 
 public static class CreateActivityQuestionCommandHandler
 {
-    public static async Task<Result> HandleAsync(
+    public static async Task<Result> Handle(
     CreateActivityQuestionCommand command,
     IApplicationDbContext context,
     IMessageBus bus,

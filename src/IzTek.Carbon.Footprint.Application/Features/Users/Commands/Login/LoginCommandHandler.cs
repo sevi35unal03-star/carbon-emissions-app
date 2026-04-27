@@ -9,7 +9,7 @@ public class LoginCommandHandler(
     ITokenService tokenService,
     ILogger<LoginCommandHandler> logger)
 {
-    public async Task<Result<TokenResponse>> HandleAsync(
+    public async Task<Result<TokenResponse>> Handle(
         LoginCommand command,
         CancellationToken ct)
     {

@@ -4,7 +4,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.ActivityQuestions.Commands
 
 public static class UpdateActivityQuestionCommandHandler
 {
-    public static async Task<Result> HandleAsync(
+    public static async Task<Result> Handle(
         UpdateActivityQuestionCommand command,
         IApplicationDbContext context,
         CancellationToken ct)

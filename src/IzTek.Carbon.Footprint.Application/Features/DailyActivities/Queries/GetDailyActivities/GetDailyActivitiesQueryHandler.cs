@@ -4,7 +4,7 @@ namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.Ge
 
 public class GetDailyActivitiesQueryHandler
 {
-    public async Task<Result<DailyActivityResponse>> HandleAsync(
+    public async Task<Result<DailyActivityResponse>> Handle(
         GetDailyActivitiesQuery query,
         IApplicationDbContext context,
         ICurrentUserService userService,

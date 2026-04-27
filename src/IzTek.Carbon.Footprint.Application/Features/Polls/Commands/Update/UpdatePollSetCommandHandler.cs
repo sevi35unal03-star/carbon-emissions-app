@@ -2,7 +2,7 @@
 
 public static class UpdatePollSetCommandHandler
 {
-    public static  async Task<Result> HandleAsync(
+    public static  async Task<Result> Handle(
         UpdatePollSetCommand command,
         IApplicationDbContext context,
         CancellationToken ct)
