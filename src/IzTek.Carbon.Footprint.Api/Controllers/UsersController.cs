@@ -7,7 +7,6 @@ using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login.Password;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetDonationHistory;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUserProfile;
 using IzTek.Carbon.Footprint.Application.Features.Users.Queries.GetUsersDetailed;
-using IzTek.Carbon.Footprint.Infrastructure.Services;
 
 namespace IzTek.Carbon.Footprint.Api.Controllers;
 

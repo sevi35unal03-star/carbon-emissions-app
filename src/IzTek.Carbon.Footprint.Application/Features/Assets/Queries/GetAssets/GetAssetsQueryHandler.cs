@@ -35,7 +35,9 @@ public static class GetAssetsQueryHandler
                 bucket: "assets");
 
             if (urlResult.IsSuccessful)
+            {
                 urls[asset.AssetType] = urlResult.Data;
+            }
         }
 
         var response = new AssetsResponse(

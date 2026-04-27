@@ -29,7 +29,7 @@ public class LoginCommandHandler(
             return Result<TokenResponse>.Failure(SystemErrorCodes.InvalidCredentials, HttpStatusCode.Unauthorized);
         }
 
-        logger.LogInformation("Login successful → UserId: {UserId}", user.Id);
+        logger.LogInformation("Login success → UserId: {UserId}", user.Id);
 
         return Result<TokenResponse>.Success(await tokenService.CreateTokenAsync(user));
     }
