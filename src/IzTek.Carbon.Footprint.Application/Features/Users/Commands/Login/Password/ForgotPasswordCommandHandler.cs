@@ -25,32 +25,35 @@ public class ForgotPasswordCommandHandler(
             return Result.Failure(SystemErrorCodes.NotFound, HttpStatusCode.NotFound);
         }
 
-        // 2. OTP kodu oluştur
+        // 2. DeviceId validasyonu
+        if (string.IsNullOrWhiteSpace(command.DeviceToken))
+        {
+            logger.LogWarning("ForgotPassword failed: DeviceToken missing → {PhoneNumber}", command.PhoneNumber);
+            return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
+        }
+
+        // 3. OTP kodu oluştur
         var resetCode = RandomNumberGenerator.GetInt32(10000, 99999).ToString();
         var expiry = DateTime.UtcNow.AddMinutes(15).ToString("o");
 
-        // 3. Önce eskiyi sil (yoksa hata vermesin), sonra yenisini kaydet
-        try
-        {
-            await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTP");
-            await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry");
-        }
-        catch
-        {
-            // Kayıt yoksa sessizce geç
-        }
+        // 4. Eskiyi sil, yenisini kaydet (DeviceToken de dahil)
+        await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTP");
+        await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry");
+        await userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordResetDeviceToken");
 
         await userManager.SetAuthenticationTokenAsync(user, "Default", "PasswordResetOTP", resetCode);
         await userManager.SetAuthenticationTokenAsync(user, "Default", "PasswordResetOTPExpiry", expiry);
-        // 4. Mock modda OTP log'a yazılır
+        await userManager.SetAuthenticationTokenAsync(user, "Default", "PasswordResetDeviceToken", command.DeviceToken);
+        // 5. Mock modda OTP log'a yazılır
         var useMock = configuration.GetValue<bool>("UseMockPlatformService");
         if (useMock)
         {
-            logger.LogInformation("[MOCK] OTP: {OTP} → UserId: {UserId}", resetCode, user.Id);
+            logger.LogInformation("[MOCK] OTP: {OTP} → UserId: {UserId} | DeviceId: {DeviceId}",
+                resetCode, user.Id, command.DeviceToken);
             return Result.Success();
         }
 
-        // 5. Production'da SMS gönder
+        // 6. Production'da SMS gönder
         var result = await platformService.SendSmsAsync(
             phoneNumber: user.PhoneNumber!,
             message: $"Şifre sıfırlama kodunuz: {resetCode}. Bu kod 15 dakika geçerlidir.");
@@ -61,7 +64,8 @@ public class ForgotPasswordCommandHandler(
             return Result.Failure(SystemErrorCodes.BadRequest, HttpStatusCode.BadRequest);
         }
 
-        logger.LogInformation("ForgotPassword OTP sent → UserId: {UserId}", user.Id);
+        logger.LogInformation("ForgotPassword OTP sent → UserId: {UserId} | DeviceToken: {DeviceToken}",
+            user.Id, command.DeviceToken);
         return Result.Success();
     }
 }
