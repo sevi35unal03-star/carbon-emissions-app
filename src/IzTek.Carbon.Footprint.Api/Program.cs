@@ -1,4 +1,6 @@
-﻿using IzTek.Carbon.Footprint.Application.Common.Behaviors;
+﻿using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using IzTek.Carbon.Footprint.Application.Common.Behaviors;
 using IzTek.Carbon.Footprint.Application.Common.Interfaces;
 using IzTek.Carbon.Footprint.Application.Features.RefreshTokens.Commands.Cleanup;
 using IzTek.Carbon.Footprint.Application.Features.Users.Commands.Login;
@@ -8,10 +10,14 @@ using IzTek.Carbon.Footprint.Infrastructure.Validators;
 using JasperFx.CodeGeneration;
 using Lamar.Microsoft.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
 using DomainRole = IzTek.Carbon.Footprint.Domain.Entities.Role;
+
+
+// Firebase Admin SDK'yi başlat
+FirebaseApp.Create(new AppOptions { Credential = GoogleCredential.FromFile("karbon-ai-8d88e-firebase-adminsdk-fbsvc-d0c2986411.json") });
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseLamar();

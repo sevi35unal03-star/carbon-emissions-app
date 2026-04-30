@@ -8,6 +8,5 @@ public class ResetPasswordCommand
     public string ResetCode { get; set; } = string.Empty;
     public string NewPassword { get; set; } = string.Empty;
     public string ConfirmNewPassword { get; set; } = string.Empty;
-
-  
+    public string DeviceToken { get; set; } = string.Empty;
 }

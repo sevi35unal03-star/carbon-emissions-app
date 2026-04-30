@@ -53,8 +53,13 @@ public class UsersController(
     [AllowAnonymous]
     [EnableRateLimiting("auth")]
     [HttpPost("password/forgot")]
-    public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordCommand command)
-        => CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
+    public async Task<IActionResult> ForgotPasswordAsync(
+      [FromBody] ForgotPasswordCommand command,
+      [FromHeader(Name = "X-Device-Token")] string deviceToken)
+    {
+        command.DeviceToken = deviceToken;
+        return CreateActionResultInstance(await bus.InvokeAsync<Result>(command));
+    }
 
     /// <summary>OTP kodu ile şifre sıfırlar.</summary>
     [AllowAnonymous]
