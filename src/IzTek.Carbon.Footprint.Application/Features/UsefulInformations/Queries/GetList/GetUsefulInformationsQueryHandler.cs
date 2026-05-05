@@ -24,7 +24,7 @@ public static class GetUsefulInformationsQueryHandler
             {
                 Id = x.Id,
                 Title = x.Title,
-                Content = x.Content,
+                Content = x.Content,                    
                 DisplayOrder = x.DisplayOrder
             })
             .ToListAsync(ct);
