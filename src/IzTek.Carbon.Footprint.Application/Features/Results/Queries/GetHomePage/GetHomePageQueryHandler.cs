@@ -23,8 +23,9 @@ public static class GetHomePageQueryHandler
                 HasCompletedPoll: false,
                 GlobalTarget: null,
                 MonthlyTarget: null,
-                TopLeaders: null,
-                CurrentUserRank: null));
+                TopLeaders: null
+                //CurrentUserRank: null
+                ));
 
         // 1. Aktif TreeDefinition
         var treeDef = await context.TreeDefinitions
@@ -89,16 +90,16 @@ public static class GetHomePageQueryHandler
                 IsCurrentUser: x.UserId == currentUserId))
             .ToList();
 
-        var userEntry = allRankingsRaw
-            .Select((x, i) => new { x.UserId, x.TotalTrees, Rank = i + 1 })
-            .FirstOrDefault(x => x.UserId == currentUserId);
+        // var userEntry = allRankingsRaw
+        //     .Select((x, i) => new { x.UserId, x.TotalTrees, Rank = i + 1 })
+        //     .FirstOrDefault(x => x.UserId == currentUserId);
 
-        var currentUserRank = userEntry is not null
-            ? new HomeUserRankDto(
-                Rank: userEntry.Rank,
-                TreeCount: userEntry.TotalTrees,
-                Message: $"{userEntry.TotalTrees} Ağaç ile {userEntry.Rank}. sıradasınız.")
-            : null;
+        // var currentUserRank = userEntry is not null
+        //     ? new HomeUserRankDto(
+        //         Rank: userEntry.Rank,
+        //         TreeCount: userEntry.TotalTrees,
+        //         Message: $"{userEntry.TotalTrees} Ağaç ile {userEntry.Rank}. sıradasınız.")
+        //     : null;
 
         // 6. Progress hesapla
         var globalProgress = globalTarget > 0
@@ -123,7 +124,6 @@ public static class GetHomePageQueryHandler
                 DonatedTreeCount: totalDonatedThisMonth,
                 RemainingTreeCount: Math.Max(0, monthlyGoal - totalDonatedThisMonth),
                 ProgressPercent: monthlyProgress),
-            TopLeaders: topLeaders,
-            CurrentUserRank: currentUserRank));
+            TopLeaders: topLeaders));
     }
 }

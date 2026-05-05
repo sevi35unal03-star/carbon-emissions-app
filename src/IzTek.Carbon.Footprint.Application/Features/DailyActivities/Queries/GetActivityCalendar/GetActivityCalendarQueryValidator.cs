@@ -13,10 +13,7 @@
                 .When(x => x.Month.HasValue)
                 .WithMessage("Geçerli bir ay giriniz. (1-12)");
 
-            RuleFor(x => x.Period)
-                .InclusiveBetween(1, 2)
-                .WithMessage("Period 1 veya 2 olmalıdır.");
-        }
+      }
     }
 
 }

@@ -54,6 +54,7 @@ public class DailyActivitiesController(IMessageBus bus, IStringLocalizer<Resourc
     /// <summary>
     /// Gunluk Aktivitelerim — en son cevaplanmis gunun cevaplari.
     /// </summary>
+    [Authorize]
     [HttpGet("previous-answers")]
     public async Task<IActionResult> GetPreviousAnswersAsync()
         => CreateActionResultInstance(

@@ -12,29 +12,11 @@ public static class GetActivityCalendarQueryHandler
     {
         var userId = currentUserService.UserId;
 
-        DateTime startDate;
-        DateTime endDate;
+        var now = DateTime.UtcNow;
+        var lastDay = DateTime.DaysInMonth(now.Year, now.Month);
 
-        if (query.Month.HasValue)
-        {
-            if (query.Period == 1)
-            {
-                startDate = new DateTime(query.Year, query.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
-                endDate = new DateTime(query.Year, query.Month.Value, 15, 23, 59, 59, DateTimeKind.Utc);
-            }
-            else
-            {
-                var lastDay = DateTime.DaysInMonth(query.Year, query.Month.Value);
-
-                startDate = new DateTime(query.Year, query.Month.Value, 16, 0, 0, 0, DateTimeKind.Utc);
-                endDate = new DateTime(query.Year, query.Month.Value, lastDay, 23, 59, 59, DateTimeKind.Utc);
-            }
-        }
-        else
-        {
-            startDate = new DateTime(query.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            endDate = new DateTime(query.Year, 12, 31, 23, 59, 59, DateTimeKind.Utc);
-        }
+        var startDate = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var endDate = new DateTime(now.Year, now.Month, lastDay, 23, 59, 59, DateTimeKind.Utc);
 
         var items = await context.UserActivityAnswers
             .AsNoTracking()

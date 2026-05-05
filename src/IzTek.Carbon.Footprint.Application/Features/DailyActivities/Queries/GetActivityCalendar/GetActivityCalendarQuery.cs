@@ -2,8 +2,7 @@
 
 public record GetActivityCalendarQuery(
     int Year,
-    int? Month = null,
-    int Period = 1);
+    int? Month = null);
 
 
 public class CalendarResponse

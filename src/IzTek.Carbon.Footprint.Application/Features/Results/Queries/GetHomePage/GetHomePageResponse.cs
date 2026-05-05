@@ -20,14 +20,15 @@ public record HomeLeaderItemDto(
     int TreeCount,
     bool IsCurrentUser);
 
-public record HomeUserRankDto(
-    int Rank,
-    int TreeCount,
-    string Message);
+// public record HomeUserRankDto(
+//     int Rank,
+//     int TreeCount,
+//     string Message);
 
 public record GetHomePageResponse(
-    bool HasCompletedPoll,              // ← Flutter buna göre ekran seçer
-    GlobalTargetDto? GlobalTarget,      // ← nullable — anketi doldurmamışsa null
-    MonthlyTargetDto? MonthlyTarget,    // ← nullable
-    List<HomeLeaderItemDto>? TopLeaders, // ← nullable
-    HomeUserRankDto? CurrentUserRank);
+    bool HasCompletedPoll,               // ← Flutter buna göre ekran seçer
+    GlobalTargetDto? GlobalTarget,       // ← nullable — anketi doldurmamışsa null
+    MonthlyTargetDto? MonthlyTarget,     // ← nullable
+    List<HomeLeaderItemDto>? TopLeaders  // ← nullable
+                                         // HomeUserRankDto? CurrentUserRank  // ← kaldırıldı
+    );
