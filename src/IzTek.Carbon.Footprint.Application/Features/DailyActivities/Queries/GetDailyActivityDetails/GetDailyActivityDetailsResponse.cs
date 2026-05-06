@@ -6,6 +6,7 @@ public record DailyActivityDetailsResponse(
     List<DailyActivityDetailDto> Activities);
 
 public record DailyActivityDetailDto(
+    Guid ActivityQuestionId,
     string QuestionText,
     string SelectedOptionText,
     double Score,

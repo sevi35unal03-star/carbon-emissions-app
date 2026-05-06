@@ -22,6 +22,7 @@ public static class GetDailyActivityDetailsHandler
                         x.ActivityDate >= start &&
                         x.ActivityDate < end)
             .Select(x => new DailyActivityDetailDto(
+                x.ActivityQuestionId,
     x.ActivityQuestion.Text,
     x.ActivityOption.Text,
     x.TotalCarbonScore,
