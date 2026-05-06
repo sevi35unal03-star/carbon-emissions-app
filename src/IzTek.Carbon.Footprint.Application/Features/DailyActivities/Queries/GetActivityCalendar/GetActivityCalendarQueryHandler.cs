@@ -5,18 +5,30 @@ namespace IzTek.Carbon.Footprint.Application.Features.DailyActivities.Queries.Ge
 public static class GetActivityCalendarQueryHandler
 {
     public static async Task<Result<CalendarResponse>> Handle(
-        GetActivityCalendarQuery query,
-        IApplicationDbContext context,
-        ICurrentUserService currentUserService,
-        CancellationToken ct)
+     GetActivityCalendarQuery query,
+     IApplicationDbContext context,
+     ICurrentUserService currentUserService,
+     CancellationToken ct)
     {
         var userId = currentUserService.UserId;
 
-        var now = DateTime.UtcNow;
-        var lastDay = DateTime.DaysInMonth(now.Year, now.Month);
+        DateTime startDate;
+        DateTime endDate;
 
-        var startDate = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
-        var endDate = new DateTime(now.Year, now.Month, lastDay, 23, 59, 59, DateTimeKind.Utc);
+        if (query.Month.HasValue)
+        {
+            // Kullanıcı belirli bir ay seçti → o ayı getir
+            var lastDay = DateTime.DaysInMonth(query.Year, query.Month.Value);
+
+            startDate = new DateTime(query.Year, query.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+            endDate = new DateTime(query.Year, query.Month.Value, lastDay, 23, 59, 59, DateTimeKind.Utc);
+        }
+        else
+        {
+            // Sadece yıl seçildi → tüm yılı getir
+            startDate = new DateTime(query.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            endDate = new DateTime(query.Year, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+        }
 
         var items = await context.UserActivityAnswers
             .AsNoTracking()
