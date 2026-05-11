@@ -376,6 +376,3 @@ dotnet format --verify-no-changes
 dotnet build /p:TreatWarningsAsErrors=true
 ```
 
-## Lisans
-
-İzmir Teknoloji - Şirket içi kullanım

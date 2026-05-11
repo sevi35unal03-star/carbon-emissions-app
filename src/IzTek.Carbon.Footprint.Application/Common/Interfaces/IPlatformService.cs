@@ -8,9 +8,9 @@ public interface IPlatformService
 
     Task<Result?> SendPushNotificationAsync(string target, string title, string body);
 
-    Task<Result?> SendPushToAllUsersAsync(string title, string body, object? data = null); // ✅
+    Task<Result?> SendPushToAllUsersAsync(string title, string body, object? data = null); 
 
-    Task<Result?> SendPushToUserAsync(string userId, string title, string body, object? data = null); // ✅
+    Task<Result?> SendPushToUserAsync(string userId, string title, string body, object? data = null); 
 
     // BizIzmir entegrasyonu — ileride implement edilecek
     Task<Result?> RegisterUserAsync(string email, string name, string surname, string phoneNumber);
