@@ -110,4 +110,3 @@ public class PlatformService(IHttpClientFactory httpClientFactory) : IPlatformSe
     Bu servis, HTTP istemcisi aracılığıyla platformun API'sine istekler göndererek bu işlemleri gerçekleştirir.
 */
 
-// Ileride buraya RegisterAsync eklenecek -> BizIzmir servisi

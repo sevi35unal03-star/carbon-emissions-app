@@ -76,7 +76,7 @@ builder.Services
 //Local değişkeni dışarı çıkar, bir kez oku
 var jwtSettings = builder.Configuration
     .GetSection(JwtSettings.SectionName)
-    //jwt de hata olursa uygulama başlamasın, eksik konfigürasyon varsa hemen fark edelim, ekrana yazsın
+    //jwt de hata olursa uygulama başlamasın, eksik konfigürasyon varsa, ekrana yazsın
     .Get<JwtSettings>() ?? throw new InvalidOperationException("JwtSettings missing");
 
 builder.Services.Configure<JwtSettings>(
